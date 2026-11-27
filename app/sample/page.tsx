@@ -28,12 +28,17 @@ export default function SamplePage() {
         </div>
 
         <div className="mt-32">
-          <p><span className="sample-stamp">SAMPLE</span></p>
-          <ScoreSummary result={sample} sampleLabel />
+          <ScoreSummary result={sample} />
+          <p className="caption mt-16">
+            Scores are DealNote&apos;s own measurements from this run, on the run date shown. They are not
+            Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
+            Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust, local and social 15. This is
+            DealNote&apos;s scoring model, not an industry standard. Grades: A 90–100, B 80–89, C 70–79,
+            D 60–69, F below 60.
+          </p>
         </div>
 
         <h2 className="mt-32">What we found, in plain language</h2>
-        <p><span className="sample-stamp">SAMPLE</span></p>
         <p className="reading">
           The site does the basics well: it is on HTTPS, it has one clear H1, and the phone number is easy to
           find. The three findings below are the ones that cost the most calls. Each one is quick to fix.
@@ -41,11 +46,9 @@ export default function SamplePage() {
         <IssueList issues={topIssues} />
 
         <h2 className="mt-32">All findings</h2>
-        <p><span className="sample-stamp">SAMPLE</span></p>
         <IssueList issues={sample.issues.slice(3)} />
 
         <h2 className="mt-32">What we would fix</h2>
-        <p><span className="sample-stamp">SAMPLE</span></p>
         <div className="card">
           <h3>Quick wins</h3>
           <ul style={{ paddingLeft: 20 }}>
@@ -66,7 +69,6 @@ export default function SamplePage() {
         </div>
 
         <h2 className="mt-32">Investment</h2>
-        <p><span className="sample-stamp">SAMPLE</span></p>
         <div className="card">
           <div className="stack-table">
             <table>

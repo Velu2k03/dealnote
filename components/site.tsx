@@ -14,6 +14,7 @@ export default function Header() {
           <Link href="/sample">Sample report</Link>
           <Link href="/templates">Proposal templates</Link>
           <Link href="/terms">Terms</Link>
+          <Link href="/privacy">Privacy</Link>
         </nav>
       </div>
     </header>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -13,6 +14,60 @@ import {
 } from "lucide-react";
 import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
 import { CATEGORIES, gradeColor } from "@/lib/audit";
+
+export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
+  "Checkout is not connected yet — payment opens once the Polar account is set up.";
+
+/** Buy button. POSTs to /api/checkout (owned by the checkout agent) and
+ *  follows the checkout URL it returns. Shows a plain message when the
+ *  checkout is not connected yet. */
+export function BuyButton({ className = "btn btn-primary" }: { className?: string }) {
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const buy = async () => {
+    setBusy(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/checkout", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (data && typeof data.url === "string" && data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      if (data && (data.notConfigured === true || data.error === "notConfigured")) {
+        setMessage(CHECKOUT_NOT_CONFIGURED_MESSAGE);
+      } else if (!res.ok) {
+        setMessage(CHECKOUT_NOT_CONFIGURED_MESSAGE);
+      } else {
+        setMessage("Checkout did not return a payment link. Try again, or email murugan@drvelu.com.");
+      }
+    } catch {
+      setMessage("Checkout could not be reached. Try again, or email murugan@drvelu.com.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <span style={{ display: "inline-block" }}>
+      <button type="button" className={className} onClick={buy} disabled={busy}>
+        {busy ? "Opening checkout" : "Buy DealNote — $49 one-time"}
+      </button>
+      {message ? (
+        <span className="caption" role="status" style={{ display: "block", marginTop: 8 }}>
+          {message}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+/** Never "0.0 MB": under 100 KB in KB, under 1 MB as "0.x MB" with one decimal. */
+export function formatPageSize(pageBytes: number): string {
+  if (pageBytes < 100 * 1024) return `${(pageBytes / 1024).toFixed(1)} KB`;
+  return `${(pageBytes / 1024 / 1024).toFixed(1)} MB`;
+}
 
 export function GradeBadge({ grade, size = 36 }: { grade: string; size?: number }) {
   return (
@@ -71,10 +126,10 @@ export function ScoreBars({ result }: { result: AuditResult }) {
               <CategoryIcon icon={meta.icon} />
               <span style={{ fontWeight: 600, fontSize: 14 }}>{meta.label}</span>
               <span className="caption">weight {meta.weight}%</span>
-              <span className="tabular" style={{ marginLeft: "auto", fontWeight: 700 }}>
+              <span className="tabular" style={{ marginLeft: "auto", fontWeight: 600 }}>
                 {cat.score}/100
               </span>
-              <span style={{ fontWeight: 700, color: gradeColor(cat.grade) }}>{cat.grade}</span>
+              <span style={{ fontWeight: 600, color: gradeColor(cat.grade) }}>{cat.grade}</span>
             </div>
             <div className="score-bar">
               <span style={{ width: `${cat.score}%`, background: gradeColor(cat.grade) }} />
@@ -91,7 +146,7 @@ export function ScoreSummary({ result, sampleLabel = false }: { result: AuditRes
     <div className="card">
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
-          <div className="tabular" style={{ fontSize: 48, fontWeight: 700, lineHeight: 1 }}>
+          <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
             {result.overallScore}
             <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
           </div>
@@ -102,11 +157,18 @@ export function ScoreSummary({ result, sampleLabel = false }: { result: AuditRes
           <p className="mb-8" style={{ overflowWrap: "anywhere" }}>
             <strong>{result.url}</strong>
           </p>
-          <p className="caption mb-0">
-            Run on {result.fetchedAt}. HTTP {result.status}
-            {result.https ? " · HTTPS" : " · Not HTTPS"} · Loaded in {(result.loadMs / 1000).toFixed(1)}s ·
-            Page size {(result.pageBytes / 1024 / 1024).toFixed(1)} MB
+          {/* Teaser responses carry no run facts beyond the date; render only
+              the fields the server actually returned. */}
+          <p className="caption mb-8">
+            Run on {result.fetchedAt}
+            {typeof result.status === "number" ? `, HTTP ${result.status}` : ""}
+            {result.https === true ? ", HTTPS" : result.https === false ? ", not HTTPS" : ""}
           </p>
+          {typeof result.loadMs === "number" && typeof result.pageBytes === "number" ? (
+            <p className="caption mb-0">
+              Loaded in {(result.loadMs / 1000).toFixed(1)}s, page size {formatPageSize(result.pageBytes)}
+            </p>
+          ) : null}
           {sampleLabel ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
         </div>
       </div>

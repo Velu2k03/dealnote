@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BuyButton } from "@/components/audit-ui";
 
 export default function Footer() {
   return (
@@ -8,18 +9,22 @@ export default function Footer() {
           <strong>DealNote</strong> is a white-label website teardown and proposal generator for web design
           freelancers and small agencies.
         </p>
+        <nav aria-label="Footer">
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px", display: "flex", gap: 16, flexWrap: "wrap" }}>
+            <li><Link href="/audit">Run an audit</Link></li>
+            <li><Link href="/sample">Sample report</Link></li>
+            <li><Link href="/templates">Proposal templates</Link></li>
+            <li><Link href="/terms">Terms, Acceptable Use and Refund policy</Link></li>
+            <li><Link href="/privacy">Privacy Policy</Link></li>
+            <li><a href="mailto:murugan@drvelu.com">Contact: murugan@drvelu.com</a></li>
+          </ul>
+        </nav>
         <p>
-          <Link href="/audit">Run an audit</Link>
-          {" · "}
-          <Link href="/sample">Sample report</Link>
-          {" · "}
-          <Link href="/templates">Proposal templates</Link>
-          {" · "}
-          <Link href="/terms">Terms, Acceptable Use and Refund policy</Link>
+          $49 one-time. 30 audits per month fair-use limit. Reports audit the public
+          homepage only. Scores are lab measurements on the run date and can vary between runs.
         </p>
         <p className="mb-0">
-          $49 one-time. 30 audits per month fair-use limit. Payment coming soon. Reports audit the public
-          homepage only. Scores are lab measurements on the run date and can vary between runs.
+          <BuyButton className="btn btn-secondary" />
         </p>
       </div>
     </footer>

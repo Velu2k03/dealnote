@@ -4,7 +4,7 @@
   --border: #e2e8f0;
   --text: #0f172a;
   --muted: #475569;
-  --faint: #94a3b8;
+  --faint: #64748b;
   --accent: #0f766e;
   --accent-soft: #f0fdfa;
   --accent-border: #99f6e4;
@@ -21,7 +21,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
@@ -30,9 +30,9 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-h1 { font-size: 36px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; }
-h2 { font-size: 24px; font-weight: 700; line-height: 1.25; margin: 0 0 12px; }
-h3 { font-size: 18px; font-weight: 650; line-height: 1.3; margin: 0 0 8px; }
+h1 { font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; }
+h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; }
+h3 { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0 0 8px; }
 p { margin: 0 0 16px; }
 small, .caption { font-size: 13px; line-height: 1.5; color: var(--muted); }
 
@@ -46,8 +46,8 @@ section { padding: 64px 0; }
 }
 
 .eyebrow {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 12px;
+  font-size: 13px; font-weight: 600;
+  color: var(--accent); margin: 0 0 12px;
 }
 
 .btn {
@@ -55,6 +55,7 @@ section { padding: 64px 0; }
   min-height: 44px; padding: 10px 20px; border-radius: 8px;
   font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
   text-decoration: none; white-space: normal; text-align: center;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out;
 }
 .btn:hover { text-decoration: none; }
 .btn-primary { background: var(--accent); color: #fff; }
@@ -98,15 +99,15 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .score-bar > span { display: block; height: 100%; border-radius: 4px; }
 .grade-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 36px; height: 36px; padding: 0 8px; border-radius: 8px;
-  font-size: 20px; font-weight: 700; color: #fff;
+  min-width: 36px; height: 36px; padding: 0 8px; border-radius: 6px;
+  font-size: 20px; font-weight: 600; color: #fff;
 }
 .sample-stamp {
   display: inline-block; font-size: 13px; font-weight: 600; color: var(--accent);
   border: 1px solid var(--accent-border); background: var(--accent-soft);
-  border-radius: 8px; padding: 4px 10px;
+  border-radius: 6px; padding: 4px 10px;
 }
-.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border); color: var(--muted); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); }
 .tag-critical { color: var(--red); border-color: #fecaca; background: #fef2f2; }
 .tag-soon { color: var(--amber); border-color: #fde68a; background: #fffbeb; }
 .tag-nice { color: var(--muted); background: var(--surface); }
@@ -114,9 +115,9 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .site-header { border-bottom: 1px solid var(--border); background: #fff; position: sticky; top: 0; z-index: 10; }
 .site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
-.site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 8px 10px; border-radius: 8px; }
+.site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
 .site-header nav a:hover { color: var(--text); text-decoration: none; background: var(--surface); }
-.wordmark { font-size: 20px; font-weight: 700; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.wordmark { font-size: 20px; font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
 .wordmark:hover { text-decoration: none; }
 
 .site-footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 14px; }
@@ -126,7 +127,10 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 860px) { .steps-grid { grid-template-columns: 1fr; } }
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.steps-flow { display: grid; gap: 20px; }
+.step-row { display: flex; gap: 16px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 600; }
+.two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
 @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
@@ -143,6 +147,10 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .mt-0 { margin-top: 0; } .mb-0 { margin-bottom: 0; }
 .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
 .mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; } .mb-24 { margin-bottom: 24px; } .mb-32 { margin-bottom: 32px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .site-header nav a { transition: none; }
+}
 
 @media print {
   .site-header, .site-footer, .no-print { display: none !important; }
