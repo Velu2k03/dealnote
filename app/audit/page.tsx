@@ -6,6 +6,9 @@ import {
   Camera,
   Check,
   CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Download,
   Eye,
   FileText,
   KeyRound,
@@ -13,8 +16,10 @@ import {
   Lock,
   Mail,
   Play,
+  Plus,
   Printer,
   Send,
+  Trash2,
 } from "lucide-react";
 import {
   DEFAULT_BRAND,
@@ -23,7 +28,19 @@ import {
   sampleAudit,
   type AuditResult,
   type BrandProfile,
+  type ProposalItem,
 } from "@/lib/audit";
+import {
+  DEFAULT_SCOPE,
+  DEFAULT_TIMELINE,
+  NOT_INCLUDED_DEFAULT,
+  PROPOSAL_TEMPLATES,
+  SECTION_LABELS,
+  buildProposalText,
+  defaultSections,
+  type ProposalKind,
+  type SectionKey,
+} from "@/lib/templates";
 import { BuyButton, IssueList, ScoreSummary } from "@/components/audit-ui";
 
 type TrackerStatus = "Not Sent" | "Sent" | "Replied" | "Closed";
@@ -73,7 +90,20 @@ export default function AuditPage() {
   const [copied, setCopied] = useState(false);
   const [licenseKey, setLicenseKey] = useState("");
   const [logoError, setLogoError] = useState("");
-  const [prices, setPrices] = useState({ essential: "", growth: "", premium: "" });
+  const [prices, setPrices] = useState({ essential: "", growth: "", premium: "", monthly: "" });
+  const [templateKind, setTemplateKind] = useState<ProposalKind>("redesign");
+  const [sections, setSections] = useState<Record<SectionKey, boolean>>(defaultSections("redesign"));
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [fixItems, setFixItems] = useState<ProposalItem[]>([]);
+  const [newFixTitle, setNewFixTitle] = useState("");
+  const [newFixDetail, setNewFixDetail] = useState("");
+  const [newFixPhase, setNewFixPhase] = useState("Quick wins");
+  const [scopeText, setScopeText] = useState(DEFAULT_SCOPE.join("\n"));
+  const [timelineText, setTimelineText] = useState(DEFAULT_TIMELINE.join("\n"));
+  const [notIncludedText, setNotIncludedText] = useState(NOT_INCLUDED_DEFAULT.join("\n"));
+  const [expiryDays, setExpiryDays] = useState("");
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfMessage, setPdfMessage] = useState("");
 
   useEffect(() => {
     setTracker(loadTracker());
@@ -185,9 +215,11 @@ export default function AuditPage() {
         // feeds the template auto-fill and the intro-line finding count.
         if (!teaser) {
           try {
+            // Store every finding title, not just the top 3, so the
+            // templates page and the proposal generator can use findings 4-10.
             localStorage.setItem(
               LAST_FINDINGS_KEY,
-              JSON.stringify(audit.issues.slice(0, 3).map((i) => i.title)),
+              JSON.stringify(audit.issues.map((i) => i.title)),
             );
           } catch {
             // Finding auto-fill is a convenience; a failed save is not fatal.
@@ -211,10 +243,46 @@ export default function AuditPage() {
   // Sample audits are always fully visible. A live result is locked when
   // the server returned a teaser; the full result shows only with a licence key.
   const locked = result !== null && isTeaser && !displayed?.isSample;
-  const proposalItems = useMemo(
-    () => (displayed ? proposalItemsFromIssues(displayed.issues) : []),
-    [displayed],
+
+  // When a new audit (or the sample) appears, select the top 3 findings by
+  // default and build the fix list from them. Findings are quoted verbatim
+  // and never rewritten; the buyer only picks which ones to feature.
+  useEffect(() => {
+    if (!displayed) {
+      setSelectedIds([]);
+      setFixItems([]);
+      return;
+    }
+    const top = displayed.issues.slice(0, 3).map((i) => i.id);
+    setSelectedIds(top);
+    setFixItems(proposalItemsFromIssues(displayed.issues.filter((i) => top.includes(i.id))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayed?.url, displayed?.fetchedAt, displayed?.issues.length]);
+
+  const selectedIssues = useMemo(
+    () => (displayed ? displayed.issues.filter((i) => selectedIds.includes(i.id)) : []),
+    [displayed, selectedIds],
   );
+
+  const toggleFinding = (id: string) => {
+    const next = selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id];
+    setSelectedIds(next);
+    // Changing the selection rebuilds the fix list from the selected
+    // findings; edits to the fix list below apply to the current selection.
+    if (displayed) {
+      setFixItems(proposalItemsFromIssues(displayed.issues.filter((i) => next.includes(i.id))));
+    }
+  };
+
+  const changeTemplate = (kind: ProposalKind) => {
+    setTemplateKind(kind);
+    setSections(defaultSections(kind));
+  };
+
+  const templateDef = PROPOSAL_TEMPLATES.find((t) => t.kind === templateKind) ?? PROPOSAL_TEMPLATES[1];
+  const scopeLines = useMemo(() => scopeText.split("\n").map((s) => s.trim()).filter(Boolean), [scopeText]);
+  const timelineLines = useMemo(() => timelineText.split("\n").map((s) => s.trim()).filter(Boolean), [timelineText]);
+  const notIncludedLines = useMemo(() => notIncludedText.split("\n").map((s) => s.trim()).filter(Boolean), [notIncludedText]);
 
   const addToTracker = () => {
     if (!displayed) return;
@@ -236,29 +304,71 @@ export default function AuditPage() {
     );
   };
 
-  const priceOrBlank = (value: string) => (value.trim() ? value.trim() : "$____");
-
   const proposalText = useMemo(() => {
     if (!displayed) return "";
-    const lines: string[] = [];
-    lines.push(`Website redesign proposal for ${displayed.url}`);
-    lines.push(`Prepared by ${brand.brandName}, ${brand.contactName}, ${brand.contactEmail}`);
-    lines.push("");
-    lines.push("What I found");
-    displayed.issues.slice(0, 3).forEach((issue) => lines.push(`- ${issue.title}: ${issue.why}`));
-    lines.push("");
-    lines.push("What I would fix");
-    proposalItems.forEach((item) => lines.push(`- [${item.phase}] ${item.title}: ${item.detail}`));
-    lines.push("");
-    lines.push("Investment");
-    lines.push(`Essential: ${priceOrBlank(prices.essential)}`);
-    lines.push(`Growth: ${priceOrBlank(prices.growth)}`);
-    lines.push(`Premium: ${priceOrBlank(prices.premium)}`);
-    lines.push("");
-    lines.push(`Next step: ${brand.ctaText}: ${brand.ctaLink}`);
-    return lines.join("\n");
+    return buildProposalText({
+      kind: templateKind,
+      brand,
+      business: displayed.url,
+      runDate: displayed.fetchedAt,
+      issues: selectedIssues,
+      items: fixItems,
+      sections,
+      prices,
+      scopeLines,
+      timelineLines,
+      notIncluded: notIncludedLines,
+      expiryDays,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayed, brand, proposalItems, prices]);
+  }, [displayed, brand, selectedIssues, fixItems, sections, prices, scopeLines, timelineLines, notIncludedLines, expiryDays, templateKind]);
+
+  const downloadProposalPdf = async () => {
+    if (!displayed) return;
+    if (!licenseKey.trim()) {
+      setPdfMessage("A licence key is required to download the proposal PDF. Enter your key above, or buy DealNote ($49 one-time).");
+      return;
+    }
+    setPdfBusy(true);
+    setPdfMessage("");
+    try {
+      const res = await fetch("/api/pdf/proposal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: displayed.url,
+          licenseKey: licenseKey.trim(),
+          brand,
+          items: fixItems,
+          template: templateKind,
+          sections,
+          prices,
+          scopeLines,
+          timelineLines,
+          notIncluded: notIncludedLines,
+          expiryDays,
+          selectedIssueIds: selectedIds,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setPdfMessage(typeof data.error === "string" ? data.error : "The proposal PDF could not be generated.");
+        return;
+      }
+      const blob = await res.blob();
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = href;
+      a.download = "dealnote-proposal.pdf";
+      a.click();
+      URL.revokeObjectURL(href);
+      setPdfMessage("Proposal PDF downloaded.");
+    } catch {
+      setPdfMessage("The proposal PDF could not be downloaded. Check your connection and try again.");
+    } finally {
+      setPdfBusy(false);
+    }
+  };
 
   const copyProposal = async () => {
     try {
@@ -417,13 +527,54 @@ export default function AuditPage() {
                   <h2 className="mt-32">Findings ({displayed.issues.length})</h2>
                   <p className="reading">
                     Each finding shows what was found, why it matters, and the fix. Findings are ordered by
-                    severity: Critical first.
+                    severity: Critical first. Tick the findings to feature in the proposal below. Findings are
+                    quoted exactly as the audit found them; they are never rewritten.
                   </p>
                   {displayed.issues.length > 0 ? (
-                    <IssueList issues={displayed.issues} />
+                    <>
+                      <div className="card" style={{ marginBottom: 16 }}>
+                        <h3>Choose findings for the proposal</h3>
+                        <p className="caption">
+                          Top 3 are selected by default. Findings 4 to 10 work the same way. The proposal and
+                          the PDF use only the findings you tick.
+                        </p>
+                        <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+                          <legend className="caption" style={{ marginBottom: 8 }}>Findings to feature</legend>
+                          {displayed.issues.map((issue) => (
+                            <label key={issue.id} className="check-row" htmlFor={`finding-${issue.id}`}>
+                              <input
+                                type="checkbox"
+                                id={`finding-${issue.id}`}
+                                checked={selectedIds.includes(issue.id)}
+                                onChange={() => toggleFinding(issue.id)}
+                              />
+                              <span><strong>{issue.title}</strong> <span className="caption">({issue.severity})</span></span>
+                            </label>
+                          ))}
+                        </fieldset>
+                        {selectedIds.length === 0 ? (
+                          <p className="field-error" role="alert">No findings selected. The proposal will have nothing to propose until you tick at least one.</p>
+                        ) : null}
+                      </div>
+                      <IssueList issues={displayed.issues} />
+                    </>
                   ) : (
-                    <div className="card">
-                      <p className="mb-0">No issues found in the checks run. That is a clean result for this page, not a guarantee about the rest of the site.</p>
+                    <div className="card" role="alert" style={{ borderColor: "#99f6e4", background: "#f0fdfa" }}>
+                      <h3>This site is in good shape</h3>
+                      <p className="mb-16">
+                        The audit found no material issues on the homepage in this run. A teardown pitch that
+                        invents problems would be dishonest, so no fix proposal is generated for this site.
+                      </p>
+                      <p className="mb-16">
+                        What to pitch instead: ongoing care. Offer a monthly plan that keeps the site updated,
+                        backed up, and monitored, and pitch it with the Retainer Opener template.
+                      </p>
+                      <p className="mb-0">
+                        <button type="button" className="btn btn-primary" onClick={() => changeTemplate("retainer")}>
+                          Switch to the Retainer Opener
+                        </button>{" "}
+                        <Link href="/templates" className="btn btn-secondary">See all templates</Link>
+                      </p>
                     </div>
                   )}
 
@@ -487,6 +638,18 @@ export default function AuditPage() {
                         <div>
                           <label htmlFor="contact-phone">Contact phone</label>
                           <input id="contact-phone" type="tel" value={brand.contactPhone} onChange={(e) => saveBrand({ ...brand, contactPhone: e.target.value })} />
+                        </div>
+                        <div>
+                          <label htmlFor="postal-address">Postal address (for the CAN-SPAM footer on emails)</label>
+                          <textarea
+                            id="postal-address"
+                            autoComplete="street-address"
+                            placeholder="123 Main Street, Santa Rosa, CA 95401"
+                            value={brand.postalAddress ?? ""}
+                            onChange={(e) => saveBrand({ ...brand, postalAddress: e.target.value })}
+                            rows={2}
+                            style={{ minHeight: 44 }}
+                          />
                         </div>
                         <div>
                           <label htmlFor="brand-website">Website URL</label>
@@ -564,64 +727,214 @@ export default function AuditPage() {
                   </p>
                   <p className="reading">
                     The findings above become a What I Would Fix list. Prices are blank placeholders only.
-                    DealNote never fills in a price, a timeline promise, or a results promise.
+                    DealNote never fills in a price, a timeline promise, or a results promise. This proposal
+                    is for discussion purposes and is not a contract; a separate agreement is provided before
+                    work begins.
                   </p>
-                  <div className="card">
-                    <h3>What I would fix</h3>
-                    {["Quick wins", "Redesign", "Ongoing"].map((phase) => {
-                      const items = proposalItems.filter((i) => i.phase === phase);
-                      if (items.length === 0) return null;
-                      return (
-                        <div key={phase} style={{ marginBottom: 16 }}>
-                          <h4 style={{ fontSize: 15, margin: "0 0 8px" }}>{phase}</h4>
-                          <ul style={{ paddingLeft: 20, margin: 0 }}>
-                            {items.map((item) => (
-                              <li key={item.title} style={{ marginBottom: 8 }}>
-                                <strong>{item.title}.</strong> {item.detail}
-                              </li>
-                            ))}
-                          </ul>
+
+                  <div className="card" style={{ marginBottom: 16 }}>
+                    <h3>1. Choose a proposal</h3>
+                    <p className="caption">Three structurally different documents, not one skeleton with a word swapped.</p>
+                    <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+                      <legend className="caption" style={{ marginBottom: 8 }}>Proposal template</legend>
+                      {PROPOSAL_TEMPLATES.map((t) => (
+                        <label key={t.kind} className="check-row" htmlFor={`template-${t.kind}`}>
+                          <input
+                            type="radio"
+                            id={`template-${t.kind}`}
+                            name="proposal-template"
+                            checked={templateKind === t.kind}
+                            onChange={() => changeTemplate(t.kind)}
+                            style={{ accentColor: "#0F766E" }}
+                          />
+                          <span><strong>{t.name}</strong> ({t.length}) - {t.tagline}</span>
+                        </label>
+                      ))}
+                    </fieldset>
+                  </div>
+
+                  <div className="card" style={{ marginBottom: 16 }}>
+                    <h3>2. Sections to include</h3>
+                    <p className="caption">
+                      Hide any section you do not need. About is off by default: if you have no past projects
+                      yet, turn it on only when you have real work to show, or delete it.
+                    </p>
+                    <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+                      <legend className="caption" style={{ marginBottom: 8 }}>Sections</legend>
+                      {templateDef.sections.map((key) => (
+                        <label key={key} className="check-row" htmlFor={`section-${key}`}>
+                          <input
+                            type="checkbox"
+                            id={`section-${key}`}
+                            checked={sections[key] === true}
+                            onChange={(e) => setSections({ ...sections, [key]: e.target.checked })}
+                          />
+                          <span>{SECTION_LABELS[key]}</span>
+                        </label>
+                      ))}
+                    </fieldset>
+                  </div>
+
+                  <div className="card" style={{ marginBottom: 16 }}>
+                    <h3>3. What I would {templateKind === "retainer" ? "do monthly" : "fix"}</h3>
+                    <p className="caption">
+                      Edit any item, delete one, reorder with the arrows, or add your own. Changing the
+                      selected findings above rebuilds this list from the selected findings.
+                    </p>
+                    {fixItems.length === 0 ? (
+                      <p>No fix items yet. Tick a finding above, or add your own item below.</p>
+                    ) : (
+                      fixItems.map((item, idx) => (
+                        <div key={`${item.title}-${idx}`} style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                          <label htmlFor={`fix-title-${idx}`}>Fix title</label>
+                          <input
+                            id={`fix-title-${idx}`}
+                            type="text"
+                            value={item.title}
+                            onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, title: e.target.value } : f)))}
+                          />
+                          <label htmlFor={`fix-detail-${idx}`} style={{ marginTop: 8 }}>Detail</label>
+                          <input
+                            id={`fix-detail-${idx}`}
+                            type="text"
+                            value={item.detail}
+                            onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, detail: e.target.value } : f)))}
+                          />
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8, alignItems: "center" }}>
+                            <label htmlFor={`fix-phase-${idx}`} style={{ margin: 0 }}>Phase</label>
+                            <select
+                              id={`fix-phase-${idx}`}
+                              value={item.phase}
+                              onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, phase: e.target.value } : f)))}
+                              style={{ maxWidth: 160 }}
+                            >
+                              <option>Quick wins</option>
+                              <option>Redesign</option>
+                              <option>Ongoing</option>
+                            </select>
+                            <button type="button" className="btn btn-secondary" disabled={idx === 0} aria-label={`Move ${item.title} up`} onClick={() => { const n = [...fixItems]; [n[idx - 1], n[idx]] = [n[idx], n[idx - 1]]; setFixItems(n); }}>
+                              <ChevronUp size={18} strokeWidth={1.5} aria-hidden /> Up
+                            </button>
+                            <button type="button" className="btn btn-secondary" disabled={idx === fixItems.length - 1} aria-label={`Move ${item.title} down`} onClick={() => { const n = [...fixItems]; [n[idx + 1], n[idx]] = [n[idx], n[idx + 1]]; setFixItems(n); }}>
+                              <ChevronDown size={18} strokeWidth={1.5} aria-hidden /> Down
+                            </button>
+                            <button type="button" className="btn btn-secondary" aria-label={`Delete ${item.title}`} onClick={() => setFixItems(fixItems.filter((_, i) => i !== idx))}>
+                              <Trash2 size={18} strokeWidth={1.5} aria-hidden /> Delete
+                            </button>
+                          </div>
                         </div>
-                      );
-                    })}
-                    <h3>Investment</h3>
-                    <div className="stack-table">
-                      <table>
-                        <thead><tr><th>Tier</th><th>Includes</th><th>Price</th></tr></thead>
-                        <tbody>
-                          <tr>
-                            <td data-label="Tier">Essential</td>
-                            <td data-label="Includes">Quick wins, core pages, basic SEO setup</td>
-                            <td data-label="Price">
-                              <input type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 140 }} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td data-label="Tier">Growth</td>
-                            <td data-label="Includes">Everything in Essential, plus redesign, forms, and trust sections</td>
-                            <td data-label="Price">
-                              <input type="text" aria-label="Growth price" placeholder="$____" value={prices.growth} onChange={(e) => setPrices({ ...prices, growth: e.target.value })} style={{ maxWidth: 140 }} />
-                            </td>
-                          </tr>
-                          <tr>
-                            <td data-label="Tier">Premium</td>
-                            <td data-label="Includes">Everything in Growth, plus ongoing support period</td>
-                            <td data-label="Price">
-                              <input type="text" aria-label="Premium price" placeholder="$____" value={prices.premium} onChange={(e) => setPrices({ ...prices, premium: e.target.value })} style={{ maxWidth: 140 }} />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      ))
+                    )}
+                    <h4 style={{ fontSize: 15, margin: "16px 0 8px" }}>Add a fix item</h4>
+                    <label htmlFor="new-fix-title">Title</label>
+                    <input id="new-fix-title" type="text" value={newFixTitle} onChange={(e) => setNewFixTitle(e.target.value)} placeholder="e.g. Compress the hero image" />
+                    <label htmlFor="new-fix-detail" style={{ marginTop: 8 }}>Detail</label>
+                    <input id="new-fix-detail" type="text" value={newFixDetail} onChange={(e) => setNewFixDetail(e.target.value)} placeholder="e.g. Bring it below 200 KB in a modern format" />
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8, alignItems: "center" }}>
+                      <label htmlFor="new-fix-phase" style={{ margin: 0 }}>Phase</label>
+                      <select id="new-fix-phase" value={newFixPhase} onChange={(e) => setNewFixPhase(e.target.value)} style={{ maxWidth: 160 }}>
+                        <option>Quick wins</option>
+                        <option>Redesign</option>
+                        <option>Ongoing</option>
+                      </select>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        disabled={!newFixTitle.trim()}
+                        onClick={() => {
+                          setFixItems([...fixItems, { phase: newFixPhase, title: newFixTitle.trim(), detail: newFixDetail.trim() || "See the audit report." }]);
+                          setNewFixTitle("");
+                          setNewFixDetail("");
+                        }}
+                      >
+                        <Plus size={18} strokeWidth={1.5} aria-hidden /> Add fix item
+                      </button>
                     </div>
+                  </div>
+
+                  {templateKind === "redesign" ? (
+                    <div className="card" style={{ marginBottom: 16 }}>
+                      <h3>4. Scope, timeline, and what is not included</h3>
+                      <p className="caption">One item per line. The Not included list is pre-filled with concrete examples; keep or delete each line, never leave it blank.</p>
+                      <label htmlFor="scope-lines">Scope and deliverables</label>
+                      <textarea id="scope-lines" value={scopeText} onChange={(e) => setScopeText(e.target.value)} rows={5} />
+                      <label htmlFor="timeline-lines" style={{ marginTop: 12 }}>Timeline and milestones</label>
+                      <textarea id="timeline-lines" value={timelineText} onChange={(e) => setTimelineText(e.target.value)} rows={4} />
+                      <label htmlFor="not-included-lines" style={{ marginTop: 12 }}>Not included</label>
+                      <textarea id="not-included-lines" value={notIncludedText} onChange={(e) => setNotIncludedText(e.target.value)} rows={5} />
+                      <label htmlFor="expiry-days" style={{ marginTop: 12 }}>Proposal valid for (days)</label>
+                      <input
+                        id="expiry-days"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="14 or 30"
+                        value={expiryDays}
+                        onChange={(e) => setExpiryDays(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
+                        style={{ maxWidth: 160 }}
+                      />
+                    </div>
+                  ) : null}
+
+                  <div className="card">
+                    <h3>{templateKind === "redesign" ? "5. Investment" : "4. Investment"}</h3>
+                    <p className="caption">Fill in the prices yourself before sending. A blank price stays blank ($____); a $0 price is never shown.</p>
+                    {templateKind === "retainer" ? (
+                      <div>
+                        <label htmlFor="price-monthly">Monthly care plan price</label>
+                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: 160 }} />
+                      </div>
+                    ) : templateKind === "quickfix" ? (
+                      <div>
+                        <label htmlFor="price-essential">Essential price</label>
+                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 160 }} />
+                      </div>
+                    ) : (
+                      <div className="stack-table">
+                        <table>
+                          <thead><tr><th>Tier</th><th>Includes</th><th>Price</th></tr></thead>
+                          <tbody>
+                            <tr>
+                              <td data-label="Tier">Essential</td>
+                              <td data-label="Includes">Quick wins, core pages, basic SEO setup</td>
+                              <td data-label="Price">
+                                <input type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 140 }} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td data-label="Tier">Growth</td>
+                              <td data-label="Includes">Everything in Essential, plus redesign, forms, and trust sections</td>
+                              <td data-label="Price">
+                                <input type="text" aria-label="Growth price" placeholder="$____" value={prices.growth} onChange={(e) => setPrices({ ...prices, growth: e.target.value })} style={{ maxWidth: 140 }} />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td data-label="Tier">Premium</td>
+                              <td data-label="Includes">Everything in Growth, plus ongoing support period</td>
+                              <td data-label="Price">
+                                <input type="text" aria-label="Premium price" placeholder="$____" value={prices.premium} onChange={(e) => setPrices({ ...prices, premium: e.target.value })} style={{ maxWidth: 140 }} />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                     <p className="caption">Fill in the prices yourself before sending. Payment terms placeholder: 50% upfront, 50% on launch.</p>
                     <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                      <button className="btn btn-secondary" onClick={copyProposal}>
+                      <button type="button" className="btn btn-secondary" onClick={copyProposal}>
                         <FileText size={18} strokeWidth={1.5} aria-hidden /> {copied ? "Copied" : "Copy proposal text"}
+                      </button>
+                      <button type="button" className="btn btn-primary" onClick={downloadProposalPdf} disabled={pdfBusy}>
+                        <Download size={18} strokeWidth={1.5} aria-hidden /> {pdfBusy ? "Generating PDF" : "Download proposal PDF"}
                       </button>
                       <Link href="/templates" className="btn btn-secondary">
                         <Mail size={18} strokeWidth={1.5} aria-hidden /> See proposal templates
                       </Link>
                     </div>
+                    {pdfMessage ? <p className="caption mt-16" role="status">{pdfMessage}</p> : null}
+                    <p className="caption mt-16 mb-0">
+                      The PDF carries your logo and brand colours, the selected findings quoted from the audit,
+                      and your edited fix list. It needs a licence key; the audit above must be unlocked first.
+                    </p>
                   </div>
 
                   <h2 className="mt-32">Outreach tracker</h2>

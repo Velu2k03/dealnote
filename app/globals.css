@@ -82,6 +82,13 @@ input[type="text"], input[type="url"], input[type="email"], input[type="tel"], i
 }
 input[type="color"] { padding: 4px; max-width: 80px; }
 textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+/* Native checkboxes keep native keyboard behaviour; accent-color brands
+   them teal (modern-web-guidance `checkbox` guide). The wrapping label
+   gives a 44px hit target. */
+input[type="checkbox"] { accent-color: var(--accent); inline-size: 1.25em; aspect-ratio: 1; margin: 0; cursor: pointer; flex-shrink: 0; }
+.check-row { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 8px 0; cursor: pointer; font-weight: 400; margin: 0; }
+.check-row input[type="checkbox"] { margin-top: 3px; }
+.check-row > span { flex: 1 1 auto; }
 .field-error { color: var(--red); font-size: 13px; margin: 6px 0 0; }
 
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
