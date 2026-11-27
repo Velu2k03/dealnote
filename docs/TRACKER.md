@@ -8,8 +8,9 @@
 **This file is the tracker doc. It is not the sheet. Never touch Google Sheets from this task — the sheet update is the parent's job.**
 
 **Live site:** https://dealnote-blue.vercel.app/ — **SHIPPED LIVE 27 Nov 2026.** Merge commit 25f3f72 (dealnote-fixes-nov27 → main), Vercel auto-deployed, Ready after ~75s. Live GET verification: all 6 pages 200, /privacy 200 with region text, og.png 200, contact murugan@drvelu.com visible, $49 one-time, 0 "verified" on home, no future dates. Live POST verification (free audit teaser, checkout 503, PDF 402 on Vercel) NOT RUN — blocked by an approval timeout, not retried, still needs approval. Full PDF generation on Vercel serverless UNTESTED (needs a real licence key from the payment step).
+**Tracker: INSTALLED LIVE 27 Nov 2026.** Merge commit e51015b (dealnote-tracker-install → main). Exact dashboard snippet in root layout head on every page, byte-verbatim in built and live HTML of all 6 pages, verify.js returns 200 (1,538 bytes). /privacy updated to state the tracker is installed. Full report: docs/dealnote-tracker-install-2026-11-27.md. Dashboard "Check installation" / connected status still needs a re-check in the Ship or Die dashboard after traffic.
 **GitHub repo:** https://github.com/Velu2k03/dealnote
-**Branch:** `main` at 25f3f72. Fixes branch dealnote-fixes-nov27 merged and pushed; do not re-merge.
+**Branch:** `main` at e51015b (tracker install merged 27 Nov 2026). Fixes branch dealnote-fixes-nov27 merged at 25f3f72; tracker branch dealnote-tracker-install merged at e51015b; do not re-merge either.
 **Vercel project:** dealnote, team velus-projects-27f81f38, Next.js preset, no env vars set, no custom domain.
 **Payment: ON HOLD by Velu (11:29 Nov 27).** Polar code unchanged, checkout returns 503 notConfigured with no env vars. Do NOT swap to Lemon Squeezy, do NOT create payment accounts/products, do NOT test-purchase until Velu says resume.
 **Rust port:** gate passed 206/206, merged e529576. Vercel runs the TypeScript fallback, binary needs glibc >= 2.34, Vercel AL2 has 2.26. Fallback stays for now, Velu's decision. Deferred, do not touch before Dec 1.
@@ -40,7 +41,6 @@
 ## What is still NEEDS VELU
 
 - Polar account + Philippines Stripe Connect Express KYC.
-- Tracker snippet copied from the Ship or Die dashboard (My Startup > traffic tracker) — see docs/TRACKER-INSTALL.md.
 - Test purchase with real money, then refund it.
 - Custom domain decision / purchase.
 - PSI API key creation (restricted to the PSI API).
@@ -56,9 +56,10 @@
 
 **Payment:** $49 one-time. Recommended: Polar.sh (net $46.05 US / $45.32 non-US per $49 sale). Stripe unavailable to a Philippines-based seller. Lemon Squeezy existing store is a bridge only, processing stops Mar 31 2027.
 **Custom domain:** None bought, no decision recorded. Deferred until the payment step. Steps: Vercel Settings → Domains → Add subdomain.resonantatlas.com, exact CNAME Vercel shows; Cloudflare DNS CNAME, proxy OFF (DNS only); do not touch apex, nameservers, or MX.
-**Ship or Die tracker:** Not installed. Paste EXACT snippet from the dashboard, before any traffic and before first payment. Do not invent it. Public script URL: https://www.ship-or-die.com/hackathon/verify.js.
+**Ship or Die tracker:** INSTALLED LIVE 27 Nov 2026, merge e51015b. Exact snippet from the dashboard, in app/layout.tsx head on every page:
+`<script defer src="https://www.ship-or-die.com/hackathon/verify.js" data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"></script>`
 **TrustMRR:** Not started, after first real sale. Checked directly Nov 27: trustmrr.com is live, operator and full provider list could NOT be verified from the site itself; the Polar support correction rests on the TrustMRR FAQ via secondary sources checked Oct 13 2026 (see docs/TRUSTMRR-POLAR-CORRECTION.md).
-**Ship or Die My Startup:** Not filled.
+**Ship or Die My Startup:** FILLED 27 Nov 2026 — DealNote, Software / web app, website https://dealnote-blue.vercel.app/, public sharing on. Dashboard status before tracker install: traffic "Not connected", revenue "Not connected".
 **Launch target:** Dec 1. Contest ends Dec 16 2026 21:00 Manila.
 
 **Audit batch 2026-11-27:** docs/dealnote-audit-batch-2026-11-27.md. Verdict: SHIP WITH FIXES. Neon verdict: NO-SHIP 4.1/10 (docs/neon-dealnote-audit-2026-11-27.html). Claude miss-check: docs/claude-misscheck-dealnote-2026-11-27.md (items 1-29). Slop check: docs/dealnote-slop-check-2026-11-27.md. Fixes report: docs/dealnote-fixes-2026-11-27.md.
