@@ -2,7 +2,7 @@
 
 **Product:** DealNote, white-label website teardown + proposal generator, $49 one-time.
 **Repo:** `~/workspace/ship-or-die-100k/teardown-generator`, branch `dealnote-fixes-nov27`.
-**Base commit:** `3706d51`. **Commit:** `50697eb`.
+**Base commit:** `3706d51`. **Commit:** `ec33765`.
 **Scope:** re-ran the slop check from `docs/dealnote-slop-check-2026-11-27.md` (HIGH 3, MEDIUM 7, LOW 8;
 replicated Briskly ~29/100, Jev-style ~15–25/100) against the fixed code at commit `3706d51`,
 fixed what was still open, and re-scored. No branch switch, no merge, no deploy, no accounts,
