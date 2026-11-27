@@ -1,0 +1,37 @@
+{
+  "schema": "rust-anything/bridge@1",
+  "root": "/home/hatch/workspace/ship-or-die-100k/teardown-generator",
+  "unit": "lib/analyze.ts",
+  "language": "ts",
+  "kind": "napi",
+  "crate_name": "analyze-page-rs",
+  "exports": [
+    {
+      "name": "analyzePage",
+      "file": "lib/analyze.ts",
+      "line": 73,
+      "params": [
+        {
+          "name": "input",
+          "ts_type": "AnalyzeInput",
+          "optional": false,
+          "rest": false
+        }
+      ],
+      "returns": "AnalyzeOutput",
+      "is_async": false,
+      "is_generator": false,
+      "type_params": [],
+      "uses_instanceof": false
+    }
+  ],
+  "classes": [],
+  "js_only": [
+    {
+      "name": "internalLinksOf",
+      "file": "lib/analyze.ts",
+      "line": 51,
+      "reason": "not hot in the profiled run; `go` ports one function"
+    }
+  ]
+}
