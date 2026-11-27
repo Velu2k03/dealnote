@@ -1,7 +1,8 @@
 # DealNote — Plan
 
 **Product:** White-label local-business website teardown and proposal generator.
-**Date:** 27 Nov 2026. **Status:** Name + plan only. No code written, nothing built, nothing deployed.
+**Date:** 27 Nov 2026. **Status:** v1 built and live on Vercel (https://dealnote-blue.vercel.app), Rust port of analyzePage merged e529576 (Vercel runs TypeScript fallback, glibc 2.34 vs 2.26). Audit batch 2026-11-27 done on branch dealnote-audit-batch, verdict SHIP WITH FIXES, see docs/dealnote-audit-batch-2026-11-27.md.
+**Tracker sheet:** https://docs.google.com/spreadsheets/d/1ozzeyu22c7yK7-YXivY9zXXhq40Wrds_QTi2EYIoF0M/edit (spreadsheetId 1ozzeyu22c7yK7-YXivY9zXXhq40Wrds_QTi2EYIoF0M, tabs Status, Packs, Tasks, Decisions, Sales). See docs/TRACKER.md.
 
 ## 1. Name
 
