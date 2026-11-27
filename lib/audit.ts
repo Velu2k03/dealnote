@@ -259,6 +259,8 @@ export interface BrandProfile {
   ctaText: string;
   ctaLink: string;
   introLine: string;
+  /** Postal address, required for the CAN-SPAM footer on every email. */
+  postalAddress: string;
   logoUrl?: string;
   logoDataUrl?: string;
 }
@@ -274,6 +276,7 @@ export const DEFAULT_BRAND: BrandProfile = {
   ctaText: "Book a free 15-minute call",
   ctaLink: "https://cal.com/yourstudio/intro",
   introLine: "I reviewed your website and found 7 quick wins.",
+  postalAddress: "",
   logoUrl: "",
   logoDataUrl: "",
 };

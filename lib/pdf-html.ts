@@ -7,6 +7,29 @@
 
 import type { AuditResult, BrandProfile, ProposalItem } from "@/lib/audit";
 import { CATEGORIES } from "@/lib/audit";
+import {
+  NON_BINDING_TEXT,
+  NOT_INCLUDED_DEFAULT,
+  TESTIMONIAL_SLOT_TEXT,
+  priceOrBlank,
+  type ProposalKind,
+  type SectionKey,
+} from "@/lib/templates";
+
+/** Buyer brand colour, validated to a #rrggbb hex; anything else falls
+ *  back to DealNote teal so a bad value can never break the PDF. */
+export function brandAccent(brand: BrandProfile): string {
+  const c = (brand.primaryColor ?? "").trim();
+  return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#0F766E";
+}
+
+/** Logo for the PDF: only an uploaded data URL is embedded. A remote
+ *  logo URL is never fetched server-side for the PDF. */
+function logoImg(brand: BrandProfile): string {
+  const src = (brand.logoDataUrl ?? "").trim();
+  if (!src.startsWith("data:image/")) return "";
+  return `<img src="${escapeHtml(src)}" alt="" style="max-height:48px;max-width:220px;display:block;margin-bottom:10px;">`;
+}
 
 // ---------------------------------------------------------------------------
 // Chromium rendering (Puppeteer). Pinned matched pair, verified locally:
@@ -65,14 +88,14 @@ function gradeColor(grade: string): string {
   return "#B91C1C";
 }
 
-const BASE_CSS = `
+const baseCss = (accent: string) => `
   * { box-sizing: border-box; }
   body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1e293b; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.55; background: #ffffff; }
   h1 { font-size: 26px; line-height: 1.25; color: #0f172a; margin: 0 0 6px; }
-  h2 { font-size: 17px; color: #0f172a; margin: 28px 0 8px; padding-bottom: 6px; border-bottom: 2px solid #0F766E; }
+  h2 { font-size: 17px; color: #0f172a; margin: 28px 0 8px; padding-bottom: 6px; border-bottom: 2px solid ${accent}; }
   h3 { font-size: 14px; color: #0f172a; margin: 14px 0 4px; }
   p { margin: 6px 0; }
-  .brand { color: #0F766E; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+  .brand { color: ${accent}; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
   .meta { color: #64748b; font-size: 12px; }
   .sample-stamp { display: inline-block; border: 2px solid #B91C1C; color: #B91C1C; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; font-size: 12px; margin: 10px 0; }
   .score-box { border: 1px solid #cbd5e1; padding: 16px 20px; margin: 16px 0; }
@@ -82,11 +105,12 @@ const BASE_CSS = `
   th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
   th { color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
   .issue { border: 1px solid #e2e8f0; padding: 12px 14px; margin: 10px 0; page-break-inside: avoid; }
-  .severity { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; color: #ffffff; background: #0F766E; }
+  .severity { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; color: #ffffff; background: ${accent}; }
   .severity.critical { background: #B91C1C; }
   .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #cbd5e1; color: #64748b; font-size: 11px; line-height: 1.5; }
-  .cta { border: 2px solid #0F766E; padding: 14px 16px; margin: 16px 0; }
-  .cta a { color: #0F766E; font-weight: 700; }
+  .cta { border: 2px solid ${accent}; padding: 14px 16px; margin: 16px 0; }
+  .cta a { color: ${accent}; font-weight: 700; }
+  @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 `;
 
 function reportShell(opts: {
@@ -99,8 +123,9 @@ function reportShell(opts: {
 }): string {
   const b = opts.brand;
   return `<!doctype html>
-<html><head><meta charset="utf-8"><style>${BASE_CSS}</style></head>
+<html><head><meta charset="utf-8"><style>${baseCss(brandAccent(b))}</style></head>
 <body>
+  ${logoImg(b)}
   <div class="brand">${escapeHtml(b.brandName)}</div>
   <h1>${escapeHtml(opts.title)}</h1>
   <p class="meta">${escapeHtml(opts.prospectUrl)} &middot; ${escapeHtml(opts.runDate)}</p>
@@ -160,15 +185,50 @@ export function teardownReportHtml(opts: {
   return reportShell({ title: "Website Teardown Report", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
 }
 
-/** Proposal PDF HTML: the fix plan, grouped by phase, plus the teardown summary. */
+/** Proposal PDF HTML: the fix plan plus the proposal structure the buyer
+ *  chose (template kind, visible sections, edited fix list, blank prices).
+ *  Findings are quoted verbatim from the audit; prices are always blank
+ *  ($____) unless the buyer typed a real value. No signature lines: the
+ *  proposal is explicitly non-binding. */
 export function proposalHtml(opts: {
   result: AuditResult;
   brand: BrandProfile;
   runDate: string;
   items: ProposalItem[];
+  template?: ProposalKind;
+  sections?: Partial<Record<SectionKey, boolean>>;
+  prices?: { essential?: string; growth?: string; premium?: string; monthly?: string };
+  scopeLines?: string[];
+  timelineLines?: string[];
+  notIncluded?: string[];
+  expiryDays?: string;
+  /** Findings the buyer selected in the generator; only these appear in
+   *  the proposal PDF. Defaults to all findings when omitted. */
+  selectedIssueIds?: string[];
 }): string {
   const { result, brand, runDate, items } = opts;
-  const phases = ["Quick wins", "Redesign", "Ongoing"];
+  const shownResult: AuditResult =
+    opts.selectedIssueIds && opts.selectedIssueIds.length > 0
+      ? { ...result, issues: result.issues.filter((i) => opts.selectedIssueIds!.includes(i.id)) }
+      : result;
+  const template = opts.template ?? "redesign";
+  const on = (s: SectionKey) => opts.sections?.[s] !== false;
+  const prices = opts.prices ?? {};
+  const scopeLines = opts.scopeLines?.length ? opts.scopeLines : [];
+  const timelineLines = opts.timelineLines?.length ? opts.timelineLines : [];
+  const notIncluded = opts.notIncluded?.length ? opts.notIncluded : NOT_INCLUDED_DEFAULT;
+  const title =
+    template === "quickfix" ? "Quick-Fix Pitch" : template === "retainer" ? "Monthly Care Proposal" : "Website Fix Proposal";
+  const fixHeading = template === "retainer" ? "What we would do monthly" : "What we would fix";
+
+  const investment =
+    template === "retainer"
+      ? `<p>Monthly care plan: <strong>${escapeHtml(priceOrBlank(prices.monthly ?? ""))}</strong> per month, 3-month minimum, 30-day cancel after that.</p><p>Updates, backups, quarterly restore test, up to 2 hours of small changes per month.</p>`
+      : template === "quickfix"
+        ? `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr></tbody></table><p class="meta">Quick wins only. Payment terms: 50% upfront, 50% on completion.</p>`
+        : `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr><tr><td>Growth</td><td>${escapeHtml(priceOrBlank(prices.growth ?? ""))}</td></tr><tr><td>Premium</td><td>${escapeHtml(priceOrBlank(prices.premium ?? ""))}</td></tr></tbody></table><p class="meta">Payment terms: 50% upfront, 50% on launch. For larger projects, milestone terms of 30% / 40% / 30% can be used instead. Edit these terms to match your agreement. This is not legal advice.</p>`;
+
+  const phases = template === "retainer" ? ["Ongoing"] : ["Quick wins", "Redesign", "Ongoing"];
   const phaseSections = phases
     .map((phase) => {
       const phaseItems = items.filter((i) => i.phase === phase);
@@ -176,20 +236,44 @@ export function proposalHtml(opts: {
       return `<h3>${escapeHtml(phase)}</h3><ul>${phaseItems.map((i) => `<li><strong>${escapeHtml(i.title)}</strong> &mdash; ${escapeHtml(i.detail)}</li>`).join("")}</ul>`;
     })
     .join("");
-  const body = `
+
+  let body = `
   <div class="score-box">
     <p class="meta">Overall score</p>
     <p><span class="score-big">${result.overallScore} / 100</span> &nbsp; <span class="grade" style="color:${gradeColor(result.overallGrade)};">Grade ${escapeHtml(result.overallGrade)}</span></p>
     <p class="meta">Homepage: ${escapeHtml(result.finalUrl)}</p>
   </div>
-  <p>${escapeHtml(brand.introLine)}</p>
-  <h2>What we would fix</h2>
-  ${phaseSections || "<p>No fix items were listed for this site in this run.</p>"}
-  <h2>What we found</h2>
-  ${issueBlocks(result)}
-  <h2>What happens next</h2>
+  <p>${escapeHtml(brand.introLine)}</p>`;
+
+  if (on("found")) {
+    body += `<h2>What we found</h2>${shownResult.issues.length === 0 ? "<p>No material issues were found on the homepage in this run. The opportunity is keeping the site in good shape, not fixing what is not broken.</p>" : issueBlocks(shownResult)}`;
+  }
+  if (on("fix")) {
+    body += `<h2>${escapeHtml(fixHeading)}</h2>${phaseSections || "<p>No fix items were listed for this site in this run.</p>"}`;
+  }
+  if (on("scope") && scopeLines.length > 0) {
+    body += `<h2>Scope and deliverables</h2><ul>${scopeLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><h3>Not included</h3><ul>${notIncluded.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
+  }
+  if (on("timeline") && timelineLines.length > 0) {
+    body += `<h2>Timeline and milestones</h2><ul>${timelineLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><p class="meta">Start date: [fill in]. Timings assume the client provides content and access on time.</p>`;
+  }
+  if (on("investment")) {
+    body += `<h2>Investment</h2>${investment}`;
+  }
+  if (on("about")) {
+    body += `<h2>About and past work</h2><p>${escapeHtml(TESTIMONIAL_SLOT_TEXT).replace(/\n/g, "<br>")}</p>`;
+  }
+  if (on("terms")) {
+    body += `<h2>Terms</h2><p>This proposal includes 2 rounds of design revisions. Additional revisions or work outside the scope described above will be quoted separately. Ownership of the finished site passes to the client on final payment. Edit these terms to match your agreement with your client. This is not legal advice.</p>`;
+  }
+  if (on("nextstep")) {
+    const expiry = (opts.expiryDays ?? "").trim() || "[14/30]";
+    body += `<h2>What happens next</h2>
   <div class="cta"><p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)} &middot; ${escapeHtml(brand.contactPhone)}</p>
   <p><a href="${escapeHtml(brand.ctaLink)}">${escapeHtml(brand.ctaText)}</a></p>
-  <p class="meta">${escapeHtml(brand.website)}</p></div>`;
-  return reportShell({ title: "Website Fix Proposal", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
+  <p class="meta">${escapeHtml(brand.website)}</p></div>
+  <p>Reply to this email by [date] to book a 15-minute call. This proposal is valid for ${escapeHtml(expiry)} days from the date above.</p>
+  <p class="meta">${escapeHtml(NON_BINDING_TEXT)}</p>`;
+  }
+  return reportShell({ title, brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
 }

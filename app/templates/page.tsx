@@ -2,30 +2,25 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CheckSquare, Copy, FileText, Mail } from "lucide-react";
-
-const TIERS = [
-  {
-    name: "Essential",
-    includes: "Quick wins only: speed fixes, meta and alt text, SSL, broken links.",
-    pages: "Up to 5 pages",
-    support: "2 weeks post-launch support",
-  },
-  {
-    name: "Growth",
-    includes: "Everything in Essential, plus full redesign, mobile layout, forms, and trust sections.",
-    pages: "Up to 10 pages",
-    support: "30 days post-launch support",
-  },
-  {
-    name: "Premium",
-    includes: "Everything in Growth, plus schema, sitemap, monitoring setup, and ongoing checks.",
-    pages: "Up to 20 pages",
-    support: "90 days post-launch support",
-  },
-];
+import { CheckSquare, Copy, FileText, Mail, TriangleAlert } from "lucide-react";
+import { DEFAULT_BRAND, type BrandProfile } from "@/lib/audit";
+import {
+  EMAIL_TEMPLATES,
+  PROPOSAL_TEMPLATES,
+  buildEmailText,
+  buildProposalText,
+  canSpamFooter,
+  DEFAULT_SCOPE,
+  DEFAULT_TIMELINE,
+  defaultSections,
+  hasPlaceholder,
+  NOT_INCLUDED_DEFAULT,
+  type EmailKind,
+  type ProposalKind,
+} from "@/lib/templates";
 
 const LAST_FINDINGS_KEY = "dealnote-last-findings-v1";
+const BRAND_KEY = "dealnote-brand-v1";
 
 const CHECKLIST = [
   "The subject line matches the body (no fake \"Re:\" or \"Fwd:\").",
@@ -36,56 +31,88 @@ const CHECKLIST = [
   "You are sending email only. No SMS.",
 ];
 
+function loadBrand(): BrandProfile {
+  try {
+    const raw = localStorage.getItem(BRAND_KEY);
+    if (raw) return { ...DEFAULT_BRAND, ...(JSON.parse(raw) as BrandProfile) };
+  } catch {
+    // Keep the default brand profile.
+  }
+  return DEFAULT_BRAND;
+}
+
 export default function TemplatesPage() {
-  const [prices, setPrices] = useState({ Essential: "", Growth: "", Premium: "" });
+  const [brand, setBrand] = useState<BrandProfile>(DEFAULT_BRAND);
   const [findings, setFindings] = useState<string[]>([]);
-  const [copied, setCopied] = useState(false);
+  const [openProposal, setOpenProposal] = useState<ProposalKind | null>(null);
+  const [openEmail, setOpenEmail] = useState<EmailKind | null>(null);
+  const [emailDrafts, setEmailDrafts] = useState<Partial<Record<EmailKind, string>>>({});
+  const [copied, setCopied] = useState<string>("");
+  const [copyWarning, setCopyWarning] = useState<string>("");
 
   useEffect(() => {
+    setBrand(loadBrand());
     try {
       const raw = localStorage.getItem(LAST_FINDINGS_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as string[];
-        if (Array.isArray(parsed) && parsed.length > 0) setFindings(parsed.slice(0, 3));
+        if (Array.isArray(parsed) && parsed.length > 0) setFindings(parsed);
       }
     } catch {
       // No audit findings stored; placeholders stay as written.
     }
   }, []);
 
-  const finding = (i: number) => findings[i] ?? `[finding ${i + 1}]`;
+  const findingsMissing = findings.length === 0;
+  const business = "[Business]";
 
-  const coveringEmailText = useMemo(() => {
-    return [
-      "Subject: Your website, reviewed: 3 quick wins for [Business]",
-      "",
-      "Hi [Name],",
-      "",
-      `I reviewed [Business] website and put together a short teardown showing what is working and what is costing you calls. The three biggest items are ${finding(0)}, ${finding(1)}, and ${finding(2)}.`,
-      "",
-      "The full report is attached. If you would like, I can fix these and rebuild the site so the phone rings more often. No obligation, just a 15-minute call if it is useful.",
-      "",
-      "Best regards,",
-      "[Your name], [Your brand]",
-      "[Postal address, required for commercial email in the US]",
-      "[Phone]",
-      "[Email]",
-      "[Website]",
-      "",
-      "This is an advertisement. If you do not want marketing email from me, reply with \"unsubscribe\" or use this link: [unsubscribe link]. I will stop within 10 business days.",
-    ].join("\n");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [findings]);
+  const proposalText = (kind: ProposalKind) =>
+    buildProposalText({
+      kind,
+      brand,
+      business,
+      runDate: "[date]",
+      issues: findings.map((title, i) => ({
+        id: `t${i}`,
+        category: "speed" as const,
+        severity: "Fix soon" as const,
+        title,
+        found: title,
+        why: "See the audit report for the full finding.",
+        fix: title,
+      })),
+      items: findings.slice(0, 3).map((title) => ({ phase: "Quick wins", title, detail: "See the audit report for the fix." })),
+      sections: defaultSections(kind),
+      prices: { essential: "", growth: "", premium: "", monthly: "" },
+      scopeLines: DEFAULT_SCOPE,
+      timelineLines: DEFAULT_TIMELINE,
+      notIncluded: NOT_INCLUDED_DEFAULT,
+      expiryDays: "",
+    });
 
-  const copyEmail = async () => {
+  const emailText = (kind: EmailKind) => {
+    const def = EMAIL_TEMPLATES.find((e) => e.kind === kind)!;
+    return emailDrafts[kind] ?? buildEmailText(def, brand, business, findings);
+  };
+
+  const copyText = async (key: string, text: string) => {
+    if (hasPlaceholder(text)) {
+      setCopyWarning(
+        "This text still has [finding 1] placeholders in it. Run an audit on the audit page first, or replace every [finding] placeholder with a real finding, before you copy it.",
+      );
+      return;
+    }
+    setCopyWarning("");
     try {
-      await navigator.clipboard.writeText(coveringEmailText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
+      setCopied(key);
+      setTimeout(() => setCopied(""), 2000);
     } catch {
-      setCopied(false);
+      setCopied("");
     }
   };
+
+  const footerPreview = useMemo(() => canSpamFooter(brand), [brand]);
 
   return (
     <section style={{ paddingTop: 48 }}>
@@ -93,9 +120,10 @@ export default function TemplatesPage() {
         <div className="reading">
           <h1>Proposal templates</h1>
           <p>
-            Three tiers, one structure: problem first, then the fix, then the timeline, then the price.
-            Prices are blank placeholders you fill in. These templates are starting text you adapt, not legal
-            advice. Get your own contract reviewed if you need one.
+            3 proposals + 5 emails + editable blocks. Each proposal is a structurally different document
+            for a different deal, not the same skeleton with a word swapped. Prices are blank placeholders
+            you fill in. These templates are starting text you adapt, not legal advice. Get your own
+            contract reviewed if you need one.
           </p>
           <p>
             You are responsible for your own outreach law. Only email people in line with the rules that
@@ -104,80 +132,139 @@ export default function TemplatesPage() {
           </p>
         </div>
 
-        <div className="steps-grid mt-24">
-          {TIERS.map((tier) => (
-            <div key={tier.name} className="card">
+        {findingsMissing ? (
+          <div className="card mt-24" role="alert" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
+            <h2 style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <TriangleAlert size={18} strokeWidth={1.5} color="#B45309" aria-hidden /> No audit findings found
+            </h2>
+            <p className="mb-16">
+              The email and proposal templates below show [finding 1], [finding 2], and [finding 3] as
+              placeholders because no audit has been run in this browser yet. Run an audit on the{" "}
+              <Link href="/audit">audit page</Link> first and the real findings will fill in here.
+              Never send a template with a [finding] placeholder still in it.
+            </p>
+            <p className="mb-0">
+              <Link href="/audit" className="btn btn-primary">Run an audit first</Link>
+            </p>
+          </div>
+        ) : null}
+
+        {!(brand.postalAddress ?? "").trim() ? (
+          <div className="card mt-24" role="alert">
+            <h2>Your postal address is missing</h2>
+            <p className="mb-16">
+              The CAN-SPAM footer on every email below needs your real postal address. Add it in your{" "}
+              <Link href="/audit">brand profile on the audit page</Link> before you send anything, or the
+              footer goes out with a placeholder in it.
+            </p>
+          </div>
+        ) : null}
+
+        <h2 className="mt-32">Proposals: 3 documents, 3 deals</h2>
+        <div className="steps-grid">
+          {PROPOSAL_TEMPLATES.map((t) => (
+            <div key={t.kind} className="card">
               <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden />
-              <h2 className="mt-16" style={{ fontSize: 18, lineHeight: 1.3 }}>{tier.name}</h2>
-              <p>{tier.includes}</p>
-              <p className="mb-8"><strong>Pages: </strong>{tier.pages}</p>
-              <p className="mb-8"><strong>Support: </strong>{tier.support}</p>
+              <h3 className="mt-16">{t.name}</h3>
+              <p>{t.tagline}</p>
+              <p className="mb-8"><strong>Length: </strong>{t.length}</p>
+              <p className="mb-8"><strong>Deal: </strong>{t.dealSize}</p>
+              <p className="mb-8"><strong>Sections: </strong>{t.sections.length} ({t.sections.join(", ")})</p>
+              <p className="mb-16">{t.investmentNote}</p>
               <p className="mb-0">
-                <input
-                  type="text"
-                  aria-label={`${tier.name} price`}
-                  placeholder="$____"
-                  value={prices[tier.name as keyof typeof prices]}
-                  onChange={(e) => setPrices({ ...prices, [tier.name]: e.target.value })}
-                  style={{ fontSize: 24, fontWeight: 600, maxWidth: 160 }}
-                />
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  aria-expanded={openProposal === t.kind}
+                  onClick={() => setOpenProposal(openProposal === t.kind ? null : t.kind)}
+                >
+                  {openProposal === t.kind ? "Hide full text" : "View full text"}
+                </button>
               </p>
             </div>
           ))}
         </div>
-        <p className="caption mt-16">No guarantee of client wins.</p>
+        <p className="caption mt-16">
+          Every proposal is editable in the generator on the audit page: pick which findings to feature,
+          edit, delete, reorder, or add fix items, and hide any section. Prices always stay blank ($____)
+          until you fill them in. No guarantee of client wins.
+        </p>
 
-        <h2 className="mt-32">Template structure</h2>
-        <div className="card">
-          <ol style={{ paddingLeft: 20, marginBottom: 0 }}>
-            <li><strong>Cover.</strong> Client business name, &quot;Website redesign proposal for [Business]&quot;, your brand and logo, date, one-line summary.</li>
-            <li><strong>What I found.</strong> Three to five sentences, the top findings from the teardown, each tied to a lost call, booking, or visit.</li>
-            <li><strong>Understanding the problem.</strong> Restate the problem with the actual numbers from the audit. Never invent a dollar loss.</li>
-            <li><strong>What I would fix.</strong> Fix list mapped to findings, grouped as Quick wins, Redesign, and Ongoing.</li>
-            <li><strong>Scope and deliverables.</strong> Concrete list: pages, design level, CMS, breakpoints, integrations, revision rounds, support. Always include a &quot;Not included&quot; row.</li>
-            <li><strong>Timeline and milestones.</strong> Week 1 Discovery, Weeks 2 to 3 Design, Weeks 4 to 6 Development, Week 7 QA and Launch. You fill in the start date.</li>
-            <li><strong>Investment.</strong> Three tiers with blank prices. Payment terms placeholder: 50% upfront, 50% on launch.</li>
-            <li><strong>About.</strong> Short paragraph plus blank slots for past projects. Never fake case studies.</li>
-            <li><strong>Terms.</strong> Payment structure, revision limits, what happens beyond scope, usage rights. Template text, not legal advice.</li>
-            <li><strong>Next step and acceptance.</strong> One clear next step, an expiry placeholder, and signature lines for both parties.</li>
-          </ol>
+        {openProposal ? (
+          <div className="card mt-24">
+            <h3>{PROPOSAL_TEMPLATES.find((t) => t.kind === openProposal)?.name} - full text</h3>
+            <p className="caption">
+              Template text with placeholders. Findings fill in from your latest audit; prices stay blank.
+            </p>
+            <pre className="evidence" style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{proposalText(openProposal)}</pre>
+            <p className="mt-16 mb-0">
+              <button type="button" className="btn btn-secondary" onClick={() => copyText(`proposal-${openProposal}`, proposalText(openProposal))}>
+                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `proposal-${openProposal}` ? "Copied" : "Copy proposal text"}
+              </button>
+            </p>
+            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
+          </div>
+        ) : null}
+
+        <h2 className="mt-32">Emails: 5, one sequence</h2>
+        <p className="reading">
+          Three first touches for three different relationships, then a two-email follow-up sequence.
+          Follow-ups go in the same thread as the first email. Every email, including follow-ups, carries
+          the CAN-SPAM footer with your postal address from your brand profile.
+        </p>
+        <div className="steps-grid">
+          {EMAIL_TEMPLATES.map((e) => (
+            <div key={e.kind} className="card">
+              <Mail size={18} strokeWidth={1.5} color="#475569" aria-hidden />
+              <h3 className="mt-16">{e.name}</h3>
+              <p>{e.purpose}</p>
+              <p className="mb-8"><strong>When: </strong>{e.timing}</p>
+              <p className="mb-16"><strong>Subject lines: </strong>{e.subjects.join(" / ")}</p>
+              <p className="mb-0">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  aria-expanded={openEmail === e.kind}
+                  onClick={() => setOpenEmail(openEmail === e.kind ? null : e.kind)}
+                >
+                  {openEmail === e.kind ? "Hide email" : "View and edit email"}
+                </button>
+              </p>
+            </div>
+          ))}
         </div>
 
-        <h2 className="mt-32">Covering email template</h2>
-        <div className="card">
-          <p style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <Mail size={18} strokeWidth={1.5} color="#475569" aria-hidden /> <strong>Email only. No cold SMS scripts in this product.</strong>
-          </p>
-          {findings.length > 0 ? (
+        {openEmail ? (
+          <div className="card mt-24">
+            <h3>{EMAIL_TEMPLATES.find((e) => e.kind === openEmail)?.name}</h3>
             <p className="caption">
-              The three findings below are filled in from your latest audit on the audit page. Edit them before you send.
+              Edit the body below before you copy it. If it still contains a [finding] placeholder, the copy
+              button will warn you instead of copying.
             </p>
-          ) : null}
-          <div className="evidence">
-            <p className="mb-8"><strong>Subject:</strong> Your website, reviewed: 3 quick wins for [Business]</p>
-            <p className="mb-8">Hi [Name],</p>
-            <p className="mb-8">
-              I reviewed [Business] website and put together a short teardown showing what is working and
-              what is costing you calls. The three biggest items are {finding(0)}, {finding(1)}, and {finding(2)}.
+            <label htmlFor="email-draft">Email text</label>
+            <textarea
+              id="email-draft"
+              value={emailText(openEmail)}
+              onChange={(ev) => setEmailDrafts({ ...emailDrafts, [openEmail]: ev.target.value })}
+              rows={14}
+            />
+            <p className="mt-16 mb-0">
+              <button type="button" className="btn btn-secondary" onClick={() => copyText(`email-${openEmail}`, emailText(openEmail))}>
+                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `email-${openEmail}` ? "Copied" : "Copy email"}
+              </button>
             </p>
-            <p className="mb-8">
-              The full report is attached. If you would like, I can fix these and rebuild the site so the
-              phone rings more often. No obligation, just a 15-minute call if it is useful.
-            </p>
-            <p className="mb-8">
-              Best regards,<br />[Your name], [Your brand]<br />[Postal address, required for commercial email in the US]<br />[Phone]<br />[Email]<br />[Website]
-            </p>
-            <p className="mb-0">
-              This is an advertisement. If you do not want marketing email from me, reply with
-              &quot;unsubscribe&quot; or use this link: [unsubscribe link]. I will stop within 10 business days.
-            </p>
+            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
           </div>
-          <p className="mt-16 mb-0">
-            <button className="btn btn-secondary" onClick={copyEmail}>
-              <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied ? "Copied" : "Copy covering email"}
-            </button>
+        ) : null}
+
+        <h2 className="mt-32">CAN-SPAM footer (on every email)</h2>
+        <div className="card">
+          <p className="caption">
+            Auto-filled from your brand profile. If your postal address is missing above, this footer is not
+            ready to send.
           </p>
-          <p className="caption mt-16 mb-0">
+          <pre className="evidence" style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{footerPreview}</pre>
+          <p className="caption mb-0">
             You are responsible for your own outreach law, including spam, consent, and local rules where you
             operate. Only email people in line with the rules that apply to you.
           </p>
