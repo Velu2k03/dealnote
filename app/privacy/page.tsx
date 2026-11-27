@@ -29,7 +29,8 @@ export default function PrivacyPage() {
             <strong>Vercel server logs.</strong> DealNote is hosted by Vercel. When you visit the site or
             run an audit, Vercel logs the request as needed to operate and secure the service: IP address,
             user agent, path, timestamp, and the audited URL in the audit request. Retention follows
-            Vercel&apos;s current plan.
+            Vercel&apos;s current plan. Serverless functions run in Vercel&apos;s default region,
+            Washington, D.C., USA (iad1); static files are served from Vercel&apos;s global CDN.
           </p>
           <p>
             <strong>No cookies in v1.</strong> DealNote sets no cookies.

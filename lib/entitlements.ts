@@ -162,10 +162,12 @@ export interface KvClient {
 
 /**
  * KV-backed entitlement store. Keys are namespaced under `dealnote:`.
- * Wire it by passing the project's KV client, e.g.:
- *   import { kv } from "@vercel/kv";
- *   export const entitlementStore = createKvEntitlementStore(kv);
- * (The @vercel/kv import and binding live in the route that wires it,
+ * Wire it by passing the project's KV client, e.g. Upstash Redis
+ * (`@upstash/redis`, Vercel KV is sunset and `@vercel/kv` is deprecated):
+ *   import { Redis } from "@upstash/redis";
+ *   const redis = Redis.fromEnv();
+ *   export const entitlementStore = createKvEntitlementStore(redis);
+ * (The Redis import and binding live in the route that wires it,
  * not here, so this module stays vendor-free.)
  */
 export function createKvEntitlementStore(kv: KvClient): EntitlementStore {
