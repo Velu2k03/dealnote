@@ -36,12 +36,11 @@ export default function PrivacyPage() {
             <strong>No cookies in v1.</strong> DealNote sets no cookies.
           </p>
           <p>
-            <strong>No analytics, no advertising trackers, no third-party scripts in v1.</strong> The site
-            loads no analytics, no advertising tracker, and no other third-party script today. One exception
-            is planned before launch: the Ship or Die hackathon traffic tracker. It is not yet installed.
-            Once the exact snippet is installed, it will load{" "}
-            <code>https://www.ship-or-die.com/hackathon/verify.js</code> and count visits. This page will
-            be updated when that happens.
+            <strong>One third-party script: the Ship or Die hackathon traffic tracker.</strong> The site
+            loads no analytics, no advertising tracker, and no other third-party script. The one exception
+            is the Ship or Die hackathon traffic tracker, installed 27 Nov 2026. It loads{" "}
+            <code>https://www.ship-or-die.com/hackathon/verify.js</code> and counts visits to verify
+            traffic for the Ship or Die $100K Hackathon.
           </p>
           <p>
             <strong>Payments.</strong> Payments are handled by Polar, the merchant of record. Polar collects

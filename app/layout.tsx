@@ -39,9 +39,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <head>
-        {/* TODO: Ship or Die tracker snippet goes here. Copy the EXACT snippet from the Ship or Die dashboard (My Startup > traffic tracker) into <head> on every page BEFORE any traffic and BEFORE the first payment. Do not invent the snippet. */}
-      </head>
+      <head
+        dangerouslySetInnerHTML={{
+          __html:
+            '<script defer src="https://www.ship-or-die.com/hackathon/verify.js" data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"></script>',
+        }}
+      />
       <body>
         <Header />
         <main>{children}</main>

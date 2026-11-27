@@ -1,40 +1,41 @@
 # DealNote — Ship or Die Tracker Install Note
 
-**Date:** 27 Nov 2026
-**Branch:** `dealnote-fixes-nov27`
-**Status: NOT INSTALLED, NEEDS VELU (dashboard access)**
+**Date installed:** 27 Nov 2026
+**Branch:** `dealnote-tracker-install`, merged to main (see docs/dealnote-tracker-install-2026-11-27.md for merge commit)
+**Status: INSTALLED**
 
 ## Rule
 
 Install the tracker BEFORE any traffic and BEFORE the first payment. Keep it active for the whole contest. No traffic or launch may happen before the snippet is installed.
 
-## Do NOT invent the snippet
+## The exact snippet (copied word for word from the dashboard)
 
-The exact snippet must be copied from the Ship or Die dashboard (**My Startup > traffic tracker**). Do not reconstruct it from the script URL alone, and do not paste a snippet from a chat message, a leaderboard page, or another entrant's site. An invented snippet is worse than a missing one, because a wrong snippet silently fails to verify traffic.
+Copied by Velu from the Ship or Die dashboard (My Startup > traffic tracker) on 27 Nov 2026, after My Startup was saved as: DealNote, Software / web app, website https://dealnote-blue.vercel.app/, public sharing on. Dashboard status before install: traffic "Not connected", revenue "Not connected".
 
-## What is confirmed
+```html
+<script defer src="https://www.ship-or-die.com/hackathon/verify.js" data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"></script>
+```
 
-- Public script URL confirmed: https://www.ship-or-die.com/hackathon/verify.js
-- That URL alone is not the snippet. The dashboard-issued snippet tag (script tag with its attributes) has not been verified from any source in this research, and no source shows it.
-- Placement: paste into `<head>` in `app/layout.tsx` on every page.
-- Note on the base code at branch start (commit f807acb): no tracker TODO comment was found in `app/layout.tsx` itself. The TODO comment lives in README.md. The code agent adds the snippet placement in `app/layout.tsx` in this fixes round; the snippet itself still has to come from the dashboard.
+Do NOT alter any part of it, including the `data-site` value. This file records the snippet because the task brief explicitly required it; it is the dashboard-issued snippet for this startup only.
+
+## Placement
+
+Pasted into `<head>` in `app/layout.tsx` (root layout), so it is on every page: /, /audit, /sample, /templates, /terms, /privacy. Verified verbatim in the built HTML of all 6 pages (grep for `data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"` and the exact `src` URL) and in live served HTML after deploy.
 
 ## Install checklist
 
-- [ ] Copy the exact snippet from the Ship or Die dashboard (My Startup > traffic tracker)
-- [ ] Paste it into `<head>` in `app/layout.tsx` (every page)
-- [ ] Deploy
-- [ ] Check the Ship or Die dashboard shows connected
-- [ ] Check the browser network tab for a request to `verify.js`
+- [x] Copy the exact snippet from the Ship or Die dashboard (My Startup > traffic tracker)
+- [x] Paste it into `<head>` in `app/layout.tsx` (every page)
+- [x] Deploy (Vercel auto-deploy from main)
+- [ ] Check the Ship or Die dashboard shows connected (needs a dashboard re-check after traffic; see docs/dealnote-tracker-install-2026-11-27.md)
+- [x] Check the browser network tab for a request to `verify.js` (local test: request to https://www.ship-or-die.com/hackathon/verify.js returns 200)
 
 ## Status
 
-**NOT INSTALLED.** This needs Velu: only he has dashboard access to copy the snippet. No traffic has been sent yet, so nothing is lost, but no traffic or launch may happen before this is done.
-
-After install, record here: date installed, who copied the snippet, dashboard status shown, and the network-tab check result. Do not record the snippet itself in this file if it contains any per-startup identifier; the snippet belongs in `app/layout.tsx` only.
+**INSTALLED 27 Nov 2026.** /privacy was updated the same day: it now states the tracker is installed and loads verify.js to count visits.
 
 ## Privacy note
 
-The tracker sends visitor data to a third party. It must be named in the Privacy Policy (/privacy) before it is deployed. See docs/dealnote-legal-research-2026-11-27.md §5.4–§5.6. Do not add any other third-party script (analytics, chat, session replay) without a privacy review.
+The tracker sends visitor data to a third party. It is named in the Privacy Policy (/privacy). Do not add any other third-party script (analytics, chat, session replay) without a privacy review.
 
 Contact: murugan@drvelu.com
