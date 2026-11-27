@@ -1,0 +1,163 @@
+"use client";
+
+import {
+  AlertOctagon,
+  AlertTriangle,
+  Gauge,
+  Info,
+  MousePointerClick,
+  Search,
+  ShieldCheck,
+  Smartphone,
+  Wrench,
+} from "lucide-react";
+import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
+import { CATEGORIES, gradeColor } from "@/lib/audit";
+
+export function GradeBadge({ grade, size = 36 }: { grade: string; size?: number }) {
+  return (
+    <span
+      className="grade-badge"
+      style={{ background: gradeColor(grade), width: size, height: size, fontSize: size === 36 ? 20 : 28 }}
+      aria-label={`Grade ${grade}`}
+    >
+      {grade}
+    </span>
+  );
+}
+
+export function CategoryIcon({ icon }: { icon: string }) {
+  const props = { size: 18, strokeWidth: 1.5, color: "#475569", "aria-hidden": true };
+  switch (icon) {
+    case "gauge":
+      return <Gauge {...props} />;
+    case "smartphone":
+      return <Smartphone {...props} />;
+    case "search":
+      return <Search {...props} />;
+    case "wrench":
+      return <Wrench {...props} />;
+    case "mouse-pointer-click":
+      return <MousePointerClick {...props} />;
+    case "shield-check":
+      return <ShieldCheck {...props} />;
+    default:
+      return <Info {...props} />;
+  }
+}
+
+export function SeverityIcon({ severity }: { severity: Severity }) {
+  const props = { size: 18, strokeWidth: 1.5, "aria-hidden": true };
+  if (severity === "Critical") return <AlertOctagon {...props} color="#B91C1C" />;
+  if (severity === "Fix soon") return <AlertTriangle {...props} color="#B45309" />;
+  return <Info {...props} color="#475569" />;
+}
+
+export function severityClass(severity: Severity): string {
+  if (severity === "Critical") return "tag tag-critical";
+  if (severity === "Fix soon") return "tag tag-soon";
+  return "tag tag-nice";
+}
+
+export function ScoreBars({ result }: { result: AuditResult }) {
+  return (
+    <div>
+      {result.categories.map((cat) => {
+        const meta = CATEGORIES.find((m) => m.key === cat.key);
+        if (!meta) return null;
+        return (
+          <div key={cat.key} style={{ marginBottom: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <CategoryIcon icon={meta.icon} />
+              <span style={{ fontWeight: 600, fontSize: 14 }}>{meta.label}</span>
+              <span className="caption">weight {meta.weight}%</span>
+              <span className="tabular" style={{ marginLeft: "auto", fontWeight: 700 }}>
+                {cat.score}/100
+              </span>
+              <span style={{ fontWeight: 700, color: gradeColor(cat.grade) }}>{cat.grade}</span>
+            </div>
+            <div className="score-bar">
+              <span style={{ width: `${cat.score}%`, background: gradeColor(cat.grade) }} />
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ScoreSummary({ result, sampleLabel = false }: { result: AuditResult; sampleLabel?: boolean }) {
+  return (
+    <div className="card">
+      <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+        <div style={{ textAlign: "center" }}>
+          <div className="tabular" style={{ fontSize: 48, fontWeight: 700, lineHeight: 1 }}>
+            {result.overallScore}
+            <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
+          </div>
+          <p className="caption mb-0">Overall score</p>
+        </div>
+        <GradeBadge grade={result.overallGrade} size={56} />
+        <div style={{ flex: "1 1 220px" }}>
+          <p className="mb-8" style={{ overflowWrap: "anywhere" }}>
+            <strong>{result.url}</strong>
+          </p>
+          <p className="caption mb-0">
+            Run on {result.fetchedAt}. HTTP {result.status}
+            {result.https ? " · HTTPS" : " · Not HTTPS"} · Loaded in {(result.loadMs / 1000).toFixed(1)}s ·
+            Page size {(result.pageBytes / 1024 / 1024).toFixed(1)} MB
+          </p>
+          {sampleLabel ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
+        </div>
+      </div>
+      <div className="mt-24">
+        <ScoreBars result={result} />
+      </div>
+      <p className="caption mb-0">
+        Weights: Speed 20, Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust, local and social 15.
+        This is DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
+        D 60-69, F below 60.
+      </p>
+    </div>
+  );
+}
+
+export function IssueList({ issues, showCategory = true }: { issues: Issue[]; showCategory?: boolean }) {
+  return (
+    <div>
+      {issues.map((issue) => {
+        const meta = CATEGORIES.find((m) => m.key === issue.category);
+        return (
+          <article key={issue.id} className="card" style={{ marginBottom: 16 }}>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", flexWrap: "wrap" }}>
+              <SeverityIcon severity={issue.severity} />
+              <div style={{ flex: "1 1 260px" }}>
+                <h3 className="mb-8">{issue.title}</h3>
+                <p className="mb-8">
+                  <span className={severityClass(issue.severity)}>{issue.severity}</span>{" "}
+                  {showCategory && meta ? <span className="tag">{meta.label}</span> : null}
+                </p>
+                <p className="mb-8">
+                  <strong>What was found: </strong>
+                  {issue.found}
+                </p>
+                <p className="mb-8">
+                  <strong>Why it matters: </strong>
+                  {issue.why}
+                </p>
+                <p className="mb-0">
+                  <strong>Fix: </strong>
+                  {issue.fix}
+                </p>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+}
+
+export function categoryLabel(key: CategoryKey): string {
+  return CATEGORIES.find((m) => m.key === key)?.label ?? key;
+}
