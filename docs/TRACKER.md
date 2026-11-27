@@ -7,10 +7,11 @@
 
 **This file is the tracker doc. It is not the sheet. Never touch Google Sheets from this task — the sheet update is the parent's job.**
 
-**Live site:** https://dealnote-blue.vercel.app/
+**Live site:** https://dealnote-blue.vercel.app/ — **SHIPPED LIVE 27 Nov 2026.** Merge commit 25f3f72 (dealnote-fixes-nov27 → main), Vercel auto-deployed, Ready after ~75s. Live GET verification: all 6 pages 200, /privacy 200 with region text, og.png 200, contact murugan@drvelu.com visible, $49 one-time, 0 "verified" on home, no future dates. Live POST verification (free audit teaser, checkout 503, PDF 402 on Vercel) NOT RUN — blocked by an approval timeout, not retried, still needs approval. Full PDF generation on Vercel serverless UNTESTED (needs a real licence key from the payment step).
 **GitHub repo:** https://github.com/Velu2k03/dealnote
-**Branch:** `dealnote-fixes-nov27` (base commit f807acb). Do not switch branches, do not commit or push from this task; the coordinator merges and commits.
-**Vercel project:** dealnote, team velus-projects-27f81f38, build 34s, Next.js preset, no env vars at audit time, no custom domain.
+**Branch:** `main` at 25f3f72. Fixes branch dealnote-fixes-nov27 merged and pushed; do not re-merge.
+**Vercel project:** dealnote, team velus-projects-27f81f38, Next.js preset, no env vars set, no custom domain.
+**Payment: ON HOLD by Velu (11:29 Nov 27).** Polar code unchanged, checkout returns 503 notConfigured with no env vars. Do NOT swap to Lemon Squeezy, do NOT create payment accounts/products, do NOT test-purchase until Velu says resume.
 **Rust port:** gate passed 206/206, merged e529576. Vercel runs the TypeScript fallback, binary needs glibc >= 2.34, Vercel AL2 has 2.26. Fallback stays for now, Velu's decision. Deferred, do not touch before Dec 1.
 
 ## Fixes round — 27 Nov 2026 (what changed)
@@ -24,6 +25,17 @@
 - **PDF:** Puppeteer primary + React-PDF fallback, being built this round, outcome TBD.
 - **Next.js:** bumped from 14.2.18 to latest patched 14.2.x (exact version: 14.2.35, per package.json working tree; coordinator to confirm).
 - **Docs written/updated this round:** docs/TRUSTMRR-POLAR-CORRECTION.md (new), docs/TRACKER-INSTALL.md (new), docs/refund-log.md (new), docs/dealnote-fixes-2026-11-27.md (new), docs/design-notes.md, docs/TRACKER.md (this file), PLAN.md (§4/§5/§6, §15, new §16), README.md.
+
+## Site-whole round — 27 Nov 2026 (SHIPPED LIVE, merge 25f3f72)
+
+- **Slop re-run:** Briskly-style ~5/100, Jev-style ~1 partial tell (est. ~3–5/100). Fixed M4, M6 residual, M7, L5, L4 residual, 13 em dashes, skipped headings. Full record: docs/dealnote-slop-recheck-2026-11-27.md. 2 em dashes left in the frozen payment component (BuyButton), reword when the freeze lifts.
+- **Screenshots:** all 6 pages, 1280 + 390, docs/screenshots/whole-{home,audit,sample,templates,privacy,terms}-{1280,390}.png. No horizontal overflow anywhere.
+- **OG:** public/og.png 1200×630, meta tags present in served and live HTML. Not tested on opengraph.xyz.
+- **PDF:** verified locally (teardown 71,173 bytes, proposal 67,889 bytes, both 4 pages, no-key 402). Full PDF on Vercel serverless UNTESTED — needs a real licence key.
+- **KV adapter:** no free no-account durable store exists. In-memory best-effort stays for Dec 1; do not present 30/month as a hard cap. Stale @vercel/kv comment fixed to @upstash/redis.
+- **Vercel region:** default iad1 (Washington, D.C.) verified from public docs, added to /privacy. Log retention still open: sources conflict (Hobby 1 hour everywhere; Pro 1 hour per changelog vs 1 day per docs table). Plan not confirmed in dashboard — NEEDS VELU.
+- **TrustMRR one-time:** secondary evidence says one-time payments count in last-30-days/all-time revenue but NOT in MRR (expect MRR $0). Whether Ship or Die ranks by MRR or revenue/profit is still unverified — rules check needed.
+- Full report: docs/dealnote-site-whole-2026-11-27.md.
 
 ## What is still NEEDS VELU
 
