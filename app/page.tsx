@@ -14,10 +14,11 @@ export default function Home() {
           <div className="hero-grid">
             <div>
               <p className="eyebrow">For web design freelancers and small agencies</p>
-              <h1>Paste any business website URL. Get a teardown report plus a ready-to-send proposal in about a minute.</h1>
+              <h1>Paste any business website URL.</h1>
               <p style={{ color: "#475569" }}>
-                Show the prospect what is wrong with their site, then sell the fix. The report carries your
-                brand, your logo, and your contact details, not ours.
+                Get a teardown report plus a ready-to-send proposal in about a minute. Show the prospect what is
+                wrong with their site, then sell the fix. The report carries your brand, your logo, and your
+                contact details, not ours.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <Link href="/audit" className="btn btn-primary">
@@ -28,7 +29,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="caption mt-24">
-                $49 one-time. No subscription. No per-report fee. 30 audits per month fair-use limit.
+                $49 one-time, with no subscription and no per-report fee. Fair-use limit: 30 audits per month.
               </p>
             </div>
             <div>
@@ -109,7 +110,7 @@ export default function Home() {
             <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
               $49
             </p>
-            <p>One payment. No subscription. No per-report fee.</p>
+            <p>One payment of $49, with no subscription and no per-report fee.</p>
             <ul style={{ paddingLeft: 20 }}>
               <li>30 audits per month fair-use limit</li>
               <li>White-label reports under your brand</li>
@@ -118,8 +119,7 @@ export default function Home() {
             </ul>
             <p className="caption">
               $49 once is less than two months of a $39-per-month subscription. SEOptimer White Label,
-              $39/mo on its public pricing page, checked 27 Nov 2026. Example only — compare current
-              prices before you buy. No guarantee of client wins.
+              $39/mo on its public pricing page, checked 27 Nov 2026. Example only. Compare current prices before you buy. No guarantee of client wins.
             </p>
             <p className="mb-16">
               <BuyButton />
@@ -170,7 +170,7 @@ export default function Home() {
           <div className="reading mt-24">
             <h3>Is the $49 really one-time?</h3>
             <p>
-              Yes. One payment of $49, no subscription, no per-report fee. The fair-use limit is 30 audits
+              Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is 30 audits
               per month. Lifetime means the lifetime of the product, as stated in the terms.
             </p>
             <h3>Does the client see the DealNote name?</h3>

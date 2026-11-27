@@ -159,6 +159,22 @@ Changed in this round (code in `app/` and `components/`, verified separately by 
 - `--faint` darkened to `#64748B`.
 - SAMPLE stamp on /sample at the top of the page and in the footer only.
 
+Slop re-check round, 27 Nov 2026 (branch `dealnote-fixes-nov27`, after commit `3706d51`):
+- H1 shortened to "Paste any business website URL." with the rest moved to the subhead;
+  pricing/hero/FAQ staccato triples reworded into plain sentences.
+- Middle-dot separators removed entirely (covering-email signature is now three lines).
+- SAMPLE stamp exactly once per page (top of /sample; inside the score card on /audit and /).
+- Em dashes removed from all rendered copy except two strings inside the frozen payment
+  component (`components/audit-ui.tsx`, BuyButton label + checkout message) — those stay until
+  the payment freeze lifts.
+- `.callout` and `.evidence` inner radius 8px → 6px (nested-radius rule, matching the
+  stamp/tag/badge fix).
+- Heading order fixed: /audit status/empty-state headings and /templates tier names are h2
+  (tier names keep the 18px h3 visual size inline).
+- Replicated scores after this round: Briskly-style ~5/100 (only the uniform 8px card rule,
+  half-counted — the card style is the documented design system), Jev-style ~1 partial tell
+  of 34, est. ~3–5/100 (equal pricing-tier cards only, genuinely parallel content).
+
 Unchanged — the core system stays:
 
 - White/slate pages, one accent deep teal `#0F766E`, Lucide 18 px / 1.5 stroke only, no gradients, no glows, no glass, no emoji, no stock photos, no decorative illustration.

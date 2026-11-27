@@ -332,7 +332,7 @@ export default function AuditPage() {
 
           {running ? (
             <div className="card mt-24" aria-live="polite">
-              <h3>Running the audit</h3>
+              <h2>Running the audit</h2>
               {STEPS.map((label, i) => (
                 <div key={label} className="progress-step">
                   <span className={`progress-dot ${i < step ? "done" : i === step ? "active" : ""}`}>
@@ -347,7 +347,7 @@ export default function AuditPage() {
 
           {fetchFailed ? (
             <div className="card mt-24" role="alert" style={{ borderColor: "#fecaca" }}>
-              <h3>Audit could not read that page</h3>
+              <h2>Audit could not read that page</h2>
               <p>{fetchFailed}</p>
               <p className="mb-16">
                 No score was given for a page that could not be read. You can still see how the product
@@ -362,9 +362,6 @@ export default function AuditPage() {
           {displayed ? (
             <>
               <div className="mt-32">
-                {displayed.isSample ? (
-                  <p><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
-                ) : null}
                 <ScoreSummary result={displayed} sampleLabel={displayed.isSample} />
                 <p className="caption mt-16">{SCORE_DISCLAIMER}</p>
               </div>
@@ -561,7 +558,7 @@ export default function AuditPage() {
                   <h2 className="mt-32">Proposal generator</h2>
                   <p className="reading">
                     You are responsible for your own outreach law. Only email people in line with the rules
-                    that apply to you and to them — see the sending checklist below. DealNote provides no cold
+                    that apply to you and to them. See the sending checklist below. DealNote provides no cold
                     SMS scripts. Do not send marketing texts to a prospect unless you already have their prior
                     express written consent.
                   </p>
@@ -684,7 +681,7 @@ export default function AuditPage() {
 
           {!displayed && !running && !fetchFailed ? (
             <div className="card mt-24">
-              <h3 className="mb-8">No audit yet</h3>
+              <h2 className="mb-8">No audit yet</h2>
               <p className="mb-16">
                 Run an audit above, or look at the sample first. The sample uses a fictional business and
                 fictional data, and is clearly marked SAMPLE.
@@ -703,7 +700,7 @@ export default function AuditPage() {
           </p>
           <p className="caption">
             <KeyRound size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-            <Link href="/templates">Sending checklist</Link> — read it before you email a proposal.
+            <Link href="/templates">Sending checklist</Link>: read it before you email a proposal.
           </p>
         </div>
       </section>

@@ -49,7 +49,7 @@ export default function TermsPage() {
           <h2>Refund policy</h2>
           <p>
             If a report is bad, report it within 14 days of the run date shown on the report and we will
-            replace it or refund the $49 — our choice. A bad report is one with a wrong finding, for example
+            replace it or refund the $49, our choice. A bad report is one with a wrong finding, for example
             a check that contradicts the fetched page. To report it, email{" "}
             <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a> with (1) the report URL, (2) the
             finding you say is wrong, and (3) why it is wrong. We will reply within 3 business days.
@@ -83,7 +83,7 @@ export default function TermsPage() {
             where you operate. In the United States, commercial email must follow the CAN-SPAM Act (honest
             headers and subject line, identification as an advertisement, your postal address, and an opt-out
             honoured within 10 business days). Canada, the UK/EU, and Australia require consent before most
-            cold commercial email — do not rely on the US rule when emailing outside the US. Do not send
+            cold commercial email. Do not rely on the US rule when emailing outside the US. Do not send
             marketing texts unless you already have the recipient&apos;s prior express written consent.
           </p>
 

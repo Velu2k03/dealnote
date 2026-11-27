@@ -87,7 +87,6 @@ export default function SamplePage() {
         </div>
 
         <div className="card mt-32">
-          <p><span className="sample-stamp">SAMPLE</span></p>
           <h3>Next step</h3>
           <p>
             Reply to this email, or book a free 15-minute call at the link in the covering email. Prepared by

@@ -30,8 +30,8 @@ const LAST_FINDINGS_KEY = "dealnote-last-findings-v1";
 const CHECKLIST = [
   "The subject line matches the body (no fake \"Re:\" or \"Fwd:\").",
   "The footer has your real name, brand, postal address, and an opt-out.",
-  "The findings quoted are the real findings from the audit — no invented figures, no invented dollar loss, no fake case studies.",
-  "The recipient is in the US, or — if in Canada, the UK/EU, or Australia — you have consent or a documented consent basis for that country. When in doubt, do not send.",
+  "The findings quoted are the real findings from the audit, no invented figures, no invented dollar loss, no fake case studies.",
+  "The recipient is in the US, or, if in Canada, the UK/EU, or Australia, you have consent or a documented consent basis for that country. When in doubt, do not send.",
   "You have checked the recipient against your own do-not-contact list and any opt-outs you have received.",
   "You are sending email only. No SMS.",
 ];
@@ -67,8 +67,10 @@ export default function TemplatesPage() {
       "",
       "Best regards,",
       "[Your name], [Your brand]",
-      "[Postal address — required for commercial email in the US]",
-      "[Phone] · [Email] · [Website]",
+      "[Postal address, required for commercial email in the US]",
+      "[Phone]",
+      "[Email]",
+      "[Website]",
       "",
       "This is an advertisement. If you do not want marketing email from me, reply with \"unsubscribe\" or use this link: [unsubscribe link]. I will stop within 10 business days.",
     ].join("\n");
@@ -97,7 +99,7 @@ export default function TemplatesPage() {
           </p>
           <p>
             You are responsible for your own outreach law. Only email people in line with the rules that
-            apply to you and to them — see the sending checklist below. DealNote provides no cold SMS scripts.
+            apply to you and to them. See the sending checklist below. DealNote provides no cold SMS scripts.
             Do not send marketing texts to a prospect unless you already have their prior express written consent.
           </p>
         </div>
@@ -106,7 +108,7 @@ export default function TemplatesPage() {
           {TIERS.map((tier) => (
             <div key={tier.name} className="card">
               <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden />
-              <h3 className="mt-16">{tier.name}</h3>
+              <h2 className="mt-16" style={{ fontSize: 18, lineHeight: 1.3 }}>{tier.name}</h2>
               <p>{tier.includes}</p>
               <p className="mb-8"><strong>Pages: </strong>{tier.pages}</p>
               <p className="mb-8"><strong>Support: </strong>{tier.support}</p>
@@ -163,7 +165,7 @@ export default function TemplatesPage() {
               phone rings more often. No obligation, just a 15-minute call if it is useful.
             </p>
             <p className="mb-8">
-              Best regards,<br />[Your name], [Your brand]<br />[Postal address — required for commercial email in the US]<br />[Phone] · [Email] · [Website]
+              Best regards,<br />[Your name], [Your brand]<br />[Postal address, required for commercial email in the US]<br />[Phone]<br />[Email]<br />[Website]
             </p>
             <p className="mb-0">
               This is an advertisement. If you do not want marketing email from me, reply with
@@ -181,7 +183,7 @@ export default function TemplatesPage() {
           </p>
         </div>
 
-        <h2 className="mt-32">Before you send — 60-second checklist</h2>
+        <h2 className="mt-32">Before you send: 60-second checklist</h2>
         <div className="card">
           <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
             {CHECKLIST.map((item) => (

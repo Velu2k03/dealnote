@@ -20,8 +20,7 @@ export default function Footer() {
           </ul>
         </nav>
         <p>
-          $49 one-time. 30 audits per month fair-use limit. Reports audit the public
-          homepage only. Scores are lab measurements on the run date and can vary between runs.
+          $49 one-time. Reports audit the public homepage only. Scores are lab measurements on the run date and can vary between runs.
         </p>
         <p className="mb-0">
           <BuyButton className="btn btn-secondary" />

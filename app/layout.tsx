@@ -25,7 +25,7 @@ export const metadata: Metadata = {
       "Paste any business website URL. Get a teardown report plus a ready-to-send proposal.",
     url: "https://dealnote-blue.vercel.app",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DealNote — paste any business URL. Get a teardown report plus a ready-to-send proposal." }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DealNote: paste any business URL. Get a teardown report plus a ready-to-send proposal." }],
   },
   twitter: {
     card: "summary_large_image",
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={inter.variable}>
       <head>
-        {/* TODO: Ship or Die tracker snippet goes here — copy the EXACT snippet from the Ship or Die dashboard (My Startup > traffic tracker) into <head> on every page BEFORE any traffic and BEFORE the first payment. Do not invent the snippet. */}
+        {/* TODO: Ship or Die tracker snippet goes here. Copy the EXACT snippet from the Ship or Die dashboard (My Startup > traffic tracker) into <head> on every page BEFORE any traffic and BEFORE the first payment. Do not invent the snippet. */}
       </head>
       <body>
         <Header />
