@@ -259,6 +259,8 @@ export interface BrandProfile {
   ctaText: string;
   ctaLink: string;
   introLine: string;
+  logoUrl?: string;
+  logoDataUrl?: string;
 }
 
 export const DEFAULT_BRAND: BrandProfile = {
@@ -272,6 +274,8 @@ export const DEFAULT_BRAND: BrandProfile = {
   ctaText: "Book a free 15-minute call",
   ctaLink: "https://cal.com/yourstudio/intro",
   introLine: "I reviewed your website and found 7 quick wins.",
+  logoUrl: "",
+  logoDataUrl: "",
 };
 
 export interface ProposalItem {

@@ -36,7 +36,9 @@ Web-design freelancers and small agencies (1–10 people) who pitch redesigns to
 
 **$49 one-time.** No subscription. No per-report fee. One stated fair-use limit, printed at checkout and on the landing page: **30 audits per month** per buyer. Never use the word "unlimited" anywhere. "Lifetime" means the lifetime of the product, stated in the terms. Refund: replace or refund a bad report reported within 14 days (see §10).
 
-Price comparison for the sales page (from RESEARCH.md, re-verify before publishing): $49 once is less than two months of the cheapest white-label audit subscription (SEOptimer White Label $39/mo). That is arithmetic on published prices, not an earnings claim.
+Price comparison for the sales page (from RESEARCH.md, re-verify before publishing): $49 once is less than two months of a $39-per-month subscription. Example only — compare current prices before you buy. Do not use the word "cheapest" and do not name a comparator without a date and a source; the audit found the "$39/mo cheapest white-label audit subscription" line unsubstantiated (no named competitor, no date, no source on the page). The pricing card must not list "Teardown PDF and proposal PDF" as included until paid PDF is built; until then the bullet reads "Teardown PDF and proposal PDF (coming with payment)".
+
+**Net per sale (Polar Starter): $46.05 per $49 US sale, $45.32 non-US.** See docs/TRUSTMRR-POLAR-CORRECTION.md. The $44.83 figure in the Claude miss-check was wrong: there is no separate Stripe 2.9% + $0.30 card fee on top of Polar's 5% + $0.50 fee; Stripe fees are payout fees passed through ($2/mo + 0.25% + $0.25 per payout).
 
 ## 5. System architecture
 
@@ -59,23 +61,26 @@ Next.js server (Vercel, Node runtime, NO static export)
   |     +-- 4. Scorer -> per-category 0-100 -> A-F grade -> weighted total
   |
   +-- Entitlement check (server only)
-  |     Free teaser: overall grade + top 3 findings only.
-  |     Full report JSON + PDF: only after Stripe webhook confirms $49 payment.
+  |     Free teaser: overall grade + top 2 findings only (score + grade + top 2 findings until the server confirms a licence key).
+  |     Full report JSON + PDF: only after the server confirms a licence key for the $49 Polar payment.
   |     Full report is NEVER shipped to the browser before payment.
+  |     Licence-key auth decided in the 27 Nov 2026 fixes round: Polar licence keys, validated server-side per request. No accounts in v1. Keys can be shared; that is accepted for v1.
   |
   +-- PDF renderer (server only)
   |     Primary: puppeteer-core + @sparticuz/chromium (pinned versions)
   |     Fallback: @react-pdf/renderer (second layout, kept ready)
   |     Same branded HTML template as the on-screen preview.
   |     PDF cached per audit (24 h) so re-download does not re-render.
+  |     Status 27 Nov 2026 fixes round: being built this round, outcome TBD — see §16. Do not claim paid PDF exists until the code agent's build is verified on the real host.
   |
   +-- Brand profile store (per buyer: logo, name, colours, contact)
         One profile, reused across all reports. Stored server-side.
         No vendor name in any PDF, share link, or PDF metadata.
 
 External services (all server-side, keys never in the browser):
-  - PageSpeed Insights API (Google, free tier, key restricted to PSI API)
-  - Stripe Checkout + webhooks (payments, $49 one-time)
+  - PageSpeed Insights API (Google, free tier, key restricted to PSI API) — key not created yet, NEEDS VELU (see §15)
+  - Polar Checkout + webhooks (payments, $49 one-time). NOT Stripe: Stripe direct is unavailable to a Philippines-based seller. Polar is the merchant of record, net $46.05 per $49 US sale ($45.32 non-US). TrustMRR supports Polar directly — see docs/TRUSTMRR-POLAR-CORRECTION.md. Polar account + KYC still NEEDS VELU.
+  - Ship or Die tracker: NOT installed. Exact snippet must be copied from the dashboard (My Startup > traffic tracker) before any traffic and before the first payment. NEEDS VELU. See docs/TRACKER-INSTALL.md.
   - Vercel hosting (Next.js 14, Node runtime; PDF route needs a
     long-running / high-memory function config, not Edge)
   - No database of businesses. No Google Maps / Places. No analytics
@@ -88,8 +93,8 @@ External services (all server-side, keys never in the browser):
 **Request flow (happy path):**
 1. Buyer pastes a URL on /audit, optionally picks their saved brand profile.
 2. Server validates the URL (public http/https only; reject localhost, private IPs, non-http schemes), fetches the page, runs PSI mobile + desktop in parallel, checks links, scores.
-3. Server returns the teaser: overall grade, category grades, top 3 findings. Full findings, evidence quotes, proposal draft and PDF download stay locked.
-4. Buyer pays $49 once via Stripe Checkout. Webhook marks the buyer entitled.
+3. Server returns the teaser: overall grade, category grades, top 2 findings. Full findings, evidence quotes, proposal draft and PDF download stay locked.
+4. Buyer pays $49 once via Polar Checkout. Polar webhook (`order.paid`) marks the buyer entitled and a licence key is issued; the buyer enters the key and the server validates it.
 5. Server returns the full report JSON and a short-lived signed PDF download link. Buyer edits the proposal draft (prices, timeline, intro), then downloads the teardown PDF, the proposal PDF, or one combined PDF.
 
 **Failure handling:** PSI takes 15–40 s per strategy; run mobile + desktop in parallel, show progress steps, cache per URL for 24 h so a repeat audit is instant. If a site blocks the fetch, returns an error, or is heavily JS-rendered so the HTML crawl cannot see the content, say so plainly on the report ("Could not read — the site blocked the check / the page loads content with JavaScript") and never score what was not measured. Never invent a finding for an unreadable page. Time out cleanly; never leave a blank screen.
@@ -104,10 +109,10 @@ External services (all server-side, keys never in the browser):
 | HTML parse | cheerio | Deterministic, no browser needed for the parse half of the audit |
 | Speed data | PageSpeed Insights API | Google runs Lighthouse; no Chrome to babysit on v1. Cache 24 h per URL. Key restricted to the PSI API only |
 | PDF | Primary: Puppeteer (`puppeteer-core` + `@sparticuz/chromium`, pinned versions). Fallback: `@react-pdf/renderer` | Best fidelity (one HTML template for screen + PDF, selectable text, real page breaks). React-PDF is the serverless-safe fallback if Chromium proves flaky in testing. Never jsPDF/html2canvas for the client report (image PDF, no selectable text) |
-| Payments | Stripe Checkout (one-time $49) + webhooks | Standard, and webhook confirmation is what unlocks the full report server-side |
+| Payments | Polar Checkout (one-time $49) + webhooks, licence-key entitlement | Merchant of record, Philippines payout via Stripe Connect Express, TrustMRR-supported directly. Stripe direct is unavailable to a Philippines-based seller. Net $46.05 US / $45.32 non-US per $49 sale |
 | Styling | Tailwind CSS, design system in docs/design-notes.md | Single source of truth for app UI, report HTML, and PDF |
 | Icons | Lucide, 18 px, 1.5 stroke | Only icon set allowed (see design notes) |
-| Fonts | Inter (UI + report), system fallback in PDF if embed fails | Legible at small sizes, renders consistently in Chromium PDF, open licence |
+| Fonts | Inter (UI + report), loaded via next/font/google (weights 400/500/600/700) | Loaded properly in the 27 Nov 2026 fixes round; previously named but never loaded. Legible at small sizes, renders consistently in Chromium PDF, open licence |
 | State | One brand profile per buyer, server-stored | Set once, reused on every report |
 | No | No database of businesses, no Google Maps/Places, no stored lead lists, no CRM, no email sequences in v1 | Out of scope and a legal risk; see §9 |
 
@@ -115,10 +120,11 @@ External services (all server-side, keys never in the browser):
 
 | Route | Purpose |
 |---|---|
-| `/` (landing) | One-line pitch, how it works (paste URL, get teardown, send proposal), sample report link, price $49 one-time with the 30-audit/month fair-use limit printed next to it, comparison line vs $39/mo white-label subscriptions (arithmetic, not an earnings claim), FAQ, no earnings claims, no "Verified" claims |
-| `/audit` | Interactive audit tool. URL input, brand-profile picker, progress steps while the audit runs, teaser result (overall grade + top 3 findings), locked full report with paywall, edit step for the proposal draft, PDF download after payment |
+| `/` (landing) | One-line pitch, how it works (paste URL, get teardown, send proposal), sample report link, price $49 one-time with the 30-audit/month fair-use limit printed next to it, comparison line vs a $39-per-month subscription (example only, compare current prices before you buy; no "cheapest" claim), FAQ, no earnings claims, no "Verified" claims |
+| `/audit` | Interactive audit tool. URL input, brand-profile picker, progress steps while the audit runs, teaser result (overall grade + top 2 findings), locked full report with paywall, edit step for the proposal draft, PDF download after payment |
 | `/sample` | Full sample teardown report, on screen and as a downloadable PDF. Clearly marked SAMPLE on every page. Fictional business only (invented name, invented address/phone, invented site content) — never a real business presented as a sample |
 | `/templates` | Proposal templates. The proposal structure in §8 as editable templates (Essential / Growth / Premium tiers, blank prices). Templates are starting text the freelancer adapts, not legal advice |
+| `/privacy` | Privacy Policy (instructed in the 27 Nov 2026 fixes round; NOT present in the working tree at time of writing — no app/privacy/ dir, though the footer already links to /privacy; coordinator to verify): Vercel server logs, localStorage keys, Ship or Die tracker once added, contact murugan@drvelu.com. Verify Vercel log retention/region first. |
 | `/terms` | Terms, Acceptable Use, Refund policy. Includes: lifetime means the lifetime of the product; refund rule (replace or refund bad reports reported in 14 days); no guarantee of client wins; data provided as-is; buyer is responsible for their own outreach law; no cold SMS scripts anywhere in the product; no personal data collection; audit limit; what the tool does and does not check (no traffic/ranking estimates, no Google Maps/Places data) |
 
 ## 8. Audit engine design
@@ -221,24 +227,54 @@ Delivery: teardown PDF and proposal PDF as separate downloads, plus one combined
 
 | Day | Work |
 |---|---|
-| Thu 27 Nov | Name + plan + design notes (this document). Set up project skeleton. PSI API key (restricted to PSI API), Stripe account check. |
+| Thu 27 Nov | Name + plan + design notes (this document). Set up project skeleton. PSI API key (restricted to PSI API), Polar account check. |
 | Fri 28 Nov | Audit engine: fetch + parse + PSI parallel calls + broken-link checks + scorer. Teaser result on screen. Test on 5 real local-business sites; read every finding against the fetched HTML by hand. |
 | Sat 29 Nov | Report + white-label: brand profile, preview, PDF (Puppeteer primary, React-PDF fallback ready), proposal generator with blank placeholders, edit-before-send step. Full sample report on a fictional business. |
-| Sun 30 Nov | Payment + landing: Stripe Checkout $49 one-time, webhook entitlement, server-side paywall (full report never shipped before payment), landing page, /sample, /templates, /terms. Deploy on Vercel. End-to-end test: free audit → pay (test mode) → full PDF. |
+| Sun 30 Nov | Payment + landing: Polar Checkout $49 one-time, webhook entitlement (licence key), server-side paywall (full report never shipped before payment), landing page, /sample, /templates, /terms. Deploy on Vercel. End-to-end test: free audit → pay (test mode) → full PDF. |
 | Mon 1 Dec | Launch. Demo video (2 min, Loom). Launch posts: r/webdev, r/freelance, r/webdesign, r/Entrepreneur, Indie Hackers, X/Twitter, Facebook freelancer groups. Three sample teardowns (fictional businesses) as social proof. Daily distribution from 1 Dec: one new post/day, reply to every comment. |
 
-## 15. What is still missing (do not claim these are done)
+## 15. What is still missing (do not claim these are done) — updated 27 Nov 2026 fixes round
 
-- Payment: Stripe Checkout + webhook + entitlement logic not built; no test purchase made yet.
-- Ship or Die tracker: product not registered/logged in the hackathon tracker yet.
-- TrustMRR: not set up; no verified-profit tracking wired in.
-- Custom domain: none bought or attached (do not buy until the registrar + trademark check in §1 is done). Launch domain is a Vercel subdomain until then.
-- Real test purchases: zero. No real $49 purchase has been made or refunded in test.
-- PSI API key: not created; quota not verified on the project's own key.
-- PDF on Vercel: Puppeteer + Chromium pairing not tested on the real host; React-PDF fallback not built.
-- Sample report: fictional-business sample not written yet.
-- Legal review: terms/refund/acceptable-use text is drafted from research, not reviewed by a lawyer. General information, not legal advice.
+- Payment: Polar Checkout + webhooks + licence-key entitlement is code-ready with env placeholders in this fixes round (no live keys, no Polar account yet). No test purchase made yet. NEEDS VELU: Polar account + Philippines Stripe Connect Express KYC.
+- Ship or Die tracker: NOT installed. Exact snippet must be copied from the dashboard (My Startup > traffic tracker) before any traffic and before the first payment. NEEDS VELU. See docs/TRACKER-INSTALL.md.
+- TrustMRR: not set up; connection after the first sale, via a Polar read-only key. TrustMRR supports Polar directly (see docs/TRUSTMRR-POLAR-CORRECTION.md). Open item: TrustMRR handling of one-time (non-subscription) payments is still unverified and must be checked in the TrustMRR add-startup flow before the first sale is counted on.
+- Custom domain: none bought, no decision recorded. NEEDS VELU decision. Launch domain is a Vercel subdomain until then. Do not buy until the registrar + trademark check in §1 is done.
+- Real test purchases: zero. No real $49 purchase has been made or refunded in test. A live test purchase with real money NEEDS VELU.
+- PSI API key: not created; quota not verified on the project's own key. NEEDS VELU. Until it exists, speed scores are measured load time + page size, not Lighthouse scores, and the report must say so.
+- PDF on Vercel: Puppeteer primary + React-PDF fallback, being built this round, outcome TBD — see §16. Do not claim paid PDF exists until verified on the real host.
+- Contact email + refund channel: murugan@drvelu.com is published in the footer, /terms, FAQ, and User-Agent, with a mailto refund route and a refund log (docs/refund-log.md), in this fixes round. Live status to be confirmed by the coordinator after verification.
+- /privacy page: instructed in this fixes round; NOT present in the working tree at time of writing (no app/privacy/ dir). Verify Vercel log retention/region first; live status to be confirmed by the coordinator after verification.
+- Next.js: bumped from 14.2.18 to the latest patched 14.2.x in this fixes round. Exact version installed: 14.2.35 (package.json in the working tree shows "next": "^14.2.35", up from 14.2.18; uncommitted at time of writing, coordinator to confirm after the code agent's install/build).
+- Sample report: fictional-business sample (Harbor & Pine Plumbing) exists and is marked SAMPLE. Done in v1.
+- Legal review: terms/refund/acceptable-use text is drafted from research, not reviewed by a lawyer. General information, not legal advice. NEEDS VELU / lawyer before payment goes live (governing-law + liability-limitation clause, Business Opportunity Rule confirm).
 - Trademark/domain check for DealNote: web-search only so far (§1).
+- P1 items still open after this round (see docs/dealnote-fixes-2026-11-27.md): robots.txt honouring, rate limiting, SSRF redirect re-validation, server-stored brand profiles, SEO meta / OG images / sitemap / JSON-LD, email capture, homepage screenshot capture (same Puppeteer stack as the PDF).
+
+## 16. Fixes round 27 Nov 2026
+
+Branch `dealnote-fixes-nov27`, base commit f807acb. Audit verdicts this round fixes: audit batch SHIP WITH FIXES (docs/dealnote-audit-batch-2026-11-27.md), Neon NO-SHIP 4.1/10 (docs/neon-dealnote-audit-2026-11-27.html), Claude miss-check items 1-29 (docs/claude-misscheck-dealnote-2026-11-27.md), slop check HIGH 3 / MEDIUM 7 / LOW 8 (docs/dealnote-slop-check-2026-11-27.md). Full per-item table: docs/dealnote-fixes-2026-11-27.md.
+
+Fix list in this round (code by the code agent, docs by the docs agent; nothing here is verified live until the coordinator confirms it):
+
+1. Contact email murugan@drvelu.com published (footer, /terms, FAQ, User-Agent) + mailto refund route + refund log started (docs/refund-log.md).
+2. /privacy page added.
+3. Copy fixes: $39 line reworded (no "cheapest"), pricing bullet "Teardown PDF and proposal PDF (coming with payment)", CAN-SPAM footer block + 60-second sending checklist on /templates.
+4. Slop HIGHs fixed: Inter loaded via next/font/google (400/500/600/700), eyebrows at most one and sentence case, heading weights 600 (h1/h2/h3), 650 deleted; plus MEDIUM/LOW items in docs/design-notes.md §11.
+5. Polar Checkout + webhooks code-ready with env placeholders (no live keys, no account), licence-key paywall: teaser is score + grade + top 2 findings until the server confirms a licence key.
+6. PDF: Puppeteer primary + React-PDF fallback, being built this round, outcome TBD.
+7. Next.js bumped from 14.2.18 to latest patched 14.2.x (exact version: see §15 placeholder).
+8. TrustMRR/Polar corrections recorded: docs/TRUSTMRR-POLAR-CORRECTION.md (TrustMRR supports Polar directly; Polar net $46.05 US / $45.32 non-US; $44.83 was wrong).
+
+NEEDS VELU items (nothing in this list may proceed without him):
+
+- Polar account + Philippines Stripe Connect Express KYC.
+- Tracker snippet copied from the Ship or Die dashboard (My Startup > traffic tracker).
+- Test purchase with real money, then refund it.
+- Custom domain decision / purchase.
+- PSI API key creation (restricted to the PSI API).
+- Legal review of terms (governing law, liability limitation, Business Opportunity Rule confirm).
+
+Open questions for the coordinator (see the fixes report): whether PDF generation works on the real host, whether the licence-key paywall holds server-side, whether the build passes, and the live test results. No build or test result is claimed in this file.
 
 ## Sources
 

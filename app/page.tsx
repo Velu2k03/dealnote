@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, FileText, Globe, Send } from "lucide-react";
+import { CheckCircle2, FileText, Globe, Send } from "lucide-react";
 import { sampleAudit } from "@/lib/audit";
-import { IssueList, ScoreSummary } from "@/components/audit-ui";
+import { BuyButton, IssueList, ScoreSummary } from "@/components/audit-ui";
 
 export default function Home() {
   const sample = sampleAudit();
@@ -14,22 +14,22 @@ export default function Home() {
           <div className="hero-grid">
             <div>
               <p className="eyebrow">For web design freelancers and small agencies</p>
-              <h1>Paste any business website URL. Get a teardown report plus a ready-to-send proposal in about a minute.</h1>
+              <h1>Paste any business website URL.</h1>
               <p style={{ color: "#475569" }}>
-                Show the prospect what is wrong with their site, then sell the fix. The report carries your
-                brand, your logo, and your contact details, not ours.
+                Get a teardown report plus a ready-to-send proposal in about a minute. Show the prospect what is
+                wrong with their site, then sell the fix. The report carries your brand, your logo, and your
+                contact details, not ours.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <Link href="/audit" className="btn btn-primary">
-                  Run a free audit <ArrowRight size={18} strokeWidth={1.5} aria-hidden />
+                  Run a free audit
                 </Link>
                 <Link href="/sample" className="btn btn-secondary">
                   See a sample report
                 </Link>
               </div>
               <p className="caption mt-24">
-                $49 one-time. No subscription. No per-report fee. 30 audits per month fair-use limit.
-                Payment coming soon.
+                $49 one-time, with no subscription and no per-report fee. Fair-use limit: 30 audits per month.
               </p>
             </div>
             <div>
@@ -46,30 +46,42 @@ export default function Home() {
       <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
         <div className="container">
           <h2>How it works</h2>
-          <div className="steps-grid mt-24">
-            <div className="card">
-              <Globe size={18} strokeWidth={1.5} color="#0F766E" aria-hidden />
-              <h3 className="mt-16">1. Paste a URL</h3>
-              <p className="mb-0">
-                Paste the prospect&apos;s website address. DealNote fetches the public homepage and checks
-                speed, mobile, SEO, technical health, conversion, and trust signals.
-              </p>
+          <div className="steps-flow mt-24">
+            <div className="step-row">
+              <span className="step-num" aria-hidden>1</span>
+              <div>
+                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <Globe size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Paste a URL
+                </h3>
+                <p className="mb-0">
+                  Paste the prospect&apos;s website address. DealNote fetches the public homepage and checks
+                  speed, mobile, SEO, technical health, conversion, and trust signals.
+                </p>
+              </div>
             </div>
-            <div className="card">
-              <FileText size={18} strokeWidth={1.5} color="#0F766E" aria-hidden />
-              <h3 className="mt-16">2. Get the teardown</h3>
-              <p className="mb-0">
-                Every finding shows what was found, why it matters in plain language, and the fix in one
-                line. Scores use A to F grades, with the weights printed on the report.
-              </p>
+            <div className="step-row">
+              <span className="step-num" aria-hidden>2</span>
+              <div>
+                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Get the teardown
+                </h3>
+                <p className="mb-0">
+                  Every finding shows what was found, why it matters in plain language, and the fix in one
+                  line. Scores use A to F grades, with the weights printed on the report.
+                </p>
+              </div>
             </div>
-            <div className="card">
-              <Send size={18} strokeWidth={1.5} color="#0F766E" aria-hidden />
-              <h3 className="mt-16">3. Send the proposal</h3>
-              <p className="mb-0">
-                The findings become a What I Would Fix list with blank price placeholders you fill in. Send
-                the teardown to open the conversation, and the proposal when they reply.
-              </p>
+            <div className="step-row">
+              <span className="step-num" aria-hidden>3</span>
+              <div>
+                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <Send size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Send the proposal
+                </h3>
+                <p className="mb-0">
+                  The findings become a What I Would Fix list with blank price placeholders you fill in. Send
+                  the teardown to open the conversation, and the proposal when they reply.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -86,7 +98,7 @@ export default function Home() {
             <IssueList issues={topIssues} />
           </div>
           <Link href="/sample" className="btn btn-secondary">
-            Read the full sample report <ArrowRight size={18} strokeWidth={1.5} aria-hidden />
+            Read the full sample report
           </Link>
         </div>
       </section>
@@ -95,24 +107,25 @@ export default function Home() {
         <div className="container">
           <h2>Pricing</h2>
           <div className="card mt-24" style={{ maxWidth: 560 }}>
-            <p className="eyebrow">One-time payment</p>
-            <p style={{ fontSize: 48, fontWeight: 700, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
+            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
               $49
             </p>
-            <p>One payment. No subscription. No per-report fee.</p>
+            <p>One payment of $49, with no subscription and no per-report fee.</p>
             <ul style={{ paddingLeft: 20 }}>
               <li>30 audits per month fair-use limit</li>
               <li>White-label reports under your brand</li>
-              <li>Teardown PDF and proposal PDF</li>
+              <li>Teardown PDF and proposal PDF (coming with payment)</li>
               <li>Proposal templates included</li>
             </ul>
             <p className="caption">
-              $49 once is less than two months of the cheapest white-label audit subscription at $39 per
-              month. Arithmetic on published prices, not an earnings claim. No guarantee of client wins.
+              $49 once is less than two months of a $39-per-month subscription. SEOptimer White Label,
+              $39/mo on its public pricing page, checked 27 Nov 2026. Example only. Compare current prices before you buy. No guarantee of client wins.
             </p>
-            <p className="mb-0">
-              <span className="tag">Payment coming soon</span>. The audit tool on this page is free to try
-              in v1, and full PDF downloads arrive when payment is wired up.
+            <p className="mb-16">
+              <BuyButton />
+            </p>
+            <p className="caption mb-0">
+              The audit tool is free to try. Full reports and PDF downloads unlock with a licence key.
             </p>
           </div>
         </div>
@@ -157,7 +170,7 @@ export default function Home() {
           <div className="reading mt-24">
             <h3>Is the $49 really one-time?</h3>
             <p>
-              Yes. One payment of $49, no subscription, no per-report fee. The fair-use limit is 30 audits
+              Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is 30 audits
               per month. Lifetime means the lifetime of the product, as stated in the terms.
             </p>
             <h3>Does the client see the DealNote name?</h3>
@@ -172,8 +185,9 @@ export default function Home() {
             </p>
             <h3>What if the report gets something wrong?</h3>
             <p>
-              Report a bad report within 14 days and we will replace it or refund it. See the refund
-              section in the terms.
+              Report a bad report within 14 days and we will replace it or refund it. Email{" "}
+              <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a> with the report URL, the finding
+              you say is wrong, and why. See the refund section in the terms.
             </p>
             <h3>Does DealNote collect personal data about the prospect?</h3>
             <p>
@@ -181,10 +195,11 @@ export default function Home() {
               is visibly published on that page. There is no cold SMS in this product, and you are
               responsible for your own outreach law.
             </p>
-            <h3>Why is payment coming soon?</h3>
+            <h3>How do I unlock the full report?</h3>
             <p>
-              This is v1. You can run audits and preview the sample report now. Full paid PDF downloads
-              arrive when payment is wired up.
+              Buy DealNote once for $49 and you get a licence key. Enter the key on the audit page to unlock
+              the full findings, the white-label preview, and the proposal. PDF downloads are coming with
+              payment.
             </p>
           </div>
           <p className="mt-32 mb-0">

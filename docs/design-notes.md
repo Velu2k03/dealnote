@@ -1,7 +1,7 @@
 # DealNote — Design Notes
 
 **Product:** DealNote (white-label website teardown + proposal generator, $49 one-time).
-**Date:** 27 Nov 2026. **Status:** Design system only. No code, no build.
+**Date:** 27 Nov 2026. **Status:** Design system, updated in the fixes round of 27 Nov 2026 to match the slop fixes (see §11). No code, no build in this file itself; the code changes live in `app/` and `components/` and are verified separately.
 **Companion doc:** `PLAN.md` in the same folder. If this file and `PLAN.md` disagree, `PLAN.md` wins on product scope and this file wins on visual decisions.
 
 ## 1. Design stance
@@ -28,7 +28,7 @@ Clean, plain, businesslike. The buyer sells to local business owners who distrus
 | Border | `#E2E8F0` slate-200 | Cards, tables, dividers, inputs |
 | Text primary | `#0F172A` slate-900 | Headings, body text, scores |
 | Text secondary | `#475569` slate-600 | Supporting copy, captions, metadata |
-| Text faint | `#94A3B8` slate-400 | Timestamps, "could not check" labels only — never body copy |
+| Text faint | `#64748B` slate-500 | Timestamps, "could not check" labels only — never body copy. Darkened from `#94A3B8` (slate-400, 2.56:1 on white, failed WCAG AA) in the 27 Nov 2026 fixes round; the old `--faint` value must not be used for text. |
 | Accent | `#0F766E` teal-700 | Primary buttons, links, active states, score bars, section headings in reports |
 | Accent soft | `#F0FDFA` teal-50 | Accent backgrounds (callouts, highlighted rows) |
 | Accent border | `#99F6E4` teal-200 | Borders on accent callouts only |
@@ -46,9 +46,11 @@ Clean, plain, businesslike. The buyer sells to local business owners who distrus
 
 ## 3. Type
 
-**Typeface: Inter, throughout (UI, reports, PDF).**
+**Typeface: Inter, throughout (UI, reports, PDF), loaded via `next/font/google` (weights 400/500/600/700).**
 
-**Why Inter, deliberately:** it is designed for user-interface text at small sizes, which is exactly what a dense audit report is — small labels, numbers, and evidence quotes. It renders consistently in Chromium (the PDF renderer), has a full weight range so hierarchy comes from weight and size rather than a second font, and it is open-licence with no cost. One family keeps the report, the app, and the PDF visually identical, and it keeps the PDF font embedding simple (one family, two weights).
+**Why Inter, deliberately:** it is designed for user-interface text at small sizes, which is exactly what a dense audit report is — small labels, numbers, and evidence quotes. It renders consistently in Chromium (the PDF renderer), has a full weight range so hierarchy comes from weight and size rather than a second font, and it is open-licence with no cost. One family keeps the report, the app, and the PDF visually identical, and it keeps the PDF font embedding simple (one family, the weights above).
+
+The 27 Nov 2026 audit found Inter was named in the font stack but never loaded, so the site rendered in system-ui while detectors flagged it as Inter. That is fixed in this round by loading it properly via `next/font/google`. A named-but-unloaded font must never be left in the stack.
 
 **Do not use:** Cinzel, Jost (Sortes tokens), any serif display face, any rounded/geometric "friendly" face, or a second font for headings. Hierarchy is weight + size + spacing, not font switching.
 
@@ -56,25 +58,26 @@ Clean, plain, businesslike. The buyer sells to local business owners who distrus
 
 | Element | Size / weight / line-height |
 |---|---|
-| Page title (landing H1) | 36 px / 700 / 1.15, letter-spacing −0.02em |
-| Section heading (H2) | 24 px / 700 / 1.25 |
-| Card heading (H3) | 18 px / 650 / 1.3 |
+| Page title (landing H1) | 36 px / 600 / 1.15, letter-spacing −0.02em |
+| Section heading (H2) | 24 px / 600 / 1.25 |
+| Card heading (H3) | 18 px / 600 / 1.3 |
 | Body | 16 px / 400 / 1.6 |
 | Small / caption / metadata | 13 px / 400 / 1.5, slate-600 |
-| Score numbers (large) | 48 px / 700 / 1, tabular numbers |
+| Score numbers (large) | 48 px / 600 / 1, tabular numbers |
 | Buttons | 15 px / 600 |
-| Report cover title | 30 px / 700 |
+| Report cover title | 30 px / 600 |
 | Report body | 14 px / 400 / 1.6 (PDF reads smaller on paper) |
 
 **Rules:**
 - Numbers that are compared (scores, timings, counts) always use tabular figures so columns align.
 - Maximum line length for reading copy: 68 characters. Landing-page body copy is left-aligned, never centred, except the hero headline block.
-- Never set body copy below 14 px on screen, 13 px in PDF. Never use all-caps for more than a short label (eyebrow text, max 12 px, letter-spacing 0.08em).
+- Never set body copy below 14 px on screen, 13 px in PDF. Eyebrows: at most one per page/section, in sentence case, never repeating the heading it sits above. Delete any eyebrow that duplicates its heading (the 27 Nov 2026 audit found 6 uses, including "Proposal templates" above "Proposal templates"). No all-caps tracked kickers above nearly every heading.
+- The 650 heading weight is deleted. Headings are 600 (h1/h2/h3). Do not reintroduce 650 or 700 heading weights.
 - Evidence quotes (the actual title text, the actual broken URL) are shown in a slate-50 block, 14 px, with the source labelled ("Found on the homepage, 27 Nov 2026"). Evidence is never paraphrased without showing the source text.
 
 ## 4. Icons
 
-**Lucide only. Size 18 px, stroke 1.5, slate-600 by default, teal-700 when the icon is the primary action of a control.**
+**Lucide only. Size 18 px, stroke 1.5, slate-600 by default. Icons inherit text colour (slate-600); teal is used only for primary-action controls, never for decorative section icons.** The 27 Nov 2026 audit found teal step/tier icons (`color="#0F766E"`) on the landing page and templates page; those are removed in this round so icons inherit slate-600 like every other icon on the site.
 
 **Rules:**
 - One icon per control, never icon + emoji, never emoji alone.
@@ -91,6 +94,9 @@ Clean, plain, businesslike. The buyer sells to local business owners who distrus
 - **Tables:** header row slate-50, 13 px uppercase label, row dividers slate-200, no zebra striping, no coloured fills. A finding row is: severity mark, finding, evidence, fix — in that order.
 - **Forms:** labels above inputs, 14 px/600, inputs 44 px tall minimum (touch target), 1 px slate-200 border, focus ring teal-700 2 px. Error text red-700, 13 px, with the field named ("Enter a full URL starting with https://").
 - **Buttons:** primary = solid teal-700, white text, 8 px radius, 44 px tall. Secondary = white, 1 px slate-200 border, slate-900 text. Destructive (delete brand profile) = white with red-700 text and border. No gradient buttons, no pill buttons (radius stays 8 px), no uppercase button text.
+- **Motion:** one shared hover transition, 120 ms (`transition: background-color 120ms ease-out, border-color 120ms ease-out` on buttons and nav links). No `transition-all`. The audit found zero transitions in v1; hover states changed instantly.
+- **Nav links:** 44 px minimum touch target (padding raised so links reach 44 px tall). The audit found nav links at about 37 px.
+- **Equal-card grids:** equal widths only where content is truly parallel (pricing tiers). "How it works" is now a numbered vertical flow, not three equal cards; the numbered steps earn their place in a real sequential flow. The two-column "checks / does not check" pair uses unequal widths.
 - **Score display:** one large number + letter grade + a thin horizontal bar (track slate-200, fill accent for the overall score, grade colour for category bars). The letter grade is always shown next to the number so the score reads without colour.
 
 ## 6. Hero visual (landing page)
@@ -116,7 +122,7 @@ Build a static, non-interactive rendering of an actual audit result using the re
 - Page: rounded rectangle, 6 × 4 to 26 × 28, 3 px corner radius, folded top-right corner (a small triangle in the background colour, i.e. the page colour cut away — no third colour).
 - Three horizontal lines on the page (white, 2 px tall, 10 px wide, spaced 4 px apart) standing in for the report text.
 - Check mark: white, stroke 2.5 px, across the lower half of the page, slightly oversized so it reads at favicon size.
-- Wordmark: "DealNote" in Inter 700, slate-900, with no icon lockup variations in v1. The SVG mark + wordmark side by side is the only lockup; never set the wordmark in another typeface.
+- Wordmark: "DealNote" in Inter 600, slate-900, with no icon lockup variations in v1. The SVG mark + wordmark side by side is the only lockup; never set the wordmark in another typeface.
 - The logo never appears on a white-labelled client report. Client reports carry the buyer's logo only. The DealNote mark appears on the app chrome, the landing page, and the sample report cover (labelled as the sample's producer).
 
 **Do not:** add a magnifying glass (says "search tool"), a lightning bolt (says "speed tool"), a roof/house (says "real estate"), or a third colour. If the check mark does not read at 16 px, thicken the stroke before adding anything else.
@@ -131,7 +137,7 @@ The report is the product the buyer is judged on, so its design rules are strict
 - **Proposal section:** starts on a fresh page, same typography, same header/footer as the teardown. Problem before price. Prices are the freelancer's filled-in values or visible blank placeholders (`$____`) — never a number the tool invented.
 - **Header/footer (every page after the cover):** header = buyer's brand name (small, slate-600); footer = "Prepared by [brand] · [date] · Lab measurement on [date]. Scores can vary between runs. This report audits the public homepage only." + page number. No DealNote name anywhere.
 - **Page breaks:** never split a finding across pages; never leave a section heading alone at the bottom of a page; tables break only between rows. Test with a 6–10-page report end to end.
-- **Sample reports:** the word SAMPLE in teal-700, 13 px, 600 weight, at the top of every page, and fictional data only.
+- **Sample reports:** the word SAMPLE in teal-700, 13 px, 600 weight, at the top of every page, and fictional data only. On the /sample web page, the SAMPLE stamp appears at the top of the page and in the footer only — not once per section (the audit found 7 stamps on /sample).
 
 ## 9. What this design system is NOT
 
@@ -139,7 +145,44 @@ The report is the product the buyer is judged on, so its design rules are strict
 - Not a generic SaaS template: no indigo, no gradient hero, no emoji, no stock photos, no "AI-powered" badge, no fake social proof.
 - Not a developer tool: no monospace everywhere, no terminal aesthetic, no dark mode in v1. The audience is a business owner reading on a phone, not an engineer reading a log.
 
-## 10. Pre-launch design checklist
+## 11. Fixes round — 27 Nov 2026 (what changed, and what stays)
+
+Changed in this round (code in `app/` and `components/`, verified separately by the coordinator):
+
+- Inter loaded via `next/font/google` (weights 400/500/600/700); no named-but-unloaded font left in the stack.
+- Heading weights 600 (h1/h2) and 600 (h3); the 650 value deleted; wordmark 600.
+- Eyebrows: at most one, sentence case, never repeating the heading.
+- Equal-card grids: "How it works" is now a numbered vertical flow; equal widths only where content is truly parallel (pricing tiers).
+- Icons inherit text colour (slate-600); teal only for primary-action controls.
+- One shared hover transition, 120 ms; no `transition-all`.
+- Nav links 44 px minimum.
+- `--faint` darkened to `#64748B`.
+- SAMPLE stamp on /sample at the top of the page and in the footer only.
+
+Slop re-check round, 27 Nov 2026 (branch `dealnote-fixes-nov27`, after commit `3706d51`):
+- H1 shortened to "Paste any business website URL." with the rest moved to the subhead;
+  pricing/hero/FAQ staccato triples reworded into plain sentences.
+- Middle-dot separators removed entirely (covering-email signature is now three lines).
+- SAMPLE stamp exactly once per page (top of /sample; inside the score card on /audit and /).
+- Em dashes removed from all rendered copy except two strings inside the frozen payment
+  component (`components/audit-ui.tsx`, BuyButton label + checkout message) — those stay until
+  the payment freeze lifts.
+- `.callout` and `.evidence` inner radius 8px → 6px (nested-radius rule, matching the
+  stamp/tag/badge fix).
+- Heading order fixed: /audit status/empty-state headings and /templates tier names are h2
+  (tier names keep the 18px h3 visual size inline).
+- Replicated scores after this round: Briskly-style ~5/100 (only the uniform 8px card rule,
+  half-counted — the card style is the documented design system), Jev-style ~1 partial tell
+  of 34, est. ~3–5/100 (equal pricing-tier cards only, genuinely parallel content).
+
+Unchanged — the core system stays:
+
+- White/slate pages, one accent deep teal `#0F766E`, Lucide 18 px / 1.5 stroke only, no gradients, no glows, no glass, no emoji, no stock photos, no decorative illustration.
+- No Sortes tokens (no navy `#141b2e`, no gold `#d4af37`, no cream `#ede6d6`, no Cinzel, no Jost) and no NoSite indigo.
+- Semantic grade colours only (green-700 / amber-700 / red-700), letter grade always shown next to the number.
+- One card, one button pair, 8 px radius, restrained shadow only; print `print-color-adjust: exact`.
+
+## 12. Pre-launch design checklist
 
 - [ ] Landing, /audit, /sample, /templates, /terms render with no horizontal overflow at 390 px.
 - [ ] Every button and link has a visible focus ring; keyboard-only pass through /audit works.
