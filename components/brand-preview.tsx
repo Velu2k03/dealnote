@@ -99,8 +99,13 @@ export default function BrandPreview() {
           />
         </div>
         <div>
-          <label htmlFor="preview-logo">Logo (PNG or JPG, under 512 KB)</label>
-          <input id="preview-logo" type="file" accept="image/png,image/jpeg" onChange={(e) => onLogoFile(e.target.files?.[0])} />
+          <span className="btn btn-secondary" style={{ height: 48, padding: "0 20px", display: "inline-flex", alignItems: "center" }}>
+            <label htmlFor="preview-logo" style={{ margin: 0, cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+              Upload logo (PNG/SVG)
+            </label>
+          </span>
+          <input id="preview-logo" type="file" accept="image/png,image/jpeg" onChange={(e) => onLogoFile(e.target.files?.[0])} style={{ position: "absolute", width: 1, height: 1, opacity: 0, overflow: "hidden" }} />
+          <p className="caption mt-8 mb-0">PNG or JPG, under 512 KB</p>
           {logoError ? <p className="field-error mt-8" role="alert">{logoError}</p> : null}
         </div>
       </div>
@@ -118,7 +123,7 @@ export default function BrandPreview() {
           ) : null}
           <p style={{ fontSize: 20, fontWeight: 700, color, margin: 0 }}>{name}</p>
         </div>
-        <p className="mt-8 mb-0" style={{ color: "#55507A" }}>
+        <p className="mt-8 mb-0" style={{ color: "#4A3B5C" }}>
           Website Teardown and Proposal — prepared by {name}. This is how your brand looks on a client
           report. The DealNote name never appears on client reports.
         </p>

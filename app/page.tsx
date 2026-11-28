@@ -18,29 +18,27 @@ export default function Home() {
             <div>
               <p className="eyebrow">For web design freelancers and small agencies</p>
               <h1>Show the prospect what is wrong with their site, then sell the fix.</h1>
-              <p style={{ color: "#475569" }}>
+              <p style={{ color: "#4A3B5C" }}>
                 Paste any business website URL. In about a minute you get a white-label teardown report plus
                 a ready-to-send proposal, scored across speed, mobile, SEO, technical health, conversion,
                 and trust, under your own brand, logo, and contact details, not ours.
               </p>
-              <form method="get" action="/audit" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <form method="get" action="/audit" style={{ display: "flex", gap: 0, flexWrap: "nowrap", border: "1px solid #C4B5FD", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
                 <input
                   name="url"
                   type="url"
                   required
                   aria-label="Business website URL"
                   placeholder="https://www.example-plumbing.com"
-                  style={{ flex: "1 1 280px" }}
+                  style={{ flex: "1 1 auto", border: "none", minWidth: 0 }}
                 />
-                <SakugaButton type="submit">
+                <SakugaButton type="submit" className="hero-submit">
                   Run a free audit
                 </SakugaButton>
               </form>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
-                <Link href="/sample" className="btn btn-secondary">
-                  See a sample report
-                </Link>
-              </div>
+              <p className="mt-16 mb-0">
+                <Link href="/sample">See a sample report</Link>
+              </p>
               <p className="caption mt-24">
                 $49 one-time, with no subscription and no per-report fee.{" "}
                 <SakugaTooltip
@@ -70,7 +68,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE", borderBottom: "1px solid #DDD6FE" }}>
+      <section id="how-it-works" style={{ background: "#FAF5FF", borderTop: "1px solid #E9D5FF", borderBottom: "1px solid #E9D5FF" }}>
         <div className="container">
           <h2>How it works</h2>
           <div className="steps-flow mt-24">
@@ -78,7 +76,7 @@ export default function Home() {
               <span className="step-num" aria-hidden>1</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <Globe size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Paste a URL
+                  <Globe size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Paste a URL
                 </h3>
                 <p className="mb-0">
                   Paste the prospect&apos;s website address. DealNote fetches the public homepage and checks
@@ -90,7 +88,7 @@ export default function Home() {
               <span className="step-num" aria-hidden>2</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Get the teardown
+                  <FileText size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Get the teardown
                 </h3>
                 <p className="mb-0">
                   Every finding shows what was found, why it matters in plain language, and the fix in one
@@ -102,7 +100,7 @@ export default function Home() {
               <span className="step-num" aria-hidden>3</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <Send size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Send the proposal
+                  <Send size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Send the proposal
                 </h3>
                 <p className="mb-0">
                   The findings become a What I Would Fix list with blank price placeholders you fill in. Send
@@ -130,31 +128,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE", borderBottom: "1px solid #DDD6FE" }}>
+      <section style={{ background: "#FAF5FF", borderTop: "1px solid #E9D5FF", borderBottom: "1px solid #E9D5FF" }}>
         <div className="container">
           <h2>Pricing</h2>
           <SpotlightCard className="card glass mt-24" >
-            <div style={{ maxWidth: 560 }}>
-            <p className="mb-16">Everything below is included in the one payment.</p>
-            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>30 audits a month fair-use limit, about $1.63 per audit</span>
-              </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>White-label reports under your brand</span>
-              </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>Teardown PDF and proposal PDF included with your license</span>
-              </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>Proposal templates included</span>
-              </li>
-            </ul>
-            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "24px 0 8px" }} className="tabular">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }} className="pricing-grid">
+            <div>
+            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
               $49
             </p>
             <p>One payment of $49, with no subscription and no per-report fee.</p>
@@ -174,6 +154,28 @@ export default function Home() {
             <p className="caption mb-0">
               The audit tool is free to try. Full reports and PDF downloads unlock with a license key.
             </p>
+            </div>
+            <div>
+            <p className="mb-16">Everything below is included in the one payment.</p>
+            <ul style={{ listStyle: "none", paddingLeft: 0, marginBottom: 0 }}>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>30 audits a month fair-use limit, about $1.63 per audit</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>White-label reports under your brand</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>Teardown PDF and proposal PDF included with your license</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 0 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>Proposal templates included</span>
+              </li>
+            </ul>
+            </div>
             </div>
           </SpotlightCard>
         </div>
@@ -212,10 +214,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE" }}>
+      <section style={{ background: "#FAF5FF", borderTop: "1px solid #E9D5FF" }}>
         <div className="container">
           <h2>Frequently asked questions</h2>
-          <div className="reading mt-24">
+          <div className="reading mt-24" style={{ marginLeft: "auto", marginRight: "auto" }}>
             <h3>Is the $49 really one-time?</h3>
             <p>
               Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is

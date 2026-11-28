@@ -6,7 +6,7 @@ export default function TermsPage() {
           <h1>Terms, Acceptable Use, and Refund policy</h1>
           <p className="caption">Last updated: 28 Nov 2026. This text is general information, not legal advice.</p>
 
-          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+          <div className="card mt-32" style={{ background: "#FAF5FF", marginBottom: 40 }}>
             <p className="mb-0"><strong>Summary:</strong></p>
             <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
               <li>$49 one-time. No subscription, no per-report fee. Fair-use limit: 30 audits a month.</li>
@@ -101,7 +101,7 @@ export default function TermsPage() {
           <p>
             In the United States, commercial email must follow the CAN-SPAM Act (honest
             headers and subject line, identification as an advertisement, your postal address, and an opt-out
-            honoured within 10 business days). Canada, the UK/EU, and Australia require consent before most
+            honored within 10 business days). Canada, the UK/EU, and Australia require consent before most
             cold commercial email. Do not rely on the US rule when emailing outside the US. Do not send
             marketing texts unless you already have the recipient&apos;s prior express written consent.
           </p>

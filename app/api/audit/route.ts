@@ -226,7 +226,7 @@ export async function runFullAudit(
   const parsed = new URL(url);
   const homePath = parsed.pathname || "/";
 
-  // robots.txt is honoured BEFORE the homepage is fetched. A missing or
+  // robots.txt is honored BEFORE the homepage is fetched. A missing or
   // unreadable robots.txt is not a failure: the audit proceeds.
   let robotsText: string | null = null;
   let hasRobots: boolean | null = null;

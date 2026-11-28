@@ -491,7 +491,7 @@ export default function AuditPage() {
           paint. Toggle is ~506 KB (43 painted frames), so it loads last. */}
       <SakugaScripts names={["input", "checkbox", "radio", "slider", "progress", "rating", "toggle"]} />
       <section style={{ paddingTop: 48 }}>
-        <div className="container">
+        <div className="container audit-layout">
           <div className="reading">
             <h1>Run a teardown</h1>
             <p>
@@ -588,7 +588,7 @@ export default function AuditPage() {
 
           {displayed ? (
             <>
-              <div className="mt-32">
+              <div className="mt-32 audit-results">
                 <ScoreSummary result={displayed}>
                   {displayed.isSample ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
                 </ScoreSummary>
@@ -600,7 +600,7 @@ export default function AuditPage() {
                   <IssueList issues={displayed.issues.slice(0, 2)} />
                   <div className="card mt-24">
                     <h3 style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <Lock size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Full report locked
+                      <Lock size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Full report locked
                     </h3>
                     <p>
                       Full findings, white-label preview, proposal and PDF download unlock with a license key.
@@ -793,13 +793,19 @@ export default function AuditPage() {
                           <input id="logo-url" type="url" placeholder="https://example.com/logo.png" value={brand.logoUrl ?? ""} onChange={(e) => saveBrand({ ...brand, logoUrl: e.target.value })} />
                         </div>
                         <div>
-                          <label htmlFor="logo-file">Or upload a logo (PNG or JPG, under 512 KB)</label>
+                          <span className="btn btn-secondary" style={{ height: 48, padding: "0 20px", display: "inline-flex", alignItems: "center" }}>
+                            <label htmlFor="logo-file" style={{ margin: 0, cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+                              Upload logo (PNG/SVG)
+                            </label>
+                          </span>
                           <input
                             id="logo-file"
                             type="file"
                             accept="image/png,image/jpeg"
                             onChange={(e) => onLogoFile(e.target.files?.[0])}
+                            style={{ position: "absolute", width: 1, height: 1, opacity: 0, overflow: "hidden" }}
                           />
+                          <p className="caption mt-8 mb-0">PNG or JPG, under 512 KB</p>
                           {logoError ? <p className="field-error">{logoError}</p> : null}
                           {logoSrc ? (
                             <p className="mt-8 mb-0">

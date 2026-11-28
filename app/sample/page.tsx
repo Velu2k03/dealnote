@@ -55,8 +55,9 @@ export default function SamplePage() {
           page describes a real business.
         </p>
         <p className="reading">
-          Prepared by [Your studio], [Your name], [your email]. Run date: 28 Nov 2026. The bracketed
-          names are placeholders on purpose: your brand goes here on a real report.
+          Prepared by Harbor &amp; Pine Digital, Maya Lin, maya@harborandpine-digital.example,
+          (555) 019-4410, Santa Rosa, CA. Run date: 28 Nov 2026. Harbor &amp; Pine Digital is a
+          fictional studio: on a real report your own brand goes here.
         </p>
         <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <a href="/api/pdf/sample" className="btn btn-primary" download>
@@ -154,15 +155,16 @@ export default function SamplePage() {
           </p>
         </div>
 
-        <h2 className="mt-32">About [Your Studio Name]</h2>
+        <h2 className="mt-32">About Harbor &amp; Pine Digital</h2>
         <div className="card glass">
           <p>
-            [Your Studio Name] is a web design studio run by [Your Name], based in [Your City]. We build
-            and fix websites for local businesses, and this sample shows the format every proposal uses.
+            Harbor &amp; Pine Digital is a fictional web design studio run by Maya Lin, based in
+            Santa Rosa, CA. It builds and fixes websites for local businesses, and this sample shows
+            the format every proposal uses. Nothing here describes a real studio or a real client.
           </p>
           <p className="mb-0">
-            [PAST PROJECT - Replace with a real project or delete this section. Never invent a client, a
-            quote, or a result.]
+            A real proposal carries the freelancer&apos;s own studio, past work, and contact details
+            here. Never invent a client, a quote, or a result.
           </p>
         </div>
 
@@ -180,7 +182,7 @@ export default function SamplePage() {
           <h3>Next step</h3>
           <p>
             Reply to this email, or book a free 15-minute call at the link in the covering email. Prepared by
-            Your Studio. Lab measurement on 28 Nov 2026. Scores can vary between runs. This report audits the
+            Harbor &amp; Pine Digital. Lab measurement on 28 Nov 2026. Scores can vary between runs. This report audits the
             public homepage only.
           </p>
           <p className="caption mb-0">
