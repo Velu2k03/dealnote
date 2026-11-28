@@ -199,7 +199,7 @@ export default function TemplatesPage() {
             </p>
           </div>
         ) : null}
-        <div className="steps-flow mt-24" aria-label="How templates fit the workflow">
+        <div className="steps-flow mt-24 template-steps" aria-label="How templates fit the workflow">
           <div className="step-row">
             <span className="step-num" aria-hidden>1</span>
             <div>
@@ -244,10 +244,10 @@ export default function TemplatesPage() {
           with a word swapped. Prices are blank placeholders you fill in. These templates are starting
           text you adapt, not legal advice. Get your own contract reviewed if you need one.
         </p>
-        <div className="steps-flow">
+        <div className="template-grid">
           {PROPOSAL_TEMPLATES.map((t) => (
-            <div key={t.kind} className="step-row">
-              <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden style={{ flexShrink: 0, marginTop: 4 }} />
+            <div key={t.kind} className="card" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <FileText size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden style={{ flexShrink: 0, marginTop: 4 }} />
               <div style={{ flex: "1 1 auto" }}>
                 <h3 className="mt-0">{t.name} <span className="caption">({t.length}, {t.dealSize})</span></h3>
                 <p className="mb-8">{t.tagline}</p>
@@ -316,13 +316,13 @@ export default function TemplatesPage() {
           same thread, a Day 14 breakup, and two warm sends after a call or a proposal. Every email,
           including follow-ups, carries the CAN-SPAM footer with your postal address from your brand profile.
         </p>
-        <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 16 }}>
+        <ol className="template-grid" style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {EMAIL_TEMPLATES.map((e, i) => (
             <li key={e.kind} className="card" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
               <span className="step-num" aria-hidden>{i + 1}</span>
               <div style={{ flex: "1 1 auto" }}>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <Mail size={18} strokeWidth={1.5} color="#475569" aria-hidden /> {e.name}
+                  <Mail size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> {e.name}
                 </h3>
                 <p className="mb-8">{e.purpose}</p>
                 <p className="mb-8"><strong>When: </strong>{e.timing}</p>

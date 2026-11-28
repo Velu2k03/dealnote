@@ -207,7 +207,7 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   let convPassed = 0;
   let convTotal = 0;
   convTotal += 1; if (phoneVisible || hasTel) convPassed += 1; else addIssue("conversion", "Critical", "No phone number visible on the homepage", "No phone number was found in the visible page text.", "Visitors who cannot see a number cannot call, and most will not hunt for a contact page.", "Put the phone number in the header and near the main call to action.");
-  convTotal += 1; if (hasForm) convPassed += 1; else addIssue("conversion", "Fix soon", "No contact or booking form", "No form was found on the homepage.", "Visitors who prefer to write rather than call have no way to enquire.", "Add a short contact form with name, phone, and message.");
+  convTotal += 1; if (hasForm) convPassed += 1; else addIssue("conversion", "Fix soon", "No contact or booking form", "No form was found on the homepage.", "Visitors who prefer to write rather than call have no way to inquire.", "Add a short contact form with name, phone, and message.");
   convTotal += 1;
   if (hasForm && formFields <= 6) convPassed += 1;
   else if (hasForm) addIssue("conversion", "Fix soon", "Contact form asks for too much up front", `The contact form has ${formFields} fields.`, "Long forms put people off, so fewer visitors send an inquiry.", "Cut the form to name, phone, and message, and ask for the rest later.");

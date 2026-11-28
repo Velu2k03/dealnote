@@ -29,7 +29,7 @@ import {
   type ProposalItem,
 } from "@/lib/audit";
 import { runPaidAuditCached } from "@/app/api/audit/route";
-import { footerLine, htmlToPdfBuffer, proposalHtml } from "@/lib/pdf-html";
+import { footerLine, headerLine, htmlToPdfBuffer, proposalHtml } from "@/lib/pdf-html";
 import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NOT_INCLUDED_DEFAULT, type ProposalKind, type SectionKey } from "@/lib/templates";
 
 export const runtime = "nodejs";
@@ -179,7 +179,11 @@ export async function POST(request: Request) {
 
   let pdf: Buffer;
   try {
-    pdf = await htmlToPdfBuffer(html, footerLine(brand, paid.result.fetchedAt, paid.result.url));
+    pdf = await htmlToPdfBuffer(
+      html,
+      headerLine({ brand, docType: "Proposal", prospectUrl: paid.result.url, runDate: paid.result.fetchedAt, isSample: false }),
+      footerLine(brand, paid.result.fetchedAt, paid.result.url),
+    );
   } catch {
     return NextResponse.json(
       { error: "PDF export is not available in this build." },

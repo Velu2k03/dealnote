@@ -15,7 +15,7 @@
 import { NextResponse } from "next/server";
 import { DEFAULT_BRAND, brandValidationError, isValidAuditUrl, type BrandProfile } from "@/lib/audit";
 import { runPaidAuditCached } from "@/app/api/audit/route";
-import { footerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
+import { footerLine, headerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -73,7 +73,11 @@ export async function POST(request: Request) {
 
   let pdf: Buffer;
   try {
-    pdf = await htmlToPdfBuffer(html, footerLine(brand, paid.result.fetchedAt, paid.result.url));
+    pdf = await htmlToPdfBuffer(
+      html,
+      headerLine({ brand, docType: "Teardown report", prospectUrl: paid.result.url, runDate: paid.result.fetchedAt, isSample: false }),
+      footerLine(brand, paid.result.fetchedAt, paid.result.url),
+    );
   } catch {
     return NextResponse.json(
       { error: "PDF export is not available in this build." },

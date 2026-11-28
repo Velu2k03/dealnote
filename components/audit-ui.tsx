@@ -89,7 +89,7 @@ export function GradeBadge({ grade, size = 36 }: { grade: string; size?: number 
 }
 
 export function CategoryIcon({ icon }: { icon: string }) {
-  const props = { size: 18, strokeWidth: 1.5, color: "#475569", "aria-hidden": true };
+  const props = { size: 18, strokeWidth: 1.5, color: "#4A3B5C", "aria-hidden": true };
   switch (icon) {
     case "gauge":
       return <Gauge {...props} />;
@@ -112,7 +112,7 @@ export function SeverityIcon({ severity }: { severity: Severity }) {
   const props = { size: 18, strokeWidth: 1.5, "aria-hidden": true };
   if (severity === "Critical") return <AlertOctagon {...props} color="#B91C1C" />;
   if (severity === "Fix soon") return <AlertTriangle {...props} color="#B45309" />;
-  return <Info {...props} color="#475569" />;
+  return <Info {...props} color="#4A3B5C" />;
 }
 
 export function severityClass(severity: Severity): string {
@@ -162,13 +162,13 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
         <div style={{ textAlign: "center" }}>
           <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
             <CountUp to={result.overallScore} immediate />
-            <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
+            <span style={{ fontSize: 20, color: "#4A3B5C" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
         </div>
         <GradeBadge grade={result.overallGrade} size={56} />
         <div style={{ flex: "1 1 220px" }}>
-          <p className="mb-8" style={{ overflowWrap: "anywhere" }}>
+          <p className="mb-8" title={result.url} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>
             <strong>{result.url}</strong>
           </p>
           {/* Teaser responses carry no run facts beyond the date; render only

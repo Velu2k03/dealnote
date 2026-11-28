@@ -6,7 +6,7 @@ export default function PrivacyPage() {
           <h1>Privacy Policy</h1>
           <p className="caption">Last updated: 28 Nov 2026. This page is general information, not legal advice.</p>
 
-          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+          <div className="card mt-32" style={{ background: "#FAF5FF", marginBottom: 40 }}>
             <p className="mb-0"><strong>Summary:</strong></p>
             <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
               <li>No accounts in v1, so no account information is collected.</li>

@@ -1,29 +1,30 @@
 :root {
-  /* Tokens in OKLCH (Loop 5, oklch-skill + tailwind-design-system token
-     discipline). Pinkish Sakuga palette (Velu, 28 Nov 2026, supersedes
-     the deep-teal-only rule): white paper, lavender surfaces, violet
-     line, pink accent — the Sakuga VFX look (white, lavender, violet
-     line, pink accents, #ff5fa8). Hex originals:
-     bg #ffffff, surface #f4f3fc, border #ddd6fe, text #1d1a4a,
-     muted #55507a, faint #6e6890, accent #be185d, accent-soft #fdf2f8,
-     accent-border #f9a8d4, green #15803d, amber #b45309, red #b91c1c.
-     Contrast on white, WCAG: accent 6.04, muted 7.46, faint 5.19,
-     text 16.17, red 6.47, amber 5.02, green 5.02 — all AA.
-     White on accent is 6.04, AA. Grade colors stay green/amber/red
-     with the A-F letter, never pink-washed. */
-  --bg: oklch(1 0 0);
-  --surface: oklch(0.967 0.012 291.3);
-  --border: oklch(0.894 0.055 293.3);
-  --text: oklch(0.253 0.086 281.1);
-  --muted: oklch(0.454 0.068 288.8);
-  --faint: oklch(0.538 0.062 291);
-  --accent: oklch(0.525 0.199 4);
-  --accent-soft: oklch(0.971 0.014 343.2);
-  --accent-border: oklch(0.823 0.11 346);
-  --green: oklch(0.527 0.137 150.1);
-  --amber: oklch(0.555 0.146 49);
-  --red: oklch(0.505 0.19 27.5);
-  /* Sakuga VFX --sk-* variables (28 Nov 2026, pinkish direction).
+  /* Neon redesign tokens (28 Nov 2026, Gemini 4 Neon, "DealNote PDF and
+     site redesign"), on top of the live Sakuga pink palette. Hex values
+     are Neon's exact spec; contrast on white, WCAG: pink text #BE185D
+     6.04, pink CTA #DB2777 4.60 (white text), ink #181024, secondary
+     #4A3B5C, muted #6B5B7E — all AA. Grade colors stay green/amber/red
+     with the A-F letter, never pink-washed. Sakuga glow #EC4899 is
+     graphics only, never text. */
+  --bg: #ffffff;
+  --surface: #faf5ff;
+  --surface-2: #f5ecff;
+  --blush: #fdf2f8;
+  --border: #e9d5ff;
+  --border-line: #c4b5fd;
+  --focus: #7c3aed;
+  --text: #181024;
+  --muted: #4a3b5c;
+  --faint: #6b5b7e;
+  --accent: #be185d;
+  --cta: #db2777;
+  --cta-hover: #9d174d;
+  --accent-soft: #fdf2f8;
+  --accent-border: #f9a8d4;
+  --green: #15803d;
+  --amber: #b45309;
+  --red: #b91c1c;
+/* Sakuga VFX --sk-* variables (28 Nov 2026, pinkish direction).
      These are the Sakuga defaults, set here so the page wins over the
      core's :where() defaults: pink accent #ff5fa8 (decorative effects
      only, never body text — the site accent #be185d is the readable
@@ -66,29 +67,30 @@ body {
 a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; }
 a:hover { text-decoration: underline; }
 
-h1 { font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; text-wrap: balance; }
-h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; text-wrap: balance; }
+h1 { font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; margin: 0 0 16px; text-wrap: balance; }
+h2 { font-size: 28px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; text-wrap: balance; }
 h3 { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0 0 8px; }
 p { margin: 0 0 16px; text-wrap: pretty; }
 small, .caption { font-size: 13px; line-height: 1.5; color: var(--muted); }
 
-.container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.reading { max-width: 720px; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.reading { max-width: 760px; }
 section { padding: 64px 0; }
 @media (max-width: 640px) {
-  section { padding: 48px 0; }
-  h1 { font-size: 30px; }
-  h2 { font-size: 22px; }
+  section { padding: 40px 0; }
+  .container { padding: 0 16px; }
+  h1 { font-size: 32px; }
+  h2 { font-size: 24px; }
 }
 
 .eyebrow {
-  font-size: 13px; font-weight: 600;
+  font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
   color: var(--accent); margin: 0 0 12px;
 }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 44px; padding: 10px 20px; border-radius: 8px;
+  min-height: 48px; padding: 12px 20px; border-radius: 12px;
   font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
   text-decoration: none; white-space: normal; text-align: center;
   touch-action: manipulation;
@@ -101,42 +103,44 @@ section { padding: 64px 0; }
   .btn:hover { transform: translateY(-1px); }
 }
 .btn:active { transform: translateY(0) scale(0.98); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: oklch(0.459 0.17 3.8); }
-.btn-secondary { background: #fff; border-color: var(--border); color: var(--text); }
-.btn-secondary:hover { border-color: var(--faint); }
+.btn-primary { background: var(--cta); color: #fff; }
+.btn-primary:hover { background: var(--cta-hover); }
+.btn-secondary { background: #fff; border-color: var(--border); color: var(--accent); }
+.btn-secondary:hover { border-color: var(--border-line); background: var(--blush); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--accent); }
+.btn-ghost:hover { color: var(--cta-hover); text-decoration: underline; }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
-  outline: 2px solid var(--accent); outline-offset: 2px;
+  outline: 2px solid var(--focus); outline-offset: 2px;
 }
 
 .card {
-  background: #fff; border: 1px solid var(--border); border-radius: 8px;
-  box-shadow: 0 1px 2px oklch(0.208 0.04 265.8 / 0.06); padding: 24px;
+  background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(24, 16, 36, 0.06); padding: 24px;
 }
-/* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule), now
-   in pink/lavender tints (28 Nov 2026 Sakuga direction): frosted
-   translucent panels for the hero score card, finding cards, step rows
-   and the pricing card. Dark slate text on light frosted panels only,
-   never over images or busy backgrounds, so contrast stays AA. Glass is
-   screen-only: print forces plain white (see @media print below), and
-   the PDF templates in lib/pdf-html.ts never use it. */
+.card:hover { border-color: var(--border-line); }
+/* Glass is kept only for the hero score card and the sticky header
+   (Neon redesign): white/80, blur, violet border. Everywhere else the
+   card is plain white. Glass is screen-only: print forces plain white
+   (see @media print below), and the PDF templates in lib/pdf-html.ts
+   never use it. */
 .glass {
-  background: oklch(0.99 0.01 340 / 0.72);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid oklch(0.894 0.055 293.3 / 0.65);
-  box-shadow: 0 8px 32px oklch(0.253 0.086 281.1 / 0.08), 0 1px 2px oklch(0.253 0.086 281.1 / 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(233, 213, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(24, 16, 36, 0.08), 0 1px 2px rgba(24, 16, 36, 0.06);
 }
 .callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 6px; padding: 16px 20px; }
 .evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; font-size: 14px; overflow-wrap: anywhere; }
 
 label { display: block; font-size: 14px; font-weight: 600; margin: 0 0 6px; }
 input[type="text"], input[type="url"], input[type="email"], input[type="tel"], input[type="color"], select, textarea {
-  width: 100%; min-height: 44px; padding: 10px 12px; font-size: 16px;
+  width: 100%; min-height: 48px; padding: 12px 16px; font-size: 16px;
   font-family: inherit; color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px; background: #fff;
+  border: 1px solid var(--border-line); border-radius: 12px; background: #fff;
 }
+input::placeholder { color: var(--faint); }
 input[type="color"] { padding: 4px; max-width: 80px; }
 textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
 /* Native checkboxes keep native keyboard behaviour; accent-color brands
@@ -172,11 +176,11 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
   border-radius: 6px; padding: 4px 10px;
 }
 .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); }
-.tag-critical { color: var(--red); border-color: oklch(0.885 0.059 18.3); background: oklch(0.971 0.013 17.4); }
-.tag-soon { color: var(--amber); border-color: oklch(0.924 0.115 95.7); background: oklch(0.987 0.021 95.3); }
+.tag-critical { color: var(--red); border-color: #FECACA; background: #FEF2F2; }
+.tag-soon { color: var(--amber); border-color: #FDE68A; background: #FFFBEB; }
 .tag-nice { color: var(--muted); background: var(--surface); }
 
-.site-header { border-bottom: 1px solid var(--border); background: oklch(1 0 0 / 0.8); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
+.site-header { border-bottom: 1px solid var(--border); background: rgba(255, 255, 255, 0.8); -webkit-backdrop-filter: blur(12px) saturate(150%); backdrop-filter: blur(12px) saturate(150%); position: sticky; top: 0; z-index: 10; }
 .site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
@@ -218,7 +222,7 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
-    box-shadow: 0 8px 24px oklch(0.208 0.04 265.8 / 0.16);
+    box-shadow: 0 8px 24px rgba(24, 16, 36, 0.16);
     padding: 8px;
     margin: 0;
   }
@@ -247,6 +251,17 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
+@media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr !important; } }
+/* Templates page (Neon redesign): 3-column horizontal step bar, and
+   unified bordered cards in a 2-column grid for both 8 proposals and
+   8 emails. */
+.template-steps { grid-template-columns: repeat(3, 1fr); }
+.template-steps .step-row { flex-direction: column; gap: 8px; }
+.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 860px) {
+  .template-steps { grid-template-columns: 1fr; }
+  .template-grid { grid-template-columns: 1fr; }
+}
 .steps-flow { display: grid; gap: 20px; }
 /* Step rows carry the shared .glass class in the markup; layout only here. */
 .step-row { display: flex; gap: 16px; align-items: flex-start; border-radius: 8px; padding: 24px; }
