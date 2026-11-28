@@ -282,7 +282,7 @@ export function sampleAudit(): AuditResult {
         severity: "Fix soon",
         title: "Contact form asks for too much up front",
         found: "The contact form has 8 fields, including full address before any reply.",
-        why: "Long forms put people off, so fewer visitors send an enquiry.",
+        why: "Long forms put people off, so fewer visitors send an inquiry.",
         fix: "Cut the form to name, phone, and message, and ask for the address later.",
       },
       {
@@ -343,6 +343,26 @@ export const DEFAULT_BRAND: BrandProfile = {
   ctaLink: "",
   introLine: "I reviewed your website and found several quick wins.",
   postalAddress: "",
+  logoUrl: "",
+  logoDataUrl: "",
+};
+
+/** The fictional studio behind the sample report (Neon redesign, 28 Nov
+ *  2026). The sample PDF and /sample page are signed by this studio, never
+ *  by a [Your studio] placeholder. Real PDFs still require the buyer's own
+ *  brand (brandValidationError refuses placeholders). */
+export const SAMPLE_BRAND: BrandProfile = {
+  brandName: "Harbor & Pine Digital",
+  contactName: "Maya Lin",
+  contactEmail: "maya@harborandpine-digital.example",
+  contactPhone: "(555) 019-4410",
+  website: "https://www.harborandpine-digital.example",
+  primaryColor: "#BE185D",
+  accentColor: "#8F8DF7",
+  ctaText: "Book a free 15-minute call",
+  ctaLink: "",
+  introLine: "I reviewed your website and found several quick wins.",
+  postalAddress: "Santa Rosa, CA",
   logoUrl: "",
   logoDataUrl: "",
 };

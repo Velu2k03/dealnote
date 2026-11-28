@@ -210,7 +210,7 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   convTotal += 1; if (hasForm) convPassed += 1; else addIssue("conversion", "Fix soon", "No contact or booking form", "No form was found on the homepage.", "Visitors who prefer to write rather than call have no way to enquire.", "Add a short contact form with name, phone, and message.");
   convTotal += 1;
   if (hasForm && formFields <= 6) convPassed += 1;
-  else if (hasForm) addIssue("conversion", "Fix soon", "Contact form asks for too much up front", `The contact form has ${formFields} fields.`, "Long forms put people off, so fewer visitors send an enquiry.", "Cut the form to name, phone, and message, and ask for the rest later.");
+  else if (hasForm) addIssue("conversion", "Fix soon", "Contact form asks for too much up front", `The contact form has ${formFields} fields.`, "Long forms put people off, so fewer visitors send an inquiry.", "Cut the form to name, phone, and message, and ask for the rest later.");
   const conversionScore = scoreFromChecks(convPassed, convTotal);
 
   // Trust & local
