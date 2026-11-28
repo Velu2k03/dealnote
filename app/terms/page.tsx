@@ -11,9 +11,12 @@ export default function TermsPage() {
             DealNote is a tool for web design freelancers and small agencies. You paste a public business
             website URL, and DealNote fetches that public homepage, checks it, and produces a white-label
             teardown report plus a proposal draft under your brand. Price: $49 one-time. No subscription. No
-            per-report fee. Fair-use limit: 30 audits per month per buyer. Lifetime means the lifetime of
-            the product. If DealNote is discontinued, lifetime access ends with it, and the refund rule below
-            applies to purchases made within the preceding 14 days.
+            per-report fee. Fair-use limit: 30 audits per month per buyer. That limit is a fair-use
+            limit, enforced on a best-effort basis: usage is counted per licence key, and the count is
+            durable once the Upstash Redis store is configured; until then it may reset when the hosting
+            restarts. Lifetime means the lifetime of the product. If DealNote is discontinued, lifetime
+            access ends with it, and the refund rule below applies to purchases made within the preceding
+            14 days.
           </p>
           <p>
             You can buy DealNote from the Buy button on the home page and the audit page. You get a licence
@@ -51,7 +54,7 @@ export default function TermsPage() {
             If a report is bad, report it within 14 days of the run date shown on the report and we will
             replace it or refund the $49, our choice. A bad report is one with a wrong finding, for example
             a check that contradicts the fetched page. To report it, email{" "}
-            <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a> with (1) the report URL, (2) the
+            <a href="mailto:murugan@drvelu.com?subject=DealNote%20refund%20request">murugan@drvelu.com</a> with (1) the report URL, (2) the
             finding you say is wrong, and (3) why it is wrong. We will reply within 3 business days.
             Refunds are for bad reports, not for a prospect declining your proposal, and not for a report
             you have not read. If a feature you paid for stops working, report it the same way and the same

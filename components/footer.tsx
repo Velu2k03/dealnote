@@ -22,6 +22,10 @@ export default function Footer() {
         <p>
           $49 one-time. Reports audit the public homepage only. Scores are lab measurements on the run date and can vary between runs.
         </p>
+        <p>
+          DealNote is made by Velu Murugan (DrVelu), Santa Rosa City, Laguna, Philippines. Last updated
+          27 Nov 2026.
+        </p>
         <p className="mb-0">
           <BuyButton className="btn btn-secondary" />
         </p>

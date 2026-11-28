@@ -121,9 +121,44 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 
 .site-header { border-bottom: 1px solid var(--border); background: #fff; position: sticky; top: 0; z-index: 10; }
 .site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-.site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; }
+.site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
 .site-header nav a:hover { color: var(--text); text-decoration: none; background: var(--surface); }
+/* One nav list at every size (modern-web-guidance `navbar`): the Menu
+   button and popover exist only under 640px, where the header would
+   otherwise wrap to three rows. Above 640px the button is hidden and the
+   same list is inline. The popover is native, so light-dismiss and Escape
+   work with no script; the list stays in the tab order as plain links. */
+.site-menu { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; align-items: center; }
+.menu-button { display: none; }
+@media (max-width: 640px) {
+  .site-header-inner { flex-wrap: nowrap; gap: 12px; padding: 8px 16px; }
+  .site-header nav { flex-wrap: nowrap; }
+  .menu-button { display: inline-flex; min-height: 44px; }
+  .site-menu {
+    position: fixed;
+    inset: auto;
+    top: 60px;
+    right: 16px;
+    left: auto;
+    width: min(80vw, 20rem);
+    max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 6rem);
+    overflow: auto;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.16);
+    padding: 8px;
+    margin: 0;
+  }
+  .site-menu:is(:popover-open, .\:popover-open) { display: flex; }
+  .site-menu li a { display: block; padding: 12px 10px; }
+}
 .wordmark { font-size: 20px; font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
 .wordmark:hover { text-decoration: none; }
 

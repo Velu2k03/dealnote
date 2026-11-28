@@ -27,7 +27,7 @@ export const CATEGORIES: CategoryMeta[] = [
   { key: "seo", label: "On-page SEO", weight: 20, icon: "search", description: "Title, meta description, headings, and page content." },
   { key: "technical", label: "Technical", weight: 15, icon: "wrench", description: "HTTPS, crawlability, sitemap, and links." },
   { key: "conversion", label: "Conversion", weight: 15, icon: "mouse-pointer-click", description: "Calls to action, contact details, and forms." },
-  { key: "trust", label: "Trust, local and social", weight: 15, icon: "shield-check", description: "Business details, reviews, and social links on the page." },
+  { key: "trust", label: "Trust & local", weight: 15, icon: "shield-check", description: "Business details, reviews, and social links on the page." },
 ];
 
 export interface Issue {
@@ -94,6 +94,58 @@ export function gradeColor(grade: string): string {
   return "#B91C1C";
 }
 
+/** True when a dotted-quad IPv4 address is non-public (private, loopback,
+ *  link-local incl. cloud metadata 169.254/16, CGNAT 100.64/10, or
+ *  otherwise reserved). Handles decimal (2130706433) and hex (0x7f000001)
+ *  forms as well as dotted quads, in case a parser ever passes one through. */
+export function isNonPublicIPv4(host: string): boolean {
+  let octets: number[] | null = null;
+  const dotted = host.split(".");
+  if (dotted.length === 4 && dotted.every((p) => /^\d+$/.test(p) && Number(p) <= 255)) {
+    octets = dotted.map(Number);
+  } else if (/^\d+$/.test(host)) {
+    const n = Number(host);
+    if (Number.isSafeInteger(n) && n >= 0 && n <= 0xffffffff) {
+      octets = [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+    }
+  } else if (/^0x[0-9a-f]+$/i.test(host)) {
+    const n = parseInt(host, 16);
+    if (Number.isSafeInteger(n) && n >= 0 && n <= 0xffffffff) {
+      octets = [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255];
+    }
+  }
+  if (!octets) return false;
+  const [a, b] = octets;
+  return (
+    a === 0 || // 0.0.0.0/8 ("this network")
+    a === 10 || // 10/8 private
+    a === 127 || // 127/8 loopback
+    (a === 169 && b === 254) || // 169.254/16 link-local (cloud metadata)
+    (a === 172 && b >= 16 && b <= 31) || // 172.16/12 private
+    (a === 192 && b === 168) || // 192.168/16 private
+    (a === 100 && b >= 64 && b <= 127) || // 100.64/10 CGNAT shared space
+    (a === 192 && b === 0) || // 192.0.0/24 IETF protocol assignments
+    (a === 198 && (b === 18 || b === 19)) || // 198.18/15 benchmarking
+    (a === 198 && b === 51) || // 198.51.100/24 documentation (TEST-NET-2)
+    (a === 203 && b === 0) || // 203.0.113/24 documentation (TEST-NET-3)
+    (a === 192 && b === 0 && octets[2] === 2) // 192.0.2/24 documentation (TEST-NET-1)
+  );
+}
+
+/** True when an IPv6 host is non-public: loopback, unspecified, link-local,
+ *  unique-local, or an IPv4-mapped address (::ffff:0:0/96). Any mapped
+ *  address is blocked outright, because the mapped IPv4 half is checked
+ *  separately and a mapped loopback/private address must never pass. */
+export function isNonPublicIPv6(host: string): boolean {
+  // Node's URL parser may return the IPv6 host with brackets; strip them.
+  const h = host.toLowerCase().replace(/^\[|\]$/g, "");
+  if (h === "::1" || h === "::" || h.startsWith("::1")) return true;
+  if (h.startsWith("fe8") || h.startsWith("fe9") || h.startsWith("fea") || h.startsWith("feb")) return true; // fe80::/10 link-local
+  if (h.startsWith("fc") || h.startsWith("fd")) return true; // fc00::/7 unique-local
+  if (h.startsWith("::ffff:")) return true; // IPv4-mapped: blocked outright
+  return false;
+}
+
 export function isValidAuditUrl(raw: string): { ok: true; url: string } | { ok: false; error: string } {
   let parsed: URL;
   try {
@@ -104,7 +156,9 @@ export function isValidAuditUrl(raw: string): { ok: true; url: string } | { ok: 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
     return { ok: false, error: "Enter a full URL starting with https://" };
   }
-  const host = parsed.hostname.toLowerCase();
+  // Node's URL parser returns IPv6 hosts bracketed ([::1]); strip the
+  // brackets before the blocklist checks so mapped/link-local forms match.
+  const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "");
   if (
     host === "localhost" ||
     host.endsWith(".localhost") ||
@@ -113,8 +167,13 @@ export function isValidAuditUrl(raw: string): { ok: true; url: string } | { ok: 
     host.startsWith("10.") ||
     host.startsWith("192.168.") ||
     /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(host) ||
+    host.startsWith("169.254.") ||
+    /^100\.(6[4-9]|[7-9][0-9]|1[0-1][0-9]|12[0-7])\./.test(host) ||
     host === "[::1]" ||
-    host.startsWith("::1")
+    host.startsWith("::1") ||
+    host.startsWith("::ffff:") ||
+    isNonPublicIPv4(host) ||
+    isNonPublicIPv6(host)
   ) {
     return { ok: false, error: "That address is not a public website. Paste a public business website URL." };
   }
@@ -149,7 +208,7 @@ export function sampleAudit(): AuditResult {
       return sum + c.score * ((meta ? meta.weight : 0) / 100);
     }, 0),
   );
-  return {
+  const sample: AuditResult = {
     url: SAMPLE_BUSINESS.site,
     finalUrl: SAMPLE_BUSINESS.site,
     fetchedAt: "27 Nov 2026",
@@ -246,6 +305,10 @@ export function sampleAudit(): AuditResult {
       },
     ],
   };
+  // Findings are ordered by severity, Critical first, matching the live audit.
+  const severityRank: Record<string, number> = { Critical: 0, "Fix soon": 1, "Nice to have": 2 };
+  sample.issues.sort((a, b) => (severityRank[a.severity] ?? 2) - (severityRank[b.severity] ?? 2));
+  return sample;
 }
 
 export interface BrandProfile {
@@ -275,7 +338,7 @@ export const DEFAULT_BRAND: BrandProfile = {
   accentColor: "#155E75",
   ctaText: "Book a free 15-minute call",
   ctaLink: "https://cal.com/yourstudio/intro",
-  introLine: "I reviewed your website and found 7 quick wins.",
+  introLine: "I reviewed your website and found several quick wins.",
   postalAddress: "",
   logoUrl: "",
   logoDataUrl: "",
@@ -285,6 +348,10 @@ export interface ProposalItem {
   phase: string;
   title: string;
   detail: string;
+  /** Finding this item was generated from, when any. Custom items have none.
+   *  Used so toggling a finding adds/removes only its own item and never
+   *  wipes edits to the other items. */
+  issueId?: string;
 }
 
 export function proposalItemsFromIssues(issues: Issue[]): ProposalItem[] {
@@ -297,5 +364,6 @@ export function proposalItemsFromIssues(issues: Issue[]): ProposalItem[] {
     phase: phaseFor(issue.category),
     title: issue.title,
     detail: issue.fix,
+    issueId: issue.id,
   }));
 }

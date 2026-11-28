@@ -10,7 +10,7 @@
 
 import type { BrandProfile, Issue, ProposalItem } from "@/lib/audit";
 
-export type ProposalKind = "quickfix" | "redesign" | "retainer";
+export type ProposalKind = "quickfix" | "redesign" | "retainer" | "localseo" | "landing" | "fastclose" | "newbuild" | "ecommerce";
 
 export type SectionKey =
   | "cover"
@@ -69,7 +69,7 @@ export const PROPOSAL_TEMPLATES: ProposalTemplateDef[] = [
     dealSize: "Full redesigns",
     sections: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "about", "terms", "nextstep"],
     defaultOn: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "terms", "nextstep"],
-    investmentNote: "Three tiers (Essential / Growth / Premium). Most clients pick the middle tier.",
+    investmentNote: "Three tiers (Essential / Growth / Premium).",
   },
   {
     kind: "retainer",
@@ -80,6 +80,56 @@ export const PROPOSAL_TEMPLATES: ProposalTemplateDef[] = [
     sections: ["cover", "found", "fix", "investment", "nextstep"],
     defaultOn: ["cover", "found", "fix", "investment", "nextstep"],
     investmentNote: "One monthly price line. Updates, backups, monitoring, small changes.",
+  },
+  {
+    kind: "localseo",
+    name: "Local SEO & GBP Refresh",
+    tagline: "For a business that is invisible in local search: profile, listings, and on-page local signals.",
+    length: "6 sections",
+    dealSize: "Local search + Google Business Profile",
+    sections: ["cover", "found", "fix", "scope", "investment", "nextstep"],
+    defaultOn: ["cover", "found", "fix", "scope", "investment", "nextstep"],
+    investmentNote: "One tier (Essential) plus a monthly profile-care line. No invented rankings.",
+  },
+  {
+    kind: "landing",
+    name: "Landing Page / Lead-Gen Funnel",
+    tagline: "One page built to turn visits into calls and bookings, with a form and a clear offer.",
+    length: "7 sections",
+    dealSize: "One landing page + lead capture",
+    sections: ["cover", "found", "understanding", "fix", "scope", "investment", "nextstep"],
+    defaultOn: ["cover", "found", "understanding", "fix", "scope", "investment", "nextstep"],
+    investmentNote: "One flat fee for the page, plus an optional monthly optimisation line.",
+  },
+  {
+    kind: "fastclose",
+    name: "One-Page Fast-Close Quote",
+    tagline: "A single page that quotes the job and asks for a yes, for small jobs that close in a day.",
+    length: "1 page",
+    dealSize: "Small jobs, quote in a day",
+    sections: ["cover", "found", "fix", "investment", "nextstep"],
+    defaultOn: ["cover", "found", "fix", "investment", "nextstep"],
+    investmentNote: "One price, one page, valid 7 days. No tiers, no timeline section.",
+  },
+  {
+    kind: "newbuild",
+    name: "New Website Build",
+    tagline: "For a business with no real website yet, or only a social page: a full new site from scratch.",
+    length: "10 sections",
+    dealSize: "Full new builds",
+    sections: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "about", "terms", "nextstep"],
+    defaultOn: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "terms", "nextstep"],
+    investmentNote: "Three tiers (Essential / Growth / Premium).",
+  },
+  {
+    kind: "ecommerce",
+    name: "E-commerce / Shopify Store",
+    tagline: "For a shop that needs to sell online: store setup, product pages, checkout, and payments.",
+    length: "10 sections",
+    dealSize: "Online stores",
+    sections: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "about", "terms", "nextstep"],
+    defaultOn: ["cover", "found", "understanding", "fix", "scope", "timeline", "investment", "terms", "nextstep"],
+    investmentNote: "Three tiers (Essential / Growth / Premium).",
   },
 ];
 
@@ -153,11 +203,13 @@ export function canSpamFooter(brand: BrandProfile): string {
 }
 
 // ---------------------------------------------------------------------------
-// Email templates: 5, structurally different. E1-E3 are first touches for
-// different relationships; E4-E5 are the follow-up sequence (same thread).
+// Email templates: 8, one sequence. E1-E3 are first touches for
+// different relationships; Day 3 and Day 7 are the follow-ups in the same
+// thread; Breakup is the Day 14 close; Post-Call and Post-Proposal are
+// sent after a call or after a proposal, not as cold follow-ups.
 // ---------------------------------------------------------------------------
 
-export type EmailKind = "cold" | "warm" | "referral" | "nudge" | "breakup";
+export type EmailKind = "cold" | "warm" | "referral" | "day3" | "day7" | "breakup" | "postcall" | "postproposal";
 
 export interface EmailTemplateDef {
   kind: EmailKind;
@@ -241,10 +293,10 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
       ].join("\n"),
   },
   {
-    kind: "nudge",
-    name: "Nudge follow-up",
-    timing: "3-5 business days after the first email, same thread",
-    purpose: "Short bump. Repeats the single most important finding and offers the 15-minute walkthrough again.",
+    kind: "day3",
+    name: "Day 3 Single-Fix Bump",
+    timing: "Day 3 after the first email, same thread",
+    purpose: "Short bump. Adds one new finding or one concrete fix, and offers the 15-minute walkthrough again.",
     subjects: ["Re: Your website review", "The [#1 finding] on [Business].com"],
     body: ({ brand, business, findings }) =>
       [
@@ -259,9 +311,27 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
       ].join("\n"),
   },
   {
+    kind: "day7",
+    name: "Day 7 Low-Friction Q",
+    timing: "Day 7 after the first email, same thread",
+    purpose: "One low-friction question, no pitch. Asks whether the fix is on their list this month, and offers to send the one-page quote.",
+    subjects: ["Quick question about [Business].com", "Is this on your list this month?"],
+    body: ({ brand, business, findings }) =>
+      [
+        `Hi [Name],`,
+        ``,
+        `One quick question about ${business} website: is fixing ${findings[0] ?? "[finding 1]"} something you want done this month, or is it a later job?`,
+        ``,
+        `Either answer is fine. If it is this month, I can send a one-page quote with a fixed price and a date. No call needed unless you want one.`,
+        ``,
+        `Best regards,`,
+        `${brand.contactName}, ${brand.brandName}`,
+      ].join("\n"),
+  },
+  {
     kind: "breakup",
     name: "Breakup follow-up",
-    timing: "7-10 business days after the nudge, same thread. Then stop.",
+    timing: "Day 14 after the first email, same thread. Then stop.",
     purpose: "The final touch. Closes the loop politely and leaves the report valid if they come back later.",
     subjects: ["Last note about [Business].com"],
     body: ({ brand, business }) =>
@@ -271,6 +341,42 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
         `I won't keep emailing. If now is not the right time for ${business} website, no worries at all.`,
         ``,
         `If you do want to revisit your site later, the report is still valid. Just reply to this email and I will pick it up from there.`,
+        ``,
+        `Best regards,`,
+        `${brand.contactName}, ${brand.brandName}`,
+      ].join("\n"),
+  },
+  {
+    kind: "postcall",
+    name: "Warm Post-Call Delivery",
+    timing: "After a call, same day",
+    purpose: "Sent after a call with the prospect. Delivers the report and the agreed next step, and names what was discussed.",
+    subjects: ["Your website report, as discussed", "Following up on our call - [Business].com"],
+    body: ({ brand, business, findings }) =>
+      [
+        `Hi [Name],`,
+        ``,
+        `Good talking just now. As promised, here is the short report on ${business} website. The main item we discussed is ${findings[0] ?? "[finding 1]"}.`,
+        ``,
+        `The next step is the one we agreed on the call. If anything in the report looks wrong, tell me and I will correct it.`,
+        ``,
+        `Best regards,`,
+        `${brand.contactName}, ${brand.brandName}`,
+      ].join("\n"),
+  },
+  {
+    kind: "postproposal",
+    name: "Post-Proposal Nudge",
+    timing: "48-72 hours after sending the proposal, same thread",
+    purpose: "Short nudge after a proposal has been sent. Asks one question about the proposal and offers the call, without re-pitching the whole job.",
+    subjects: ["Re: Your website proposal", "Any questions on the proposal?"],
+    body: ({ brand, business, findings }) =>
+      [
+        `Hi [Name],`,
+        ``,
+        `Just checking you received the proposal for ${business} website. The first fix in it is ${findings[0] ?? "[finding 1]"}.`,
+        ``,
+        `Any questions on the price or the timeline? A 15-minute call is enough to settle them, or reply here and I will answer in writing.`,
         ``,
         `Best regards,`,
         `${brand.contactName}, ${brand.brandName}`,
@@ -313,6 +419,11 @@ const FIX_INTRO: Record<ProposalKind, string> = {
   quickfix: "What I would fix (quick wins only)",
   redesign: "What I would fix",
   retainer: "What I would do monthly",
+  localseo: "What I would fix (local search and profile)",
+  landing: "What the new page would fix",
+  fastclose: "What I would fix",
+  newbuild: "What the new site would include",
+  ecommerce: "What the store would include",
 };
 
 export function buildProposalText(o: ProposalBuildOpts): string {
@@ -324,7 +435,13 @@ export function buildProposalText(o: ProposalBuildOpts): string {
     lines.push(`${def.name} - Website redesign proposal for ${o.business}`);
     lines.push(`Prepared by ${o.brand.brandName}, ${o.brand.contactName}, ${o.brand.contactEmail}`);
     lines.push(`Date: ${o.runDate}`);
-    lines.push(o.brand.introLine);
+    // A 0-findings audit must never claim "found N quick wins" in the
+    // proposal text: the cover line is replaced with the good-shape wording.
+    lines.push(
+      o.issues.length === 0 && /found (\d+|several) quick wins/i.test(o.brand.introLine)
+        ? "I reviewed your website and found it in good shape."
+        : o.brand.introLine,
+    );
     lines.push("");
   }
 
@@ -385,9 +502,13 @@ export function buildProposalText(o: ProposalBuildOpts): string {
     if (o.kind === "retainer") {
       lines.push(`Monthly care plan: ${priceOrBlank(o.prices.monthly)} per month, 3-month minimum, 30-day cancel after that.`);
       lines.push("Includes: updates, backups, quarterly restore test, up to 2 hours of small changes per month.");
-    } else if (o.kind === "quickfix") {
+    } else if (o.kind === "quickfix" || o.kind === "fastclose" || o.kind === "landing") {
       lines.push(`Essential: ${priceOrBlank(o.prices.essential)}`);
       lines.push("Quick wins only. Payment terms: 50% upfront, 50% on completion.");
+    } else if (o.kind === "localseo") {
+      lines.push(`Essential: ${priceOrBlank(o.prices.essential)}`);
+      lines.push(`Monthly profile care: ${priceOrBlank(o.prices.monthly)} per month.`);
+      lines.push("Payment terms: 50% upfront, 50% on completion.");
     } else {
       lines.push(`Essential: ${priceOrBlank(o.prices.essential)}`);
       lines.push(`Growth: ${priceOrBlank(o.prices.growth)}`);

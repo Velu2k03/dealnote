@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  Camera,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -59,9 +58,6 @@ const LICENSE_KEY = "dealnote-license-v1";
 const LAST_FINDINGS_KEY = "dealnote-last-findings-v1";
 
 const STEPS = ["Validating the URL", "Fetching the homepage", "Checking links and page details", "Scoring the six categories"];
-
-const SCORE_DISCLAIMER =
-  "Scores are DealNote's own measurements from this run, on the run date shown. They are not Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust, local and social 15. This is DealNote's scoring model, not an industry standard. Grades: A 90–100, B 80–89, C 70–79, D 60–69, F below 60.";
 
 const LOCAL_STORAGE_NOTICE =
   "Your brand profile and outreach tracker are stored only in this browser's local storage. Nothing is sent to DealNote or anyone else. Clear them in your browser settings to delete them.";
@@ -226,8 +222,15 @@ export default function AuditPage() {
           }
           // Keep the default intro line honest: if the buyer has not edited it,
           // state the real finding count for this audit instead of the sample's 7.
+          // A 0-findings audit never claims "found 0 quick wins".
           if (brand.introLine === DEFAULT_BRAND.introLine) {
-            saveBrand({ ...brand, introLine: `I reviewed your website and found ${audit.issues.length} quick wins.` });
+            saveBrand({
+              ...brand,
+              introLine:
+                audit.issues.length === 0
+                  ? "I reviewed your website and found it in good shape."
+                  : `I reviewed your website and found ${audit.issues.length} quick wins.`,
+            });
           }
         }
       }
@@ -264,13 +267,27 @@ export default function AuditPage() {
     [displayed, selectedIds],
   );
 
+  // A 0-findings audit renders no fix proposal at all: only the
+  // good-shape card above and the Retainer Opener path below. The full
+  // generator shows once the buyer switches to the Retainer Opener.
+  const showGenerator = displayed ? displayed.issues.length > 0 || templateKind === "retainer" : false;
+
   const toggleFinding = (id: string) => {
     const next = selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id];
     setSelectedIds(next);
-    // Changing the selection rebuilds the fix list from the selected
-    // findings; edits to the fix list below apply to the current selection.
+    // Merge, never rebuild: ticking a finding adds only that finding's
+    // item (if it is not already there); unticking removes only the item
+    // generated from that finding. Edits to every other fix item, and any
+    // custom items the buyer added, are kept exactly as they are.
     if (displayed) {
-      setFixItems(proposalItemsFromIssues(displayed.issues.filter((i) => next.includes(i.id))));
+      if (selectedIds.includes(id)) {
+        setFixItems(fixItems.filter((item) => item.issueId !== id));
+      } else {
+        const issue = displayed.issues.find((i) => i.id === id);
+        if (issue && !fixItems.some((item) => item.issueId === id)) {
+          setFixItems([...fixItems, ...proposalItemsFromIssues([issue])]);
+        }
+      }
     }
   };
 
@@ -473,7 +490,6 @@ export default function AuditPage() {
             <>
               <div className="mt-32">
                 <ScoreSummary result={displayed} sampleLabel={displayed.isSample} />
-                <p className="caption mt-16">{SCORE_DISCLAIMER}</p>
               </div>
 
               {locked ? (
@@ -513,17 +529,6 @@ export default function AuditPage() {
                 </>
               ) : (
                 <>
-                  <div className="card mt-24">
-                    <h3 style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <Camera size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Homepage screenshot
-                    </h3>
-                    <p className="mb-0">
-                      Screenshot capture is not built in v1. Paid reports will include a mobile and desktop
-                      screenshot of the homepage. For now, the findings above are drawn from the fetched page
-                      itself.
-                    </p>
-                  </div>
-
                   <h2 className="mt-32">Findings ({displayed.issues.length})</h2>
                   <p className="reading">
                     Each finding shows what was found, why it matters, and the fix. Findings are ordered by
@@ -635,6 +640,17 @@ export default function AuditPage() {
                           <label htmlFor="contact-email">Contact email</label>
                           <input id="contact-email" type="email" value={brand.contactEmail} onChange={(e) => saveBrand({ ...brand, contactEmail: e.target.value })} />
                         </div>
+                      </div>
+                      {/* The other 8 brand fields live behind one disclosure, so
+                          the form shows 3 fields, not 11, on first sight
+                          (content-first-noise-reduction: secondary content
+                          behind on-demand disclosure; native details needs
+                          no script and stays keyboard accessible). */}
+                      <details className="mt-16">
+                        <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 14, minHeight: 44, display: "flex", alignItems: "center" }}>
+                          More brand details
+                        </summary>
+                        <div className="form-grid mt-16">
                         <div>
                           <label htmlFor="contact-phone">Contact phone</label>
                           <input id="contact-phone" type="tel" value={brand.contactPhone} onChange={(e) => saveBrand({ ...brand, contactPhone: e.target.value })} />
@@ -689,10 +705,11 @@ export default function AuditPage() {
                           ) : null}
                         </div>
                       </div>
-                      <div className="mt-16">
-                        <label htmlFor="intro-line">Report intro line</label>
-                        <input id="intro-line" type="text" value={brand.introLine} onChange={(e) => saveBrand({ ...brand, introLine: e.target.value })} />
-                      </div>
+                        <div className="mt-16">
+                          <label htmlFor="intro-line">Report intro line</label>
+                          <input id="intro-line" type="text" value={brand.introLine} onChange={(e) => saveBrand({ ...brand, introLine: e.target.value })} />
+                        </div>
+                      </details>
                     </div>
                     <div className="card" style={{ borderTop: `4px solid ${brand.primaryColor}` }}>
                       {logoSrc ? (
@@ -718,6 +735,8 @@ export default function AuditPage() {
                     </div>
                   </div>
 
+                  {showGenerator ? (
+                    <>
                   <h2 className="mt-32">Proposal generator</h2>
                   <p className="reading">
                     You are responsible for your own outreach law. Only email people in line with the rules
@@ -734,7 +753,7 @@ export default function AuditPage() {
 
                   <div className="card" style={{ marginBottom: 16 }}>
                     <h3>1. Choose a proposal</h3>
-                    <p className="caption">Three structurally different documents, not one skeleton with a word swapped.</p>
+                    <p className="caption">Six structurally different documents, not one skeleton with a word swapped.</p>
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
                       <legend className="caption" style={{ marginBottom: 8 }}>Proposal template</legend>
                       {PROPOSAL_TEMPLATES.map((t) => (
@@ -778,8 +797,9 @@ export default function AuditPage() {
                   <div className="card" style={{ marginBottom: 16 }}>
                     <h3>3. What I would {templateKind === "retainer" ? "do monthly" : "fix"}</h3>
                     <p className="caption">
-                      Edit any item, delete one, reorder with the arrows, or add your own. Changing the
-                      selected findings above rebuilds this list from the selected findings.
+                      Edit any item, delete one, reorder with the arrows, or add your own. Ticking a finding
+                      adds only that finding&apos;s item; unticking removes only its item. Edits to the
+                      other items are kept.
                     </p>
                     {fixItems.length === 0 ? (
                       <p>No fix items yet. Tick a finding above, or add your own item below.</p>
@@ -852,7 +872,7 @@ export default function AuditPage() {
                     </div>
                   </div>
 
-                  {templateKind === "redesign" ? (
+                  {templateKind === "redesign" || templateKind === "localseo" || templateKind === "landing" || templateKind === "newbuild" || templateKind === "ecommerce" ? (
                     <div className="card" style={{ marginBottom: 16 }}>
                       <h3>4. Scope, timeline, and what is not included</h3>
                       <p className="caption">One item per line. The Not included list is pre-filled with concrete examples; keep or delete each line, never leave it blank.</p>
@@ -876,17 +896,24 @@ export default function AuditPage() {
                   ) : null}
 
                   <div className="card">
-                    <h3>{templateKind === "redesign" ? "5. Investment" : "4. Investment"}</h3>
+                    <h3>{templateKind === "redesign" || templateKind === "localseo" || templateKind === "landing" || templateKind === "newbuild" || templateKind === "ecommerce" ? "5. Investment" : "4. Investment"}</h3>
                     <p className="caption">Fill in the prices yourself before sending. A blank price stays blank ($____); a $0 price is never shown.</p>
                     {templateKind === "retainer" ? (
                       <div>
                         <label htmlFor="price-monthly">Monthly care plan price</label>
                         <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: 160 }} />
                       </div>
-                    ) : templateKind === "quickfix" ? (
+                    ) : templateKind === "quickfix" || templateKind === "fastclose" || templateKind === "landing" ? (
                       <div>
                         <label htmlFor="price-essential">Essential price</label>
                         <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 160 }} />
+                      </div>
+                    ) : templateKind === "localseo" ? (
+                      <div>
+                        <label htmlFor="price-essential">Essential price</label>
+                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 160 }} />
+                        <label htmlFor="price-monthly" style={{ marginTop: 12 }}>Monthly profile care price</label>
+                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: 160 }} />
                       </div>
                     ) : (
                       <div className="stack-table">
@@ -934,8 +961,12 @@ export default function AuditPage() {
                     <p className="caption mt-16 mb-0">
                       The PDF carries your logo and brand colours, the selected findings quoted from the audit,
                       and your edited fix list. It needs a licence key; the audit above must be unlocked first.
+                      A PDF reuses the audit above and does not use another audit. A PDF downloaded without
+                      running the audit first uses 1 audit.
                     </p>
                   </div>
+                    </>
+                  ) : null}
 
                   <h2 className="mt-32">Outreach tracker</h2>
                   <p className="reading">

@@ -117,7 +117,7 @@ export function severityClass(severity: Severity): string {
 export function ScoreBars({ result }: { result: AuditResult }) {
   return (
     <div>
-      {result.categories.map((cat) => {
+      {(result.categories ?? []).map((cat) => {
         const meta = CATEGORIES.find((m) => m.key === cat.key);
         if (!meta) return null;
         return (
@@ -176,8 +176,10 @@ export function ScoreSummary({ result, sampleLabel = false }: { result: AuditRes
         <ScoreBars result={result} />
       </div>
       <p className="caption mb-0">
-        Weights: Speed 20, Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust, local and social 15.
-        This is DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
+        Scores are DealNote&apos;s own measurements from this run, on the run date shown. They are not
+        Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
+        Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust &amp; local 15. This is
+        DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
         D 60-69, F below 60.
       </p>
     </div>

@@ -1,16 +1,18 @@
 // DealNote entitlements: licence-key records and the 30-audits-per-month quota.
 // Brand-new code for DealNote. No code copied from any other product.
 //
-// Storage note: the in-memory store below is the v1 implementation. It is
-// correct per server instance, but on Vercel serverless functions it resets
-// on cold start and is not shared between instances, so a licence key's
-// usage count is best-effort there. Swap in the KV adapter
-// (createKvEntitlementStore) with a real Vercel KV / Upstash Redis binding
-// before relying on the quota as a hard limit in production. The adapter
-// is interface-only: it takes a minimal { get, set, del } client, imports
-// no vendor SDK, and holds no keys.
+// Storage note: the store resolves to the KV adapter
+// (createKvEntitlementStore, Upstash Redis) when UPSTASH_REDIS_REST_URL
+// and UPSTASH_REDIS_REST_TOKEN are set, and falls back to the in-memory
+// store below when they are not. The in-memory fallback is correct per
+// server instance, but on Vercel serverless functions it resets on cold
+// start and is not shared between instances, so a licence key's usage
+// count is best-effort there and the quota is presented as a fair-use
+// limit, not a hard cap, until KV is configured. No account or service
+// is provisioned by this code; set the env vars in Vercel to enable it.
 
 import { createHash } from "crypto";
+import { getRedisClient, parseKvValue } from "@/lib/kv";
 
 export const AUDITS_PER_MONTH = 30;
 
@@ -180,7 +182,7 @@ export function createKvEntitlementStore(kv: KvClient): EntitlementStore {
 
   return {
     async getByKeyHash(keyHash) {
-      return kv.get<LicenseRecord>(licenseKey(keyHash));
+      return parseKvValue<LicenseRecord>(await kv.get(licenseKey(keyHash)));
     },
     async set(record) {
       await kv.set(licenseKey(record.keyHash), JSON.stringify(record));
@@ -189,21 +191,21 @@ export function createKvEntitlementStore(kv: KvClient): EntitlementStore {
       }
     },
     async revokeByKeyHash(keyHash) {
-      const rec = await kv.get<LicenseRecord>(licenseKey(keyHash));
+      const rec = parseKvValue<LicenseRecord>(await kv.get(licenseKey(keyHash)));
       if (rec) await kv.set(licenseKey(keyHash), JSON.stringify({ ...rec, revoked: true }));
     },
     async revokeByCustomerId(customerId) {
-      const hash = await kv.get<string>(customerKey(customerId));
+      const hash = parseKvValue<string>(await kv.get(customerKey(customerId)));
       if (hash) await this.revokeByKeyHash(hash);
     },
     async getPurchase(orderId) {
-      return kv.get<PurchaseRecord>(purchaseKey(orderId));
+      return parseKvValue<PurchaseRecord>(await kv.get(purchaseKey(orderId)));
     },
     async setPurchase(purchase) {
       await kv.set(purchaseKey(purchase.orderId), JSON.stringify(purchase));
     },
     async hasSeenEvent(eventId) {
-      return (await kv.get<string>(eventKey(eventId))) !== null;
+      return (await kv.get(eventKey(eventId))) !== null;
     },
     async markEventSeen(eventId) {
       await kv.set(eventKey(eventId), "1");
@@ -211,7 +213,23 @@ export function createKvEntitlementStore(kv: KvClient): EntitlementStore {
   };
 }
 
-/** The v1 store: in-memory. Replace with createKvEntitlementStore(kv) for production. */
+/** The store: KV-backed (Upstash Redis) when UPSTASH_REDIS_REST_URL and
+ *  UPSTASH_REDIS_REST_TOKEN are set, otherwise the in-memory store.
+ *  The in-memory fallback is best-effort on Vercel serverless (resets on
+ *  cold start, not shared between instances), so the 30-audit monthly
+ *  figure is presented as a fair-use limit, not a hard cap, until KV is
+ *  configured. See .env.example for the env vars to set in Vercel. */
+function resolveEntitlementStore(): EntitlementStore {
+  const redis = getRedisClient();
+  if (redis) return createKvEntitlementStore(redis);
+  return createMemoryEntitlementStore();
+}
+
 const storeGlobal = globalThis as unknown as { __dealnoteEntitlementStore?: EntitlementStore };
 export const entitlementStore: EntitlementStore =
-  storeGlobal.__dealnoteEntitlementStore ??= createMemoryEntitlementStore();
+  storeGlobal.__dealnoteEntitlementStore ??= resolveEntitlementStore();
+
+/** True when the entitlement store is the durable KV store. */
+export function isEntitlementStoreDurable(): boolean {
+  return getRedisClient() !== null;
+}

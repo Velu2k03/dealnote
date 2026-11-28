@@ -4,8 +4,9 @@
 // Body: { url, licenseKey, brand? } (brand = BrandProfile fields, partial
 // allowed; missing fields fall back to DEFAULT_BRAND).
 // - Requires a valid licence key: missing or invalid key -> 402, quota
-//   exhausted -> 402. The audit is re-run server-side and counts against
-//   the 30/month quota, exactly like /api/audit.
+//   exhausted -> 402. The audit is NOT re-run when the licence key
+//   already has a cached paid audit for this URL (within 24 h): the
+//   cached result is reused and no quota is consumed.
 // - Returns application/pdf rendered from the shared template in
 //   lib/pdf-html.ts (white/slate, deep teal #0F766E, no gradients).
 // - If Chromium cannot render at runtime, returns a clear 501. A PDF is
@@ -13,8 +14,8 @@
 
 import { NextResponse } from "next/server";
 import { DEFAULT_BRAND, isValidAuditUrl, type BrandProfile } from "@/lib/audit";
-import { runPaidAudit } from "@/app/api/audit/route";
-import { htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
+import { runPaidAuditCached } from "@/app/api/audit/route";
+import { footerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const paid = await runPaidAudit(check.url, licenseKey);
+  const paid = await runPaidAuditCached(check.url, licenseKey);
   if (!paid.ok) {
     // PDF export is a paid feature: an invalid key is a payment problem (402),
     // while audit failures (robots 403, fetch 502, ...) pass through as-is.
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
 
   let pdf: Buffer;
   try {
-    pdf = await htmlToPdfBuffer(html);
+    pdf = await htmlToPdfBuffer(html, footerLine(brand, paid.result.fetchedAt, paid.result.url));
   } catch {
     return NextResponse.json(
       { error: "PDF export is not available in this build." },

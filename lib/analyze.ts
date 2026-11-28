@@ -159,8 +159,9 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   let speedPassed = 0;
   let speedTotal = 0;
   speedTotal += 1; if (loadMs <= 2500) speedPassed += 1; else addIssue("speed", loadMs > 5000 ? "Critical" : "Fix soon", "Homepage loads slowly", `The homepage took about ${(loadMs / 1000).toFixed(1)} seconds to fetch in this run.`, "Visitors on a phone leave slow pages before they read anything, so fewer of them call.", "Compress large images, remove unused scripts, and ask the host about caching.");
-  speedTotal += 1; if (pageMB <= 2) speedPassed += 1; else addIssue("speed", "Fix soon", "Homepage is heavy", `The homepage HTML and page weight measured about ${pageMB.toFixed(1)} MB in this run.`, "Heavy pages cost mobile visitors time and data, and some leave before the page finishes.", "Compress images and remove resources the homepage does not need.");
-  speedTotal += 1; if (imagesMissingAlt === 0 || imageCount === 0) speedPassed += 1;
+  speedTotal += 1; if (pageMB <= 2) speedPassed += 1; else addIssue("speed", "Fix soon", "Homepage is heavy", `The homepage HTML alone measured about ${pageMB.toFixed(1)} MB in this run (images, scripts, and stylesheets are not counted).`, "Heavy pages cost mobile visitors time and data, and some leave before the page finishes.", "Compress images and remove resources the homepage does not need.");
+  // Alt text is scored under SEO, not Speed: a missing-alt defect must not
+  // also cost a Speed point. Speed is load time + page weight only.
   const speedScore = scoreFromChecks(speedPassed, speedTotal);
 
   // Mobile
@@ -197,7 +198,10 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   techTotal += 1; if (brokenLinks.length === 0) techPassed += 1; else addIssue("technical", "Critical", `${brokenLinks.length} checked link${brokenLinks.length === 1 ? "" : "s"} failed`, `These links did not return a working page: ${brokenLinks.map((b) => `${b.url} (${b.status})`).join(", ")}.`, "A visitor who taps a link and lands on an error page is unlikely to try again.", "Fix or remove each broken link.");
   techTotal += 1; if (hasCanonical) techPassed += 1; else addIssue("technical", "Nice to have", "No canonical tag", "No canonical link tag was found.", "Search engines may treat similar pages as duplicates without one.", "Add a canonical tag pointing at the page itself.");
   techTotal += 1; if (hasSitemap) techPassed += 1; else if (hasSitemap === false) addIssue("technical", "Nice to have", "No sitemap file found", "No sitemap.xml file was found at the usual address.", "A sitemap helps search engines find every page on the site.", "Add a sitemap.xml and list it in robots.txt.");
-  const technicalScore = https ? scoreFromChecks(techPassed, techTotal) : 0;
+  // No HTTPS already costs one of the four Technical checks plus a
+  // Critical issue; forcing the whole category to 0 on top of that hid
+  // the real canonical / sitemap / links result.
+  const technicalScore = scoreFromChecks(techPassed, techTotal);
 
   // Conversion
   let convPassed = 0;
@@ -209,7 +213,7 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   else if (hasForm) addIssue("conversion", "Fix soon", "Contact form asks for too much up front", `The contact form has ${formFields} fields.`, "Long forms put people off, so fewer visitors send an enquiry.", "Cut the form to name, phone, and message, and ask for the rest later.");
   const conversionScore = scoreFromChecks(convPassed, convTotal);
 
-  // Trust, local and social
+  // Trust & local
   let trustPassed = 0;
   let trustTotal = 0;
   trustTotal += 1; if (hasSchema) trustPassed += 1; else addIssue("trust", "Fix soon", "No LocalBusiness details for search engines", "No LocalBusiness or Organization schema was found on the homepage.", "Search engines use that structured detail to show the business correctly in local results.", "Add LocalBusiness schema with name, address, phone, and opening hours.");
@@ -225,6 +229,13 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
     { key: "conversion", score: conversionScore, grade: gradeFor(conversionScore) },
     { key: "trust", score: trustScore, grade: gradeFor(trustScore) },
   ];
+  // Findings are ordered by severity, Critical first, so the copy that
+  // says so is true. Stable sort, then re-number ids in display order.
+  const severityRank: Record<Severity, number> = { Critical: 0, "Fix soon": 1, "Nice to have": 2 };
+  issues.sort((a, b) => severityRank[a.severity] - severityRank[b.severity]);
+  issues.forEach((issue, idx) => {
+    issue.id = `i${idx + 1}`;
+  });
   const weights: Record<CategoryKey, number> = { speed: 20, mobile: 15, seo: 20, technical: 15, conversion: 15, trust: 15 };
   const overallScore = Math.round(
     categories.reduce((sum, c) => sum + c.score * (weights[c.key] / 100), 0),
