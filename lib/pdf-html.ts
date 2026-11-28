@@ -148,7 +148,7 @@ const baseCss = (accent: string) => `
   * { box-sizing: border-box; }
   body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #374151; margin: 0; padding: 0; font-size: 9.5pt; line-height: 1.45; background: #ffffff; }
   h1 { font-size: 22pt; font-weight: 700; line-height: 1.2; color: #111827; margin: 0 0 6pt; }
-  h2 { font-size: 13pt; font-weight: 700; color: #111827; margin: 20pt 0 8pt; padding-bottom: 5pt; border-bottom: 1pt solid #E9D5FF; }
+  h2 { font-size: 13pt; font-weight: 700; color: #111827; margin: 14pt 0 6pt; padding-bottom: 5pt; border-bottom: 1pt solid #E9D5FF; }
   h3 { font-size: 10.5pt; font-weight: 600; color: #111827; margin: 12pt 0 4pt; }
   p { margin: 5pt 0; }
   .micro { font-size: 8pt; color: #4B5563; line-height: 1.4; }
@@ -159,23 +159,23 @@ const baseCss = (accent: string) => `
   .meta { color: #4B5563; font-size: 8pt; }
   .notice-strip { background: #FAF5FF; border: 0.75pt solid #DDD6FE; padding: 8pt 10pt; margin: 10pt 0; font-size: 8.5pt; color: #374151; }
   .sample-stamp { display: inline-block; border: 1.5pt solid #B91C1C; color: #B91C1C; font-weight: 700; letter-spacing: 0.08em; padding: 2pt 8pt; font-size: 9pt; margin: 8pt 0; }
-  .hero { border: 0.75pt solid #DDD6FE; background: #FAF5FF; padding: 14pt 16pt; margin: 12pt 0; }
+  .hero { border: 0.75pt solid #DDD6FE; background: #FAF5FF; padding: 10pt 14pt; margin: 10pt 0; }
   .hero-score { font-size: 40pt; font-weight: 700; color: #111827; line-height: 1; }
   .grade-badge { display: inline-flex; align-items: center; justify-content: center; width: 48pt; height: 48pt; font-size: 24pt; font-weight: 700; color: #ffffff; }
   .score-bar { height: 6pt; background: #E9D5FF; border-radius: 3pt; overflow: hidden; }
   .score-bar > span { display: block; height: 100%; border-radius: 3pt; }
   table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9.5pt; }
-  th, td { text-align: left; padding: 5pt 6pt; border-bottom: 0.75pt solid #E9D5FF; vertical-align: top; }
+  th, td { text-align: left; padding: 4pt 6pt; border-bottom: 0.75pt solid #E9D5FF; vertical-align: top; }
   th { color: #4B5563; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.05em; }
-  .issue { border: 0.75pt solid #DDD6FE; margin: 10pt 0; break-inside: avoid; page-break-inside: avoid; }
+  .issue { border: 0.75pt solid #DDD6FE; margin: 7pt 0; break-inside: avoid; page-break-inside: avoid; }
   .issue-head { background: #FAF5FF; border-bottom: 0.75pt solid #DDD6FE; padding: 7pt 10pt; }
   .issue-head h3 { margin: 0; }
-  .issue-body { padding: 8pt 10pt; }
+  .issue-body { padding: 6pt 10pt; }
   .issue-body p { margin: 4pt 0; }
   .severity { display: inline-block; font-size: 8pt; font-weight: 700; padding: 1pt 7pt; color: #ffffff; background: ${accent}; }
   .severity.critical { background: #B91C1C; }
-  .footer-block { margin-top: 24pt; padding-top: 10pt; border-top: 1pt solid #E9D5FF; color: #4B5563; font-size: 8pt; line-height: 1.5; }
-  .cta { border-left: 2.5pt solid ${accent}; background: #FAF5FF; border-top: 0.75pt solid #DDD6FE; border-right: 0.75pt solid #DDD6FE; border-bottom: 0.75pt solid #DDD6FE; padding: 12pt 14pt; margin: 12pt 0; }
+  .footer-block { margin-top: 16pt; padding-top: 10pt; border-top: 1pt solid #E9D5FF; color: #4B5563; font-size: 8pt; line-height: 1.5; }
+  .cta { border-left: 2.5pt solid ${accent}; background: #FAF5FF; border-top: 0.75pt solid #DDD6FE; border-right: 0.75pt solid #DDD6FE; border-bottom: 0.75pt solid #DDD6FE; padding: 10pt 12pt; margin: 10pt 0; }
   .cta a { color: ${accent}; font-weight: 700; }
   .page-break { break-before: page; page-break-before: always; }
   @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
