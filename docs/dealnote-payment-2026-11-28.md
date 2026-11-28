@@ -1,9 +1,9 @@
 # DealNote Payment: Lemon Squeezy — 28 Nov 2026
 
-**Status: CODE DONE AND LIVE. Dashboard steps PENDING (browser task).**
+**Status: CODE DONE AND LIVE. Product CREATED and VERIFIED via the Lemon Squeezy API 28 Nov 2026. Vercel env vars + Upstash + test purchase PENDING — browser task required (see blockers below).**
 Payment provider is now Lemon Squeezy, not Polar. No Polar code
 remains in the app: no Polar SDK, no Polar routes, no Polar copy.
-Live site: https://dealnote-blue.vercel.app
+Live site: https://dealnote-blue.vercel.app — main HEAD 052f845 (Neon fixes merged), all 6 pages + robots.txt + sitemap.xml 200 live, checked 28 Nov ~21:10 Manila.
 
 ## Why Lemon Squeezy
 - Velu has an existing store: Resonant Atlas #244487, account
@@ -14,7 +14,21 @@ Live site: https://dealnote-blue.vercel.app
 - Do NOT touch the other stores on the account: Atlas #473370,
   CashDash.ai #349198.
 
-## Product to create (browser task, Resonant Atlas store only)
+## Product CREATED and verified via API, 28 Nov 2026 21:04-21:08 Manila
+(Browser task f8878ee8, store Resonant Atlas #244487, account
+futureai2077@gmail.com; verified with GET /v1/products/1536795,
+/v1/variants?filter[product_id]=1536795, /v1/webhooks/153059.)
+- Product ID: 1536795, name DealNote, status published, price 4900 ($49.00), test_mode false (live).
+- Variant ID: **2390379** (numeric, name Default, price 4900, status pending). CORRECT VARIANT ID — use this in Vercel.
+  WARNING: the browser report also gave a UUID ec07137c-ee2c-4f4f-b742-39251c96e711 as "Variant ID". That is NOT a variant ID; it is the ID in the hosted checkout link. `lib/lemonsqueezy.ts` does `Number(env.variantId)`, so the UUID would become NaN and checkout creation would fail. Do NOT set LEMONSQUEEZY_VARIANT_ID to the UUID.
+- Checkout URL (hosted): https://pay.resonantatlas.com/checkout/buy/ec07137c-ee2c-4f4f-b742-39251c96e711
+- Product page: https://app.lemonsqueezy.com/products/1536795
+- Description as created: "Paste any business website URL. Get a teardown report plus a ready-to-send proposal in about a minute. White-label teardown PDF + proposal PDF, 8 proposals + 8 emails, 30 audits/month fair-use, no subscription."
+- Licence keys: enabled, activation limit 1, never expires.
+- API key: created 28 Nov 2026, expires 28 May 2027. Value lives in Vercel env only, NEVER in this doc, git, or the sheet.
+- Webhook ID: 153059, URL https://dealnote-blue.vercel.app/api/webhook/lemonsqueezy, events order_created + order_refunded only, test_mode false. Signing secret: set on the webhook, same value in Vercel env LEMONSQUEEZY_WEBHOOK_SECRET only, NEVER in this doc, git, or the sheet.
+
+## Product to create (browser task, Resonant Atlas store only) — DONE, see above
 - Name: DealNote
 - Price: $49 one-time (single variant, no subscription)
 - Description: Website teardown + proposal generator for web design
@@ -26,9 +40,9 @@ Live site: https://dealnote-blue.vercel.app
   Activation limit: 1 is enough (one buyer, one browser); length:
   leave as "never expires" / lifetime of the product.
 - Record here after creation (fill in, do not commit secrets):
-  - Product ID: _PENDING_
-  - Variant ID: _PENDING_
-  - Checkout URL (hosted): _PENDING_
+  - Product ID: 1536795
+  - Variant ID: 2390379 (numeric; see warning above)
+  - Checkout URL (hosted): https://pay.resonantatlas.com/checkout/buy/ec07137c-ee2c-4f4f-b742-39251c96e711
   - API key: created in Settings -> API, put in Vercel only, never here.
   - Webhook signing secret: chosen when creating the webhook,
     put in Vercel only, never here.
@@ -40,11 +54,11 @@ Live site: https://dealnote-blue.vercel.app
 - Signing secret: choose a random value (32+ chars), same value in
   Vercel env LEMONSQUEEZY_WEBHOOK_SECRET.
 
-## Env vars to set on Vercel (project dealnote, team velus-projects-27f81f38)
+## Env vars to set on Vercel (project dealnote, team velus-projects-27f81f38) — BROWSER TASK, see blockers below
 - LEMONSQUEEZY_API_KEY (secret)
 - LEMONSQUEEZY_STORE_ID = 244487
-- LEMONSQUEEZY_PRODUCT_ID (from the product created above)
-- LEMONSQUEEZY_VARIANT_ID (from the variant created above)
+- LEMONSQUEEZY_PRODUCT_ID = 1536795
+- LEMONSQUEEZY_VARIANT_ID = 2390379 (numeric — NOT the checkout-link UUID ec07137c-ee2c-4f4f-b742-39251c96e711; the UUID would break Number() in lib/lemonsqueezy.ts)
 - LEMONSQUEEZY_WEBHOOK_SECRET (secret, same as webhook above)
 - Leave DEALNOTE_DEV_LICENSE_KEY blank in production.
 - After setting, redeploy (or wait for the next push) and verify.
@@ -88,24 +102,14 @@ Live site: https://dealnote-blue.vercel.app
 - GET /privacy: 200, names Lemon Squeezy, no "Polar".
 - GET /: 200, no "coming with payment".
 
-## Live verification (PENDING — browser task, after env vars set)
-- [ ] GET all 6 pages 200, tracker snippet on all pages.
-- [ ] POST /api/audit free teaser live: expect 200, 45/F, 2 issues.
-- [ ] POST /api/checkout live: expect 200 with a real
-  checkout URL (lemonsqueezy.com), NOT 503.
-- [ ] POST /api/pdf/teardown without key: expect 402.
-- [ ] Live $49 test purchase, then refund immediately in Lemon
-  Squeezy. Record: order ID, amount, refund ID, licence key
-  issued (do NOT put the key itself in this doc — record that it
-  was issued and that it works), and that the key unlocks the full
-  audit + PDFs live. This also proves PDF generation on Vercel
-  serverless. ONE purchase only.
-- [ ] Licence key unlocks full report live; teardown + proposal
-  PDFs download live; no "coming with payment" copy left.
-- [ ] TrustMRR: connect only after the first real sale, and only
-  if the test purchase counts. A refunded test sale likely does
-  NOT count as revenue; record the truth, do not claim TrustMRR
-  is live unless verified.
+## Live verification (28 Nov 2026 ~21:10 Manila, GETs done; POSTs BLOCKED on a permission card)
+- [x] GET all 6 pages 200, robots.txt 200, sitemap.xml 200 live.
+- [ ] POST /api/audit free teaser live: expect 200, 45/F, 2 issues. BLOCKED: the POST attempt at 21:10 Manila hit a pending permission card ("Share info with dealnote-blue.vercel.app", approval c3201560-22f0-406c-ba7d-a84c35070d24, foreground). Velu approved the live POST in chat 28 Nov 20:31, but the runtime still needs him to tap approve on that card. No POST was sent. Retry after the card is approved.
+- [ ] POST /api/checkout live: expect 200 with a real checkout URL (lemonsqueezy.com), NOT 503. Not yet run (same card blocks it); also currently WOULD return 503 until Vercel env vars are set.
+- [ ] POST /api/pdf/teardown without key: expect 402. Not yet run (same card).
+- [ ] Live $49 test purchase, then refund immediately in Lemon Squeezy. Record: order ID, amount, refund ID, licence key issued (do NOT put the key itself in this doc — record that it was issued and that it works), and that the key unlocks the full audit + PDFs live. This also proves PDF generation on Vercel serverless. ONE purchase only.
+- [ ] Licence key unlocks full report live; teardown + proposal PDFs download live; no "coming with payment" copy left.
+- [ ] TrustMRR: connect only after the first real sale, and only if the test purchase counts. A refunded test sale likely does NOT count as revenue; record the truth, do not claim TrustMRR is live unless verified.
 
 ## Test purchase + refund (PENDING)
 - Order ID: _PENDING_
@@ -140,29 +144,14 @@ key recovery clarified on home + /audit, favicon 404 fixed.
 
 ## Still pending, browser task only (not done by the subagent)
 
-- Lemon Squeezy: create DealNote product in Resonant Atlas store
-  #244487 ($49 one-time, license keys on, activation limit 1, never
-  expires); API key (Settings -> API); webhook (Settings ->
-  Webhooks, https://dealnote-blue.vercel.app/api/webhook/lemonsqueezy,
-  order_created + order_refunded only, signing secret).
-- Vercel: set LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_STORE_ID=244487,
-  LEMONSQUEEZY_PRODUCT_ID, LEMONSQUEEZY_VARIANT_ID,
-  LEMONSQUEEZY_WEBHOOK_SECRET; leave DEALNOTE_DEV_LICENSE_KEY blank
-  in production; redeploy.
-- Upstash Redis free tier via Vercel Marketplace ($0, no card):
-  provision and set UPSTASH_REDIS_REST_URL /
-  UPSTASH_REDIS_REST_TOKEN so the 30/month counter is durable.
-- Live POST verification (free audit teaser, checkout POST expecting
-  a real lemonsqueezy.com URL, PDF 402 without key, PDF 200 with a
-  real key): Velu approved this 28 Nov 20:31, BUT the last attempt
-  timed out on approval and the runtime instruction says do not
-  retry unless he asks to try again. Tell Velu it still needs his
-  approval.
-- Live $49 test purchase + immediate refund in Lemon Squeezy; record
-  order ID, amount, refund ID, license key issued (record "issued
-  and works", not the key). If it needs Velu's card, stop that step
-  only and report exactly what is needed; do not use any saved card
-  without his say; do NOT do a second purchase.
-- TrustMRR: connect only after the first real sale, and only if the
-  test purchase counts. Ship or Die revenue only with real verified
-  figures.
+BLOCKERS found 28 Nov 2026 ~21:05 Manila — why the subagent could not finish:
+- Vercel MCP connector is connected but returns 403 for team velus-projects-27f81f38 on every project call (list_projects, get_project). It says to call authorize_team_access with teamId team_FUU0It1D2nXFGEUUPNFg9fVg, but that tool is NOT in the connector's available tools ("Error: unsupported Vercel tool authorize_team_access"). No real Vercel CLI is installed on this VM (only the MCP wrapper binary at /opt/hatch/bin/vercel), and no Vercel token is available to log a CLI in with. So env vars CANNOT be set from here; they need the Vercel dashboard in a browser task.
+- Live POST verification: Velu approved it in chat 28 Nov 20:31, but the runtime raised a foreground permission card ("Share info with dealnote-blue.vercel.app", approval c3201560-22f0-406c-ba7d-a84c35070d24). It is still pending; Velu must tap approve on that card, then the POST checks can run. The earlier doc note saying "tell Velu it still needs his approval" is now wrong on the chat-approval part — he DID approve in chat; the card is the remaining gate.
+- Live $49 test purchase + immediate refund: needs a browser (checkout page, card entry). If it needs Velu's card, stop that step only and report exactly what is needed; do not use any saved card without his say; do NOT do a second purchase.
+
+Remaining browser-task steps, in order:
+- Vercel dashboard (project dealnote, team velus-projects-27f81f38): set LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_STORE_ID=244487, LEMONSQUEEZY_PRODUCT_ID=1536795, LEMONSQUEEZY_VARIANT_ID=2390379 (numeric — NOT the UUID ec07137c-ee2c-4f4f-b742-39251c96e711), LEMONSQUEEZY_WEBHOOK_SECRET; leave DEALNOTE_DEV_LICENSE_KEY blank in production; redeploy.
+- Upstash Redis free tier via Vercel Marketplace ($0, no card): provision and set UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN so the 30/month counter is durable. After it is live, update /terms copy (remove "may reset when hosting restarts", plain operational wording), commit + deploy.
+- Live POST verification (free audit teaser, checkout POST expecting a real lemonsqueezy.com URL, PDF 402 without key, PDF 200 with a real key): run after the permission card is approved AND env vars are set.
+- Live $49 test purchase + immediate refund in Lemon Squeezy; record order ID, amount, refund ID, license key issued (record "issued and works", not the key). If it needs Velu's card, stop that step only and report exactly what is needed; do not use any saved card without his say; do NOT do a second purchase.
+- TrustMRR: connect only after the first real sale, and only if the test purchase counts. Ship or Die revenue only with real verified figures.
