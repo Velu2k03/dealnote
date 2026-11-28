@@ -173,7 +173,10 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
           <p className="caption mb-0">Overall score</p>
         </div>
         <GradeBadge grade={result.overallGrade} size={56} />
-        <div style={{ flex: "1 1 13.75rem" }}>
+        {/* Unslop spacing pass 1 (28 Nov 2026): this flex item needs
+            min-width: 0, or its nowrap URL sets min-content at ~376px
+            and stretches the whole score card past a 390px viewport. */}
+        <div style={{ flex: "1 1 13.75rem", minWidth: 0 }}>
           <p className="mb-8" title={result.url} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>
             <strong>{result.url}</strong>
           </p>

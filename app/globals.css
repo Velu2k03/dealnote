@@ -279,6 +279,16 @@ details.help p { margin: 0.75rem 0 0; }
 }
 
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+/* Unslop spacing pass 1 (28 Nov 2026, Velu: spacing + mobile clip).
+   Grid and flex items default to min-width: auto, so one wide child
+   (the hero pill: no-shrink Sakuga button + long URL placeholder, and
+   the score card's nowrap URL column with flex-basis 13.75rem)
+   stretched its column to 426px on a 390px phone, and html
+   overflow-x: clip then cut the text off instead of scrolling.
+   min-width: 0 on grid children lets the input shrink instead.
+   Fluid only, no fixed px. */
+.hero-grid > *, .two-col > *, .form-grid > *, .template-grid > *,
+.pricing-grid > *, .footer-grid > *, .audit-layout > * { min-width: 0; }
 @media (max-width: 53.75rem) { .hero-grid { grid-template-columns: 1fr; gap: 2rem; } }
 @media (max-width: 40rem) { .pricing-grid { grid-template-columns: 1fr !important; } }
 /* Hero audit pill: the Sakuga submit button must not shrink and wrap to
