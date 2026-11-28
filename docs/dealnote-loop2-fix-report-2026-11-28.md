@@ -83,9 +83,16 @@ Applied: R3 first screen (templates H1 + 1 line, warnings below), R4 brand 3 fie
 - Teardown PDF: 200, 84,777 bytes, valid PDF 1.4, 4 pages A4. Proposal PDF: 200, 101,027 bytes, 5 pages. Footer present on every page of both. 0 hits for "found 7" in either PDF.
 - Screenshots: all 6 pages retaken after the gap fixes (`docs/screenshots/loop2fix-*.png`, script `scripts/shot-loop2fix.mjs`), desktop 1280 + mobile 390, **0 px horizontal overflow on all 12**. Visually checked: /templates desktop (8 proposals, clean vertical flow), home mobile (clean, refund pointer on pricing card).
 
-## Live verification (after merge/deploy)
+## Live verification (after merge/deploy, 28 Nov 2026 ~09:45 Manila)
 
-- All 6 pages 200 on https://dealnote-blue.vercel.app, tracker snippet byte-present on every page, $49 one-time, no future dates, no "verified" claims. (Filled in at deploy time; see commit message.)
+- Merge `18487aa` pushed to GitHub main; Vercel auto-deployed. Live HTML sizes match
+  the local build byte-for-byte (home 49,293 B; /audit 17,705 B; /sample 52,269 B;
+  /templates 39,017 B; /terms 26,571 B; /privacy 22,296 B).
+- All 6 pages + `/robots.txt` + `/sitemap.xml` return 200 live. Tracker snippet
+  (`data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"`) byte-present on all 6 pages;
+  `verify.js` returns 200. `/templates` live shows "8 proposals + 8 emails"; home live
+  shows "$49 one-time". 0 occurrences of "verified", 0 of 2027/2028 on every page.
+- Live POST verification NOT done (needs Velu's approval; see Still open #1).
 
 ## Still open (not fixed in Loop 2)
 
