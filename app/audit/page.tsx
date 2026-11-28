@@ -497,12 +497,12 @@ export default function AuditPage() {
                 Research first: SEOptimer's embed form is one headline + URL
                 + email, no explainer above the form; Krug: cut half the words,
                 then half again; detail lives behind a help link. The full
-                research is in docs/dealnote-audit-copy-research-2026-11-28.md
-                and the exact wording still goes to Neon in the Gemini web app,
-                Task mode, Gemini 4 Neon High, for a final decision. Nothing
-                legal was cut: robots.txt, no-login, and the lab-measurement
-                disclaimer live in the "How the audit works" details below and
-                in /terms. */}
+                research is in docs/dealnote-audit-copy-research-2026-11-28.md.
+                Neon's exact /audit copy decision (Gemini 4 Neon High, Task
+                mode, 28 Nov 2026) is implemented on this page: one-line intro,
+                utility row with 2 disclosures, 1-line score disclaimer with
+                a [?] popover, Top findings, and the cut list in
+                docs/dealnote-neon-audit-copy-2026-11-28.md. */}
             <p>Paste a public website URL. Free result: score, grade, top 2 findings.</p>
           </div>
 
