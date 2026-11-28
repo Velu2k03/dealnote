@@ -327,11 +327,21 @@ gradients, which remain at zero.
 
 ## Merge + live verification
 
-- Branch `dealnote-sakuga`, commits: (see `git log` for the exact
-  hashes at merge time). Merged to `main`, pushed; Vercel auto-deploy.
-  Live verification after deploy: (filled in at merge time — all 6
+- Branch `dealnote-sakuga`. Sakuga commit `dead2bb` ("Sakuga VFX: all
+  11 controls wired + pinkish redesign, 28 Nov 2026"). Main was ahead
+  (Neon recheck 220457c: CountUp `immediate`, two em dash fixes), so
+  main was merged into the branch first as `73151e5` (clean, no
+  conflicts; the templates banner dash fix was identical on both sides).
+  The merged state was rebuilt and re-verified locally: **52/52 passed,
+  0 failed** (one intermediate run hit the site's own 5-free-audits/hour
+  IP limit with HTTP 429 after repeated test runs; the local server was
+  restarted to reset the in-memory counter and the full suite passed;
+  license-key requests are exempt from that limit by design).
+  Merged to `main` as (merge commit below), pushed; Vercel auto-deploy.
+- Live verification after deploy: (filled in at merge time — all 6
   pages 200, tracker snippet present, effects fire live on home +
   audit + templates).
 - Payment/env vars untouched by this work (separate Vercel browser
+  task; env vars were set and checkout went live 28 Nov 21:21 via that
   task). The dev license key used for local verification is
   local-test-only and is not in git, docs, the sheet, or production.
