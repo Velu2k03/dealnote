@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <>
-      <section style={{ paddingTop: 64 }}>
+      <section style={{ paddingTop: "4rem" }}>
         <div className="container">
           <div className="hero-grid">
             <Reveal>
@@ -23,7 +23,7 @@ export default function Home() {
                 a ready-to-send proposal, scored across speed, mobile, SEO, technical health, conversion,
                 and trust, under your own brand, logo, and contact details, not ours.
               </p>
-              <form method="get" action="/audit" style={{ display: "flex", gap: 0, flexWrap: "nowrap", border: "1px solid #C4B5FD", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
+              <form method="get" action="/audit" style={{ display: "flex", gap: 0, flexWrap: "nowrap", border: "1px solid #C4B5FD", borderRadius: "0.75rem", overflow: "hidden", background: "#fff" }}>
                 <input
                   name="url"
                   type="url"
@@ -47,7 +47,7 @@ export default function Home() {
                 />
               </p>
               <p className="mt-16 mb-0">
-                <a href="#how-it-works" className="caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+                <a href="#how-it-works" className="caption" style={{ display: "inline-flex", gap: "0.375rem", alignItems: "center" }}>
                   <ChevronDown size={16} strokeWidth={1.5} aria-hidden /> See how it works below
                 </a>
               </p>
@@ -75,7 +75,7 @@ export default function Home() {
             <div className="step-row glass">
               <span className="step-num" aria-hidden>1</span>
               <div>
-                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <h3 className="mt-0" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <Globe size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Paste a URL
                 </h3>
                 <p className="mb-0">
@@ -87,7 +87,7 @@ export default function Home() {
             <div className="step-row glass">
               <span className="step-num" aria-hidden>2</span>
               <div>
-                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <h3 className="mt-0" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <FileText size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Get the teardown
                 </h3>
                 <p className="mb-0">
@@ -99,7 +99,7 @@ export default function Home() {
             <div className="step-row glass">
               <span className="step-num" aria-hidden>3</span>
               <div>
-                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <h3 className="mt-0" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <Send size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Send the proposal
                 </h3>
                 <p className="mb-0">
@@ -132,9 +132,9 @@ export default function Home() {
         <div className="container">
           <h2>Pricing</h2>
           <SpotlightCard className="card glass mt-24" >
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }} className="pricing-grid">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "start" }} className="pricing-grid">
             <div>
-            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
+            <p style={{ fontSize: "3rem", fontWeight: 600, lineHeight: 1, margin: "0 0 0.5rem" }} className="tabular">
               $49
             </p>
             <p>One payment of $49, with no subscription and no per-report fee.</p>
@@ -158,20 +158,20 @@ export default function Home() {
             <div>
             <p className="mb-16">Everything below is included in the one payment.</p>
             <ul style={{ listStyle: "none", paddingLeft: 0, marginBottom: 0 }}>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+              <li style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: "0.1875rem" }} />
                 <span>30 audits a month fair-use limit, about $1.63 per audit</span>
               </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+              <li style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: "0.1875rem" }} />
                 <span>White-label reports under your brand</span>
               </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+              <li style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: "0.1875rem" }} />
                 <span>Teardown PDF and proposal PDF included with your license</span>
               </li>
-              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 0 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+              <li style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", marginBottom: 0 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: "0.1875rem" }} />
                 <span>Proposal templates included</span>
               </li>
             </ul>
@@ -187,7 +187,7 @@ export default function Home() {
           <div className="two-col mt-24">
             <div className="card glass">
               <h3>It checks the page you paste</h3>
-              <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+              <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
                 <li>Speed, measured in the run, plus page weight</li>
                 <li>Mobile viewport and tap-to-call links</li>
                 <li>Title, meta description, headings, image alt text</li>
@@ -198,7 +198,7 @@ export default function Home() {
             </div>
             <div className="card glass">
               <h3>It does not estimate or guess</h3>
-              <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+              <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
                 <li>No traffic or ranking estimates</li>
                 <li>No invented dollar-loss figures for the prospect</li>
                 <li>No Google Maps or Places data</li>
@@ -217,7 +217,7 @@ export default function Home() {
       <section style={{ background: "#FAF5FF", borderTop: "1px solid #E9D5FF" }}>
         <div className="container">
           {/* Neon P2-1 (28 Nov 2026): the heading lives in the same
-              centered 760px column as the FAQ items, not left-aligned
+              centered 47.5rem column as the FAQ items, not left-aligned
               at the container edge while the items sit centered. */}
           <div className="reading" style={{ marginLeft: "auto", marginRight: "auto" }}>
           <h2>Frequently asked questions</h2>

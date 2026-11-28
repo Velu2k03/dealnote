@@ -4,7 +4,7 @@
 // `motion` 14.14.0, MIT, formerly Framer Motion), imported from
 // `motion/react`. One file, three effects, nothing else:
 //
-// - Reveal: fade + 12px rise, 250ms, once, when scrolled into view
+// - Reveal: fade + 0.75rem rise, 250ms, once, when scrolled into view
 //   (Loop 5: review-animations sub-300ms rule + userinterface-wiki
 //   timing-under-300ms; was 350ms in Loop 4).
 //   /terms and /privacy use a CSS-only opacity fade instead (`.fade-in`
@@ -112,7 +112,7 @@ export function StaggerItem({ children }: { children: ReactNode }) {
  * scroll into view. Use it for headline numbers (the audit score):
  * with the inView gate the score read "0" on load whenever the card
  * sat just below the fold (Neon recheck, 28 Nov 2026: score card top
- * 820px in an 800px viewport, counter stuck at 0 until scrolled to). */
+ * 51.25rem in an 50rem viewport, counter stuck at 0 until scrolled to). */
 export function CountUp({ to, immediate = false }: { to: number; immediate?: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
   const seen = useInView(ref, { once: true, margin: "-40px" });
@@ -144,7 +144,7 @@ export function CountUp({ to, immediate = false }: { to: number; immediate?: boo
 export function SpotlightCard({ children, className }: { children: ReactNode; className?: string }) {
   const x = useMotionValue(-400);
   const y = useMotionValue(-400);
-  const background = useMotionTemplate`radial-gradient(240px circle at ${x}px ${y}px, rgb(190 24 93 / 0.07), transparent 70%)`;
+  const background = useMotionTemplate`radial-gradient(15rem circle at ${x}px ${y}px, rgb(190 24 93 / 0.07), transparent 70%)`;
   return (
     <motion.div
       className={className}
