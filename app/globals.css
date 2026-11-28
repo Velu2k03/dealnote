@@ -55,9 +55,10 @@ section { padding: 64px 0; }
   min-height: 44px; padding: 10px 20px; border-radius: 8px;
   font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
   text-decoration: none; white-space: normal; text-align: center;
-  transition: background-color 120ms ease-out, border-color 120ms ease-out;
+  transition: background-color 120ms ease-out, border-color 120ms ease-out, transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.btn:hover { text-decoration: none; }
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:active { transform: translateY(0) scale(0.98); }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: #0d5f58; }
 .btn-secondary { background: #fff; border-color: var(--border); color: var(--text); }
@@ -70,6 +71,19 @@ section { padding: 64px 0; }
 .card {
   background: #fff; border: 1px solid var(--border); border-radius: 8px;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px;
+}
+/* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule): frosted
+   translucent panels for the hero score card, finding cards, step rows
+   and the pricing card. Dark slate text on light frosted panels only,
+   never over images or busy backgrounds, so contrast stays AA. Glass is
+   screen-only: print forces plain white (see @media print below), and
+   the PDF templates in lib/pdf-html.ts never use it. */
+.glass {
+  background: rgb(255 255 255 / 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgb(255 255 255 / 0.65);
+  box-shadow: 0 8px 32px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.06);
 }
 .callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 6px; padding: 16px 20px; }
 .evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; font-size: 14px; overflow-wrap: anywhere; }
@@ -119,23 +133,32 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .tag-soon { color: var(--amber); border-color: #fde68a; background: #fffbeb; }
 .tag-nice { color: var(--muted); background: var(--surface); }
 
-.site-header { border-bottom: 1px solid var(--border); background: #fff; position: sticky; top: 0; z-index: 10; }
+.site-header { border-bottom: 1px solid var(--border); background: rgb(255 255 255 / 0.8); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
 .site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
 .site-header nav a:hover { color: var(--text); text-decoration: none; background: var(--surface); }
-/* One nav list at every size (modern-web-guidance `navbar`): the Menu
-   button and popover exist only under 640px, where the header would
-   otherwise wrap to three rows. Above 640px the button is hidden and the
-   same list is inline. The popover is native, so light-dismiss and Escape
-   work with no script; the list stays in the tab order as plain links. */
+/* One nav at every size (modern-web-guidance `navbar`): the Menu button
+   and popover exist only under 640px, where the header would otherwise
+   wrap to three rows. Above 640px the button is hidden and a separate
+   plain list is inline; the popover list is hidden there, because a
+   popover element cannot also be an inline nav (Loop 4 P1-1). The popover
+   is native, so light-dismiss and Escape work with no script; the links
+   stay in the tab order as plain links. */
 .site-menu { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; align-items: center; }
+/* The mobile popover list is hidden at desktop width; the desktop list is
+   hidden under 640px. A popover element must never also be the desktop
+   inline nav: author display:flex overrides the UA closed-popover
+   display:none, and the remaining UA popover styles paint it as a fixed
+   black-bordered box in the top layer (Loop 4 P1-1). */
+.site-menu-mobile { display: none; }
 .menu-button { display: none; }
 @media (max-width: 640px) {
   .site-header-inner { flex-wrap: nowrap; gap: 12px; padding: 8px 16px; }
   .site-header nav { flex-wrap: nowrap; }
   .menu-button { display: inline-flex; min-height: 44px; }
-  .site-menu {
+  .site-menu-desktop { display: none; }
+  .site-menu-mobile {
     position: fixed;
     inset: auto;
     top: 60px;
@@ -156,8 +179,8 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     padding: 8px;
     margin: 0;
   }
-  .site-menu:is(:popover-open, .\:popover-open) { display: flex; }
-  .site-menu li a { display: block; padding: 12px 10px; }
+  .site-menu-mobile:is(:popover-open, .\:popover-open) { display: flex; }
+  .site-menu-mobile li a { display: block; padding: 12px 10px; }
 }
 .wordmark { font-size: 20px; font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
 .wordmark:hover { text-decoration: none; }
@@ -168,7 +191,7 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 .steps-flow { display: grid; gap: 20px; }
-.step-row { display: flex; gap: 16px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px; }
+.step-row { display: flex; gap: 16px; align-items: flex-start; background: rgb(255 255 255 / 0.72); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px; }
 .step-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 600; }
 .two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
 @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
@@ -190,11 +213,50 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 
 @media (prefers-reduced-motion: reduce) {
   .btn, .site-header nav a { transition: none; }
+  .btn:hover, .btn:active { transform: none; }
 }
+
+/* Body copy measure: long full-width lines slow scanning (Loop 4 UI/UX
+   P1-2). Caps prose inside cards and the reading column at ~65ch. */
+.card p, .reading p { max-width: 65ch; }
+
+/* Footer links: inline text is ~17px tall; a small vertical hit area
+   clears the 24px WCAG target size without changing the look. */
+.site-footer a { display: inline-block; padding: 4px 0; }
 
 @media print {
   .site-header, .site-footer, .no-print { display: none !important; }
   body { font-size: 14px; }
   .card { box-shadow: none; break-inside: avoid; }
   section { padding: 0; }
+  /* SAMPLE stamp repeats on every printed page: a fixed element is
+     repeated by the print engine on each page. Screen-only by default. */
+  .print-stamp {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #0f766e;
+    border-bottom: 1px solid #99f6e4;
+    background: #f0fdfa;
+    padding: 4px 0;
+  }
+  /* Glass and motion are screen-only: print shows plain white cards at
+     final state, never a translucent panel or a half-animated element. */
+  .glass { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; }
+  .step-row { background: #fff !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .motion-fade { opacity: 1 !important; transform: none !important; }
+  .spotlight-overlay { display: none !important; }
+}
+.print-stamp { display: none; }
+
+/* CSS-only fade for /terms and /privacy: opacity only, 300ms, no JS
+   cost on those pages. Reduced-motion users get no animation at all. */
+.fade-in { animation: fade-in 300ms ease-out both; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { animation: none; }
 }

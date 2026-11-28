@@ -315,7 +315,7 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
     name: "Day 7 Low-Friction Q",
     timing: "Day 7 after the first email, same thread",
     purpose: "One low-friction question, no pitch. Asks whether the fix is on their list this month, and offers to send the one-page quote.",
-    subjects: ["Quick question about [Business].com", "Is this on your list this month?"],
+    subjects: ["Quick question about [Business].com", "On your list this month?"],
     body: ({ brand, business, findings }) =>
       [
         `Hi [Name],`,
@@ -351,7 +351,7 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
     name: "Warm Post-Call Delivery",
     timing: "After a call, same day",
     purpose: "Sent after a call with the prospect. Delivers the report and the agreed next step, and names what was discussed.",
-    subjects: ["Your website report, as discussed", "Following up on our call - [Business].com"],
+    subjects: ["Your website report, as discussed", "Following up on our call"],
     body: ({ brand, business, findings }) =>
       [
         `Hi [Name],`,

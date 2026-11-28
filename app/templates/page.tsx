@@ -253,9 +253,9 @@ export default function TemplatesPage() {
 
         {findingsMissing ? (
           <div className="card mt-24" role="alert" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
-            <h2 style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <p style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 18, fontWeight: 600, margin: "0 0 8px" }}>
               <TriangleAlert size={18} strokeWidth={1.5} color="#B45309" aria-hidden /> No audit findings found
-            </h2>
+            </p>
             <p className="mb-16">
               The email and proposal templates below show [finding 1], [finding 2], and [finding 3] as
               placeholders because no audit has been run in this browser yet. Run an audit on the{" "}
@@ -270,7 +270,7 @@ export default function TemplatesPage() {
 
         {!(brand.postalAddress ?? "").trim() ? (
           <div className="card mt-24" role="alert">
-            <h2>Your postal address is missing</h2>
+            <p style={{ fontSize: 18, fontWeight: 600, margin: "0 0 8px" }}>Your postal address is missing</p>
             <p className="mb-16">
               The CAN-SPAM footer on every email below needs your real postal address. Add it in your{" "}
               <Link href="/audit">brand profile on the audit page</Link> before you send anything, or the
@@ -299,7 +299,7 @@ export default function TemplatesPage() {
           Do not send marketing texts to a prospect unless you already have their prior express written consent.
         </p>
 
-        <h2 className="mt-32">Before you send: 60-second checklist</h2>
+        <h2 className="mt-32">Before you send: checklist</h2>
         <div className="card">
           <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
             {CHECKLIST.map((item) => (

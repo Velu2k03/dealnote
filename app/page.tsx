@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { CheckCircle2, FileText, Globe, Send } from "lucide-react";
+import { CheckCircle2, ChevronDown, FileText, Globe, Send } from "lucide-react";
 import { sampleAudit } from "@/lib/audit";
 import { BuyButton, IssueList, ScoreSummary } from "@/components/audit-ui";
+import { Reveal, SpotlightCard } from "@/components/motion-ui";
 
 export default function Home() {
   const sample = sampleAudit();
@@ -12,6 +13,7 @@ export default function Home() {
       <section style={{ paddingTop: 64 }}>
         <div className="container">
           <div className="hero-grid">
+            <Reveal>
             <div>
               <p className="eyebrow">For web design freelancers and small agencies</p>
               <h1>Paste any business website URL.</h1>
@@ -41,7 +43,14 @@ export default function Home() {
               <p className="caption mt-24">
                 $49 one-time, with no subscription and no per-report fee.
               </p>
+              <p className="mt-16 mb-0">
+                <a href="#how-it-works" className="caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+                  <ChevronDown size={16} strokeWidth={1.5} aria-hidden /> See how it works below
+                </a>
+              </p>
             </div>
+            </Reveal>
+            <Reveal delay={0.08}>
             <div>
               <ScoreSummary result={sample} sampleLabel />
               <p className="caption mt-16">
@@ -49,11 +58,12 @@ export default function Home() {
                 sample report page shows the full version.
               </p>
             </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
+      <section id="how-it-works" style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
         <div className="container">
           <h2>How it works</h2>
           <div className="steps-flow mt-24">
@@ -99,6 +109,7 @@ export default function Home() {
 
       <section>
         <div className="container">
+          <Reveal>
           <h2>What a teardown finds</h2>
           <p className="reading">
             Three findings from the sample report for Harbor and Pine Plumbing, a fictional business. Each
@@ -110,13 +121,15 @@ export default function Home() {
           <Link href="/sample" className="btn btn-secondary">
             Read the full sample report
           </Link>
+          </Reveal>
         </div>
       </section>
 
       <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
         <div className="container">
           <h2>Pricing</h2>
-          <div className="card mt-24" style={{ maxWidth: 560 }}>
+          <SpotlightCard className="card glass mt-24" >
+            <div style={{ maxWidth: 560 }}>
             <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
               $49
             </p>
@@ -129,7 +142,31 @@ export default function Home() {
             </ul>
             <p className="caption">
               $49 once is less than two months of a $39-per-month subscription. SEOptimer White Label,
-              $39/mo on its public pricing page, checked 27 Nov 2026. Example only. Compare current prices before you buy. No guarantee of client wins.
+              $39/mo on its public pricing page, checked 28 Nov 2026. Example only. Compare current prices before you buy. No guarantee of client wins.
+            </p>
+            <div className="stack-table mt-16">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Option</th>
+                    <th>Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-label="Option">DealNote, one-time</td>
+                    <td data-label="Cost">$49 once, no subscription</td>
+                  </tr>
+                  <tr>
+                    <td data-label="Option">SEOptimer White Label, $39/mo</td>
+                    <td data-label="Cost">$468 over 12 monthly payments ($39 x 12); $351 billed annually on its public pricing page</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="caption">
+              Example only, using the SEOptimer prices checked 28 Nov 2026. Compare current prices before
+              you buy. DealNote is a one-time purchase, not a subscription, so there is no second year to pay.
             </p>
             <p className="mb-16">
               <BuyButton />
@@ -142,15 +179,17 @@ export default function Home() {
             <p className="caption mb-0">
               The audit tool is free to try. Full reports and PDF downloads unlock with a licence key.
             </p>
-          </div>
+            </div>
+          </SpotlightCard>
         </div>
       </section>
 
       <section>
         <div className="container">
+          <Reveal>
           <h2>What DealNote checks, and what it does not</h2>
           <div className="two-col mt-24">
-            <div className="card">
+            <div className="card glass">
               <h3>It checks the page you paste</h3>
               <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
                 <li>Speed, measured in the run, plus page weight</li>
@@ -161,7 +200,7 @@ export default function Home() {
                 <li>LocalBusiness schema, social links, favicon</li>
               </ul>
             </div>
-            <div className="card">
+            <div className="card glass">
               <h3>It does not estimate or guess</h3>
               <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
                 <li>No traffic or ranking estimates</li>
@@ -176,6 +215,7 @@ export default function Home() {
           <p className="caption mt-24">
             Scores are lab measurements on the run date under stated conditions. Scores can vary between runs.
           </p>
+          </Reveal>
         </div>
       </section>
 

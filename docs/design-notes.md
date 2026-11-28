@@ -6,7 +6,7 @@
 
 ## 1. Design stance
 
-Clean, plain, businesslike. The buyer sells to local business owners who distrust jargon and hype; the product should look like a well-made business document, not a startup landing page. No AI slop: no gradients, no glows, no glass, no aurora backgrounds, no floating blobs, no emoji anywhere (UI, reports, or marketing), no stock photos, no decorative illustration. Every visual element earns its place by explaining something or by being the product itself.
+Clean, plain, businesslike, now with Apple-style glass and motion (Velu, 28 Nov 2026 — this replaces the old plain-only rule). The buyer sells to local business owners who distrust jargon and hype; the product should look like a well-made business document, not a startup landing page. No AI slop: no colour gradients as decoration, no glows, no aurora backgrounds, no floating blobs, no emoji anywhere (UI, reports, or marketing), no stock photos, no decorative illustration. Every visual element earns its place by explaining something or by being the product itself. Glass is the one deliberate exception: frosted translucent panels (see §12), in the Apple style — clean, light, airy, lots of whitespace, large clear type, smooth spring motion.
 
 ## 2. Colour
 
@@ -40,8 +40,8 @@ Clean, plain, businesslike. The buyer sells to local business owners who distrus
 **Rules:**
 - One accent only. No second brand colour in the product chrome. (The *buyer's* brand colours appear inside their white-labelled reports — that is their brand, not DealNote's. DealNote's own chrome never takes on the buyer's colours.)
 - Grade colours are semantic, muted, and text-safe. Never use bright green/amber/red fills; use coloured text or a thin left border on a white card.
-- No gradients anywhere, including buttons, headers, and the PDF cover. Solid colours only.
-- No shadows except one restrained card shadow (`0 1px 2px rgb(15 23 42 / 0.06)`) on elevated cards. No glow, no blur, no drop-shadow text.
+- No colour gradients as decoration anywhere, including buttons, headers, and the PDF cover. Solid colours only. One narrow exception: the pricing-card spotlight (see §12) is a faint teal radial wash that follows the pointer, 7% opacity, hover only — a highlight, not a coloured gradient.
+- Shadows: one restrained card shadow (`0 1px 2px rgb(15 23 42 / 0.06)`) on plain cards; glass panels use the softer Apple shadow (`0 8px 32px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.06)`). No glow, no drop-shadow text.
 - Print: `print-color-adjust: exact` on report templates so the accent and grade colours print as shown. Test the PDF in black-and-white too — grades must still read from their letters (A–F), not from colour alone.
 
 ## 3. Type
@@ -94,7 +94,7 @@ The 27 Nov 2026 audit found Inter was named in the font stack but never loaded, 
 - **Tables:** header row slate-50, 13 px uppercase label, row dividers slate-200, no zebra striping, no coloured fills. A finding row is: severity mark, finding, evidence, fix — in that order.
 - **Forms:** labels above inputs, 14 px/600, inputs 44 px tall minimum (touch target), 1 px slate-200 border, focus ring teal-700 2 px. Error text red-700, 13 px, with the field named ("Enter a full URL starting with https://").
 - **Buttons:** primary = solid teal-700, white text, 8 px radius, 44 px tall. Secondary = white, 1 px slate-200 border, slate-900 text. Destructive (delete brand profile) = white with red-700 text and border. No gradient buttons, no pill buttons (radius stays 8 px), no uppercase button text.
-- **Motion:** one shared hover transition, 120 ms (`transition: background-color 120ms ease-out, border-color 120ms ease-out` on buttons and nav links). No `transition-all`. The audit found zero transitions in v1; hover states changed instantly.
+- **Motion:** see §12. Buttons add a 120 ms lift on hover (`translateY(-1px)`) and a press scale (0.98); the shared colour transition stays 120 ms. No `transition-all`.
 - **Nav links:** 44 px minimum touch target (padding raised so links reach 44 px tall). The audit found nav links at about 37 px.
 - **Equal-card grids:** equal widths only where content is truly parallel (pricing tiers). "How it works" is now a numbered vertical flow, not three equal cards; the numbered steps earn their place in a real sequential flow. The two-column "checks / does not check" pair uses unequal widths.
 - **Score display:** one large number + letter grade + a thin horizontal bar (track slate-200, fill accent for the overall score, grade colour for category bars). The letter grade is always shown next to the number so the score reads without colour.
@@ -193,3 +193,28 @@ Unchanged — the core system stays:
 - [ ] No emoji, no gradients, no glows, no stock photos anywhere in the app, reports, or landing page.
 - [ ] Contrast check: teal-700 on white, slate-600 on white, grade colours on white — all pass AA for their text sizes.
 - [ ] Buyer's brand colours render correctly in a test white-labelled PDF (logo, primary, accent) with no DealNote name in the content, footer, share link, or PDF metadata.
+
+## 12. Apple glass + motion — 28 Nov 2026 (Velu's new direction, replaces the old "no glass" rule)
+
+Velu ordered the plain look elevated after the Loop 4 reports: Apple glass style + MotionDev motion, built immediately with no permission gate between report and build. The plain rules above still stand except where this section explicitly replaces them (glass; motion beyond the 120 ms hover).
+
+### Glass
+
+- **Recipe (`.glass` in `app/globals.css`):** `background: rgb(255 255 255 / 0.72)`, `backdrop-filter: blur(20px) saturate(180%)`, `border: 1px solid rgb(255 255 255 / 0.65)`, soft shadow `0 8px 32px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.06)`.
+- **Where:** sticky header (translucent white, 80% + blur), hero score card, finding cards, How-it-works step rows, the two "checks / does not check" cards, the pricing card, all /sample content cards.
+- **Where NOT:** /terms and /privacy (plain white, opacity fade only), the PDF report templates in `lib/pdf-html.ts` (plain white, untouched), print (the print stylesheet forces plain white cards, no blur, no shadow).
+- **Readability guardrails:** dark slate text on light frosted panels only, never over images or busy backgrounds (there are no images behind any panel); contrast stays AA because the text colours did not change. No text over the glass header's blur — the header contains only the wordmark and nav links.
+- **Spotlight (React Bits SpotlightCard pattern, adapted):** pricing card only. A faint teal radial wash (`rgb(15 118 110 / 0.07)`, 240px circle) follows the pointer and fades to transparent; it is a hover highlight, not a decorative gradient, and it disappears on touch devices (no pointer) and in print.
+
+### Motion (Motion, npm `motion` 14.14.0, MIT, formerly Framer Motion)
+
+- **Library:** `npm install motion`, imported from `motion/react`. App Router: motion lives in client components only (`components/motion-ui.tsx`, `components/audit-ui.tsx` which is already `"use client"`); server pages import those client wrappers. No `framer-motion` package (deprecated alias).
+- **Vetting (28 Nov 2026):** SkillSpector scan of the published 14.14.0 tarball returned CAUTION, score 39, MEDIUM — its single MEDIUM finding is a README badge URL (`api.motion.dev` score badge image in README.md), a false positive: no code in the package transmits data, and the badge is not shipped. The scanner's supply-chain analyzer crashed with its known `InvalidURL` quirk (0% coverage, same failure mode as earlier scans), so the verdict rests on manual checks too: MIT licence, no install/postinstall scripts in the published package, dependencies only `tslib` + `framer-motion` 14.14.0, official motiondivision package from the npm registry. Proceeded on that basis; recorded here so a future loop can re-check.
+- **Primitives (`components/motion-ui.tsx`):** `MotionProvider` (`<MotionConfig reducedMotion="user">` in the layout), `Reveal` (fade + 12px rise, 350 ms, once, on scroll into view), `Stagger`/`StaggerItem` (finding cards enter 70 ms apart), `CountUp` (overall score counts 0 to the score in 350 ms), `SpotlightCard` (above).
+- **React Bits:** at most 3 components, copy/adapt, no heavy dependency for one effect. Used: CountUp pattern (re-implemented against Motion — the component source tab on reactbits.dev is JS-rendered and could not be fetched from this sandbox) and SpotlightCard pattern (adapted, teal, faint). No gradient text (readability), no other React Bits components. No `three`/`ogl`/`gsap` pulled in.
+- **Budgets, all honoured:** every element animates in at most 350 ms; hero stagger is 0 ms / 80 ms delays; nothing autoplays; no looping video; nothing delays the audit form (the hero form is usable during its 350 ms entrance) or the buy path (BuyButton has no entrance animation, only the 120 ms hover/press).
+- **Reduced motion:** `<MotionConfig reducedMotion="user">` disables transform/layout animation site-wide for users who ask; CountUp jumps straight to the final value; the CSS fade on /terms and /privacy is disabled by `@media (prefers-reduced-motion: reduce)`; button lift/press is disabled there too.
+- **Print/PDF:** motion wrappers carry class `motion-fade`; the print stylesheet forces `opacity: 1, transform: none` on them and hides the spotlight overlay. PDF HTML never imports motion.
+- **Bundle cost (measured 28 Nov 2026, `next build` First Load JS):** home 103 kB → 161 kB, /audit 119 kB → 177 kB, /sample 94.1 kB → 152 kB (+58 kB on pages that use Motion); /templates unchanged at 109 kB; /terms and /privacy unchanged at ~87.5 kB (CSS-only fade, no Motion JS). Shared chunks unchanged at 87.3 kB.
+- **Screenshot caveat:** `whileInView` reveals start at opacity 0, so a full-page screenshot taken without scrolling photographs below-fold sections blank. That is a capture artifact, not a live defect: scrolling through the page first (as a user does) reveals every section at opacity 1, verified in-browser 28 Nov 2026. The screenshot script scrolls through each page before capturing.
+- **Slop re-run (28 Nov 2026, after glass + motion):** Briskly-style ~5/100 and Jev-style ~3–5/100, unchanged from Loop 3. The only new slop-adjacent items are the hover-only spotlight wash and the glass blur, neither of which fires a Briskly/Jev rule in static screenshots; the frozen BuyButton em dash remains the single Jev partial tell.

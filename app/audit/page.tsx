@@ -447,6 +447,11 @@ export default function AuditPage() {
               links. It never submits forms, logs in, or bypasses a login page. If the site&apos;s robots.txt
               asks automated tools not to fetch the page, the audit will not run and no score will be given.
             </p>
+            <p className="caption mt-8 mb-8">
+              Scores are DealNote&apos;s own measurements from this run, not Lighthouse, PageSpeed, or
+              search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page
+              SEO 20, Technical 15, Conversion 15, Trust &amp; local 15.
+            </p>
             <label htmlFor="license-key">Licence key (optional, unlocks the full report)</label>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
               <input
