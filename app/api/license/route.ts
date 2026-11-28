@@ -1,4 +1,4 @@
-// DealNote licence check: POST /api/license validates a licence key
+// DealNote license check: POST /api/license validates a license key
 // server-side and reports its monthly audit quota. It never reveals a
 // full audit result and never consumes quota: checking a key is free.
 // Brand-new code for DealNote. No code copied from any other product.
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
   const licenseKey = typeof body.licenseKey === "string" ? body.licenseKey.trim() : "";
   if (!licenseKey) {
-    return NextResponse.json({ valid: false, reason: "Enter a licence key." });
+    return NextResponse.json({ valid: false, reason: "Enter a license key." });
   }
 
   const validation = await validateLicenseKey(licenseKey);
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const record = await entitlementStore.getByKeyHash(hashLicenseKey(licenseKey));
   if (record?.revoked) {
-    return NextResponse.json({ valid: false, reason: "That licence key was revoked after a refund." });
+    return NextResponse.json({ valid: false, reason: "That license key was revoked after a refund." });
   }
   const auditsUsed = record ? record.auditsUsed : 0;
   const auditsRemaining = record ? remainingAudits(record) : AUDITS_PER_MONTH;

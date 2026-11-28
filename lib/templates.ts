@@ -99,7 +99,7 @@ export const PROPOSAL_TEMPLATES: ProposalTemplateDef[] = [
     dealSize: "One landing page + lead capture",
     sections: ["cover", "found", "understanding", "fix", "scope", "investment", "nextstep"],
     defaultOn: ["cover", "found", "understanding", "fix", "scope", "investment", "nextstep"],
-    investmentNote: "One flat fee for the page, plus an optional monthly optimisation line.",
+    investmentNote: "One flat fee for the page, plus an optional monthly optimization line.",
   },
   {
     kind: "fastclose",

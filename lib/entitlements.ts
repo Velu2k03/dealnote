@@ -1,4 +1,4 @@
-// DealNote entitlements: licence-key records and the 30-audits-per-month quota.
+// DealNote entitlements: license-key records and the 30-audits-per-month quota.
 // Brand-new code for DealNote. No code copied from any other product.
 //
 // Storage note: the store resolves to the KV adapter
@@ -6,7 +6,7 @@
 // and UPSTASH_REDIS_REST_TOKEN are set, and falls back to the in-memory
 // store below when they are not. The in-memory fallback is correct per
 // server instance, but on Vercel serverless functions it resets on cold
-// start and is not shared between instances, so a licence key's usage
+// start and is not shared between instances, so a license key's usage
 // count is best-effort there and the quota is presented as a fair-use
 // limit, not a hard cap, until KV is configured. No account or service
 // is provisioned by this code; set the env vars in Vercel to enable it.
@@ -17,15 +17,15 @@ import { getRedisClient, parseKvValue } from "@/lib/kv";
 export const AUDITS_PER_MONTH = 30;
 
 export interface LicenseRecord {
-  /** SHA-256 hex of the licence key. The raw key is never stored. */
+  /** SHA-256 hex of the license key. The raw key is never stored. */
   keyHash: string;
-  /** Lemon Squeezy licence key id, when known (from validation or the webhook). */
+  /** Lemon Squeezy license key id, when known (from validation or the webhook). */
   keyId?: string;
   /** Buyer email, when known. */
   email?: string;
   /** Lemon Squeezy customer id, when known. Used to revoke on refund. */
   customerId?: string;
-  /** Lemon Squeezy order id that paid for this licence, when known. */
+  /** Lemon Squeezy order id that paid for this license, when known. */
   orderId?: string;
   /** Audits used in `month`. */
   auditsUsed: number;
@@ -64,7 +64,7 @@ export function currentMonth(now: Date = new Date()): string {
   return now.toISOString().slice(0, 7);
 }
 
-/** SHA-256 hex of a licence key. Used as the store key; raw keys are never stored. */
+/** SHA-256 hex of a license key. Used as the store key; raw keys are never stored. */
 export function hashLicenseKey(key: string): string {
   return createHash("sha256").update(key.trim()).digest("hex");
 }

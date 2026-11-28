@@ -3,8 +3,8 @@
 //
 // Body: { url, licenseKey, brand? } (brand = BrandProfile fields, partial
 // allowed; missing fields fall back to DEFAULT_BRAND).
-// - Requires a valid licence key: missing or invalid key -> 402, quota
-//   exhausted -> 402. The audit is NOT re-run when the licence key
+// - Requires a valid license key: missing or invalid key -> 402, quota
+//   exhausted -> 402. The audit is NOT re-run when the license key
 //   already has a cached paid audit for this URL (within 24 h): the
 //   cached result is reused and no quota is consumed.
 // - Returns application/pdf rendered from the shared template in
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
   const licenseKey = typeof body.licenseKey === "string" ? body.licenseKey.trim() : "";
   if (!licenseKey) {
     return NextResponse.json(
-      { error: "A licence key is required to download the PDF report. Buy DealNote ($49 one-time) to get one." },
+      { error: "A license key is required to download the PDF report. Buy DealNote ($49 one-time) to get one." },
       { status: 402 },
     );
   }

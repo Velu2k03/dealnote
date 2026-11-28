@@ -1,9 +1,9 @@
 // DealNote rate limiting: free-tier IP limit for /api/audit.
 // Brand-new code for DealNote. No code copied from any other product.
 //
-// Free tier: 5 audit requests per IP per hour. Paid licence-key requests
+// Free tier: 5 audit requests per IP per hour. Paid license-key requests
 // are exempt from this IP limit (they are counted against the 30/month
-// licence quota instead, in lib/entitlements.ts).
+// license quota instead, in lib/entitlements.ts).
 //
 // KV-backed when UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are
 // set (Upstash Redis INCR with a 1-hour expiry, shared across Vercel

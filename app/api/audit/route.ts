@@ -415,13 +415,13 @@ export async function runPaidAudit(url: string, licenseKey: string): Promise<Pai
     await entitlementStore.set(record);
   }
   if (record.revoked) {
-    return { ok: false, status: 401, error: "That licence key was revoked after a refund. Contact support if this is wrong." };
+    return { ok: false, status: 401, error: "That license key was revoked after a refund. Contact support if this is wrong." };
   }
   if (remainingAudits(record) <= 0) {
     return {
       ok: false,
       status: 402,
-      error: `This licence key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
+      error: `This license key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
     };
   }
 
@@ -433,7 +433,7 @@ export async function runPaidAudit(url: string, licenseKey: string): Promise<Pai
     return {
       ok: false,
       status: 402,
-      error: `This licence key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
+      error: `This license key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
     };
   }
   await entitlementStore.set(record);
@@ -450,10 +450,10 @@ export async function runPaidAudit(url: string, licenseKey: string): Promise<Pai
 
 /**
  * Paid audit for the PDF routes: reuse the cached result from the audit
- * that produced the report (same licence key + URL, within 24 h) and do
+ * that produced the report (same license key + URL, within 24 h) and do
  * NOT consume quota. Only when there is no cached result does this fall
  * back to runPaidAudit, which runs the audit and consumes one audit.
- * The licence key is still validated and revocation/quota are still
+ * The license key is still validated and revocation/quota are still
  * checked before any cached result is used; the cache never grants access.
  */
 export async function runPaidAuditCached(url: string, licenseKey: string): Promise<PaidAuditResult> {
@@ -467,13 +467,13 @@ export async function runPaidAuditCached(url: string, licenseKey: string): Promi
   const record: LicenseRecord | null = await entitlementStore.getByKeyHash(keyHash);
   if (!record) return runPaidAudit(url, licenseKey);
   if (record.revoked) {
-    return { ok: false, status: 401, error: "That licence key was revoked after a refund. Contact support if this is wrong." };
+    return { ok: false, status: 401, error: "That license key was revoked after a refund. Contact support if this is wrong." };
   }
   if (remainingAudits(record) <= 0) {
     return {
       ok: false,
       status: 402,
-      error: `This licence key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
+      error: `This license key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
     };
   }
   const cached = await getCachedAudit(keyHash, check.url);
@@ -502,7 +502,7 @@ export function teaserFor(result: AuditResult) {
     overallGrade: result.overallGrade,
     issues: result.issues.slice(0, 2),
     message:
-      "This is a free preview: the overall score and the top 2 findings. The full report, including every finding and the ready-to-send proposal, needs a DealNote licence ($49 one-time).",
+      "This is a free preview: the overall score and the top 2 findings. The full report, including every finding and the ready-to-send proposal, needs a DealNote license ($49 one-time).",
   };
 }
 
@@ -544,7 +544,7 @@ export async function POST(request: Request) {
   if (!limit.allowed) {
     const retryAfter = Math.max(1, Math.ceil((limit.resetAt - Date.now()) / 1000));
     return NextResponse.json(
-      { error: "Free audits are limited to 5 per hour from one address. Try again later, or use a licence key for the full report." },
+      { error: "Free audits are limited to 5 per hour from one address. Try again later, or use a license key for the full report." },
       { status: 429, headers: { "Retry-After": String(retryAfter) } },
     );
   }

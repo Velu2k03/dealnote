@@ -16,7 +16,7 @@ import {
   type SectionKey,
 } from "@/lib/templates";
 
-/** Buyer brand colour, validated to a #rrggbb hex; anything else falls
+/** Buyer brand color, validated to a #rrggbb hex; anything else falls
  *  back to DealNote teal so a bad value can never break the PDF. */
 export function brandAccent(brand: BrandProfile): string {
   const c = (brand.primaryColor ?? "").trim();

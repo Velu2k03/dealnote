@@ -119,3 +119,50 @@ Live site: https://dealnote-blue.vercel.app
 - TrustMRR connection: after first real sale only (see above).
 - Ship or Die My Startup revenue section: update only with real
   verified figures, never invented.
+
+## Neon whole-site audit fixes, 28 Nov 2026 (branch dealnote-neon-fixes)
+
+Neon Task audit: https://gemini.google.com/app/4b48280eb43a59f2, verdict
+NO-SHIP, scores Design/UI 5.5, Tap Flow 4.5, Trust 8.0, Legal 8.5,
+Copy/Slop 7.5. Full record: docs/neon-whole-site-audit-2026-11-28.md.
+
+All code findings are fixed and verified locally (production build +
+headless Chrome): P0-1 nav crash (tracker moved from a hand-written
+<head> to next/script; 10-route click matrix clean), P0-2 sample PDF
+(200, 76,635 B, 3 pages), P0-3 terms copy (Upstash sentence replaced
+with plain wording), P1-1 audit auto-run, P1-2 teaser findings to
+/templates, P1-3 hero subcopy, P1-4 section labels + checklist
+markers, P1-5 merchant of record + governing law + tracker in
+privacy sharing, P2-1 single SAMPLE banner + CountUp lands on 83,
+P2-2 US English site-wide, P2-3 privacy plain language, plus mobile
+390px verified on all 6 routes, brand preview on /sample, license
+key recovery clarified on home + /audit, favicon 404 fixed.
+
+## Still pending, browser task only (not done by the subagent)
+
+- Lemon Squeezy: create DealNote product in Resonant Atlas store
+  #244487 ($49 one-time, license keys on, activation limit 1, never
+  expires); API key (Settings -> API); webhook (Settings ->
+  Webhooks, https://dealnote-blue.vercel.app/api/webhook/lemonsqueezy,
+  order_created + order_refunded only, signing secret).
+- Vercel: set LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_STORE_ID=244487,
+  LEMONSQUEEZY_PRODUCT_ID, LEMONSQUEEZY_VARIANT_ID,
+  LEMONSQUEEZY_WEBHOOK_SECRET; leave DEALNOTE_DEV_LICENSE_KEY blank
+  in production; redeploy.
+- Upstash Redis free tier via Vercel Marketplace ($0, no card):
+  provision and set UPSTASH_REDIS_REST_URL /
+  UPSTASH_REDIS_REST_TOKEN so the 30/month counter is durable.
+- Live POST verification (free audit teaser, checkout POST expecting
+  a real lemonsqueezy.com URL, PDF 402 without key, PDF 200 with a
+  real key): Velu approved this 28 Nov 20:31, BUT the last attempt
+  timed out on approval and the runtime instruction says do not
+  retry unless he asks to try again. Tell Velu it still needs his
+  approval.
+- Live $49 test purchase + immediate refund in Lemon Squeezy; record
+  order ID, amount, refund ID, license key issued (record "issued
+  and works", not the key). If it needs Velu's card, stop that step
+  only and report exactly what is needed; do not use any saved card
+  without his say; do NOT do a second purchase.
+- TrustMRR: connect only after the first real sale, and only if the
+  test purchase counts. Ship or Die revenue only with real verified
+  figures.

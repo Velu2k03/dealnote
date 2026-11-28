@@ -2,6 +2,7 @@ import { Printer } from "lucide-react";
 import { SAMPLE_BUSINESS, sampleAudit } from "@/lib/audit";
 import { IssueList, ScoreSummary } from "@/components/audit-ui";
 import PrintButton from "@/components/print-button";
+import BrandPreview from "@/components/brand-preview";
 import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NON_BINDING_TEXT, NOT_INCLUDED_DEFAULT } from "@/lib/templates";
 
 export default function SamplePage() {
@@ -12,7 +13,7 @@ export default function SamplePage() {
     <section style={{ paddingTop: 48 }}>
       <div className="container">
         <p className="print-stamp">SAMPLE: fictional business, fictional data</p>
-        <p><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
+        <p className="no-print"><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
         <h1>Website Teardown and Proposal</h1>
         <p className="reading">
           Sample report for <strong>{SAMPLE_BUSINESS.name}</strong>, {SAMPLE_BUSINESS.city}. Address{" "}
@@ -22,7 +23,7 @@ export default function SamplePage() {
           page describes a real business.
         </p>
         <p className="reading">
-          Prepared by [Your studio], [Your name], [your email]. Run date: 27 Nov 2026. The bracketed
+          Prepared by [Your studio], [Your name], [your email]. Run date: 28 Nov 2026. The bracketed
           names are placeholders on purpose: your brand goes here on a real report.
         </p>
         <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -36,6 +37,8 @@ export default function SamplePage() {
         <div className="mt-32">
           <ScoreSummary result={sample} />
         </div>
+
+        <BrandPreview />
 
         <h2 className="mt-32">What we found, in plain language</h2>
         <p className="reading">
@@ -145,7 +148,7 @@ export default function SamplePage() {
           <h3>Next step</h3>
           <p>
             Reply to this email, or book a free 15-minute call at the link in the covering email. Prepared by
-            Your Studio. Lab measurement on 27 Nov 2026. Scores can vary between runs. This report audits the
+            Your Studio. Lab measurement on 28 Nov 2026. Scores can vary between runs. This report audits the
             public homepage only.
           </p>
           <p className="caption mb-0">

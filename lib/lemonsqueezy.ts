@@ -2,7 +2,7 @@
 // Brand-new code for DealNote. No code copied from any other product.
 //
 // Lemon Squeezy is the merchant of record: it handles the $49 one-time
-// payment, sales tax, and the licence key. DealNote never collects or
+// payment, sales tax, and the license key. DealNote never collects or
 // sees card data.
 //
 // Endpoints used (Lemon Squeezy API v1, docs.lemonsqueezy.com):
@@ -18,7 +18,7 @@
 //   LEMONSQUEEZY_API_KEY, LEMONSQUEEZY_STORE_ID,
 //   LEMONSQUEEZY_PRODUCT_ID, LEMONSQUEEZY_VARIANT_ID,
 //   LEMONSQUEEZY_WEBHOOK_SECRET
-// The product must have licence keys enabled, so every paid order gets
+// The product must have license keys enabled, so every paid order gets
 // a key that Lemon Squeezy emails to the buyer in the receipt.
 
 import { createHmac, timingSafeEqual } from "crypto";
@@ -88,7 +88,7 @@ export async function createLemonSqueezyCheckout(input: {
             redirect_url: `${input.origin}/audit?checkout=success`,
             receipt_button_text: "Open DealNote",
             receipt_thank_you_note:
-              "Your licence key is in your receipt email. Enter it on the audit page to unlock the full report and PDF downloads.",
+              "Your license key is in your receipt email. Enter it on the audit page to unlock the full report and PDF downloads.",
           },
         },
         relationships: {
@@ -121,7 +121,7 @@ export interface LemonSqueezyLicenseValidation {
 }
 
 /**
- * Validate a Lemon Squeezy licence key against the public License API.
+ * Validate a Lemon Squeezy license key against the public License API.
  * The key is sent to Lemon Squeezy only, over HTTPS, and is never
  * logged or stored. The returned meta ids are checked against the
  * configured store / product / variant, so a key from another Lemon
@@ -131,7 +131,7 @@ export async function validateLemonSqueezyLicenseKey(
   rawKey: string,
 ): Promise<LemonSqueezyLicenseValidation> {
   const key = (rawKey ?? "").trim();
-  if (!key) return { valid: false, reason: "Enter a licence key." };
+  if (!key) return { valid: false, reason: "Enter a license key." };
 
   let res: Response;
   try {
@@ -141,7 +141,7 @@ export async function validateLemonSqueezyLicenseKey(
       body: new URLSearchParams({ license_key: key }),
     });
   } catch {
-    return { valid: false, reason: "The licence check could not be reached. Try again in a moment." };
+    return { valid: false, reason: "The license check could not be reached. Try again in a moment." };
   }
   let json: {
     valid?: boolean;
@@ -159,24 +159,24 @@ export async function validateLemonSqueezyLicenseKey(
   try {
     json = (await res.json()) as typeof json;
   } catch {
-    return { valid: false, reason: "The licence check returned an unreadable reply. Try again in a moment." };
+    return { valid: false, reason: "The license check returned an unreadable reply. Try again in a moment." };
   }
 
   if (!json.valid || json.license_key?.status !== "active") {
-    return { valid: false, reason: "That licence key was not recognised. Check it and try again." };
+    return { valid: false, reason: "That license key was not recognised. Check it and try again." };
   }
   const env = lemonSqueezyEnv();
   const meta = json.meta ?? {};
   // When ids are configured, the key must belong to this store/product.
   // (Ids are numbers in the API; env values are strings, so compare as strings.)
   if (env.storeId && meta.store_id !== undefined && String(meta.store_id) !== env.storeId) {
-    return { valid: false, reason: "That licence key was not recognised. Check it and try again." };
+    return { valid: false, reason: "That license key was not recognised. Check it and try again." };
   }
   if (env.productId && meta.product_id !== undefined && String(meta.product_id) !== env.productId) {
-    return { valid: false, reason: "That licence key was not recognised. Check it and try again." };
+    return { valid: false, reason: "That license key was not recognised. Check it and try again." };
   }
   if (env.variantId && meta.variant_id !== undefined && String(meta.variant_id) !== env.variantId) {
-    return { valid: false, reason: "That licence key was not recognised. Check it and try again." };
+    return { valid: false, reason: "That license key was not recognised. Check it and try again." };
   }
   return {
     valid: true,
@@ -188,7 +188,7 @@ export async function validateLemonSqueezyLicenseKey(
 }
 
 /**
- * List the licence key(s) Lemon Squeezy generated for an order.
+ * List the license key(s) Lemon Squeezy generated for an order.
  * Needs the API key. Returns the first key string, or null.
  */
 export async function getLicenseKeyForOrder(orderId: string): Promise<string | null> {

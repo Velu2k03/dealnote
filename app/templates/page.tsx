@@ -7,6 +7,7 @@ import { DEFAULT_BRAND, type BrandProfile } from "@/lib/audit";
 import {
   EMAIL_TEMPLATES,
   PROPOSAL_TEMPLATES,
+  SECTION_LABELS,
   buildEmailText,
   buildProposalText,
   canSpamFooter,
@@ -44,6 +45,9 @@ function loadBrand(): BrandProfile {
 export default function TemplatesPage() {
   const [brand, setBrand] = useState<BrandProfile>(DEFAULT_BRAND);
   const [findings, setFindings] = useState<string[]>([]);
+  // Live preview of the latest audit (URL + score), filled in from the
+  // free teaser as well as full audits (Neon whole-site audit P1-2).
+  const [lastAudit, setLastAudit] = useState<{ url: string; score: number; grade: string } | null>(null);
   const [openProposal, setOpenProposal] = useState<ProposalKind | null>(null);
   const [openEmail, setOpenEmail] = useState<EmailKind | null>(null);
   const [emailDrafts, setEmailDrafts] = useState<Partial<Record<EmailKind, string>>>({});
@@ -55,8 +59,20 @@ export default function TemplatesPage() {
     try {
       const raw = localStorage.getItem(LAST_FINDINGS_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as string[];
-        if (Array.isArray(parsed) && parsed.length > 0) setFindings(parsed);
+        const parsed = JSON.parse(raw) as unknown;
+        // Current shape: { url, score, grade, findings[] }. Older runs
+        // stored a plain string[]; accept both.
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setFindings(parsed.filter((x): x is string => typeof x === "string"));
+        } else if (parsed && typeof parsed === "object") {
+          const rec = parsed as { url?: unknown; score?: unknown; grade?: unknown; findings?: unknown };
+          if (Array.isArray(rec.findings) && rec.findings.length > 0) {
+            setFindings(rec.findings.filter((x): x is string => typeof x === "string"));
+          }
+          if (typeof rec.url === "string" && typeof rec.score === "number" && typeof rec.grade === "string") {
+            setLastAudit({ url: rec.url, score: rec.score, grade: rec.grade });
+          }
+        }
       }
     } catch {
       // No audit findings stored; placeholders stay as written.
@@ -121,6 +137,16 @@ export default function TemplatesPage() {
           <h1>Proposal templates</h1>
           <p>8 proposals + 8 emails. Pick one, fill in the blanks, send it.</p>
         </div>
+        {lastAudit ? (
+          <div className="card mt-24" style={{ background: "#F0FDF9", borderColor: "#99F6E4" }}>
+            <p className="mb-0">
+              <strong>Latest audit filled in:</strong> {lastAudit.url} — score {lastAudit.score}/{lastAudit.grade}.
+              The {findings.length} finding{findings.length === 1 ? "" : "s"} below come from that audit, so the
+              templates show real text instead of [finding] placeholders.{" "}
+              <Link href="/audit">Run a new audit</Link> to replace them.
+            </p>
+          </div>
+        ) : null}
         <div className="steps-flow mt-24" aria-label="How templates fit the workflow">
           <div className="step-row">
             <span className="step-num" aria-hidden>1</span>
@@ -158,7 +184,7 @@ export default function TemplatesPage() {
               <div style={{ flex: "1 1 auto" }}>
                 <h3 className="mt-0">{t.name} <span className="caption">({t.length}, {t.dealSize})</span></h3>
                 <p className="mb-8">{t.tagline}</p>
-                <p className="mb-8"><strong>Sections ({t.sections.length}): </strong>{t.sections.join(", ")}</p>
+                <p className="mb-8"><strong>Sections ({t.sections.length}): </strong>{t.sections.map((s) => SECTION_LABELS[s]).join(", ")}</p>
                 <p className="mb-16">{t.investmentNote}</p>
                 <p className="mb-0">
                   <button
@@ -301,7 +327,7 @@ export default function TemplatesPage() {
 
         <h2 className="mt-32">Before you send: checklist</h2>
         <div className="card">
-          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+          <ul style={{ listStyle: "none", paddingLeft: 0, marginBottom: 0 }}>
             {CHECKLIST.map((item) => (
               <li key={item} style={{ marginBottom: 8 }}>
                 <CheckSquare size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom", marginRight: 8 }} />

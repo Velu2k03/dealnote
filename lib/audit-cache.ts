@@ -1,10 +1,10 @@
 // DealNote last-audit cache: a PDF download must NOT re-run the audit
 // and burn one of the 30 monthly audits. After a paid audit succeeds,
-// its result is cached per licence-key hash + normalised URL; the PDF
+// its result is cached per license-key hash + normalised URL; the PDF
 // routes reuse the cached result instead of calling runPaidAudit again.
 // KV-backed (Upstash Redis, 24 h expiry) when configured, otherwise an
 // in-memory Map (best-effort per instance, same fallback as entitlements).
-// The cache never grants access: PDF routes still validate the licence
+// The cache never grants access: PDF routes still validate the license
 // key and check revocation before reading it.
 
 import { getRedisClient, parseKvValue } from "@/lib/kv";

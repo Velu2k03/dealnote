@@ -5,8 +5,8 @@
 //         scopeLines?, timelineLines?, notIncluded?, expiryDays?,
 //         selectedIssueIds? } (brand = BrandProfile fields, partial
 // allowed; missing fields fall back to DEFAULT_BRAND).
-// - Requires a valid licence key: missing or invalid key -> 402, quota
-//   exhausted -> 402. The audit is NOT re-run when the licence key
+// - Requires a valid license key: missing or invalid key -> 402, quota
+//   exhausted -> 402. The audit is NOT re-run when the license key
 //   already has a cached paid audit for this URL (within 24 h): the
 //   cached result is reused and no quota is consumed. Only a first PDF
 //   for a URL runs the audit, exactly like /api/audit.
@@ -14,7 +14,7 @@
 //   built from the audit findings (proposalItemsFromIssues), never invented.
 //   Only the buyer-selected findings appear in the proposal.
 // - Returns application/pdf rendered from the shared template in
-//   lib/pdf-html.ts (buyer logo and brand colour in the PDF, white/slate,
+//   lib/pdf-html.ts (buyer logo and brand color in the PDF, white/slate,
 //   deep teal #0F766E default, no gradients).
 // - If Chromium cannot render at runtime, returns a clear 501. A PDF is
 //   never faked.
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
   const licenseKey = typeof body.licenseKey === "string" ? body.licenseKey.trim() : "";
   if (!licenseKey) {
     return NextResponse.json(
-      { error: "A licence key is required to download the PDF proposal. Buy DealNote ($49 one-time) to get one." },
+      { error: "A license key is required to download the PDF proposal. Buy DealNote ($49 one-time) to get one." },
       { status: 402 },
     );
   }

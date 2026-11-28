@@ -155,7 +155,7 @@ export function analyzePage(input: AnalyzeInput): AnalyzeOutput {
   };
 
   const pageMB = Buffer.byteLength(html, "utf8") / 1024 / 1024;
-  // Speed: load time and page weight as a lab proxy, labelled as such.
+  // Speed: load time and page weight as a lab proxy, labeled as such.
   let speedPassed = 0;
   let speedTotal = 0;
   speedTotal += 1; if (loadMs <= 2500) speedPassed += 1; else addIssue("speed", loadMs > 5000 ? "Critical" : "Fix soon", "Homepage loads slowly", `The homepage took about ${(loadMs / 1000).toFixed(1)} seconds to fetch in this run.`, "Visitors on a phone leave slow pages before they read anything, so fewer of them call.", "Compress large images, remove unused scripts, and ask the host about caching.");
