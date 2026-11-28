@@ -1,16 +1,23 @@
 :root {
-  --bg: #ffffff;
-  --surface: #f8fafc;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #475569;
-  --faint: #64748b;
-  --accent: #0f766e;
-  --accent-soft: #f0fdfa;
-  --accent-border: #99f6e4;
-  --green: #15803d;
-  --amber: #b45309;
-  --red: #b91c1c;
+  /* Tokens in OKLCH (Loop 5, oklch-skill + tailwind-design-system token
+     discipline). Same colours as the hex originals, converted 1:1:
+     bg #ffffff, surface #f8fafc, border #e2e8f0, text #0f172a,
+     muted #475569, faint #64748b, accent #0f766e, accent-soft #f0fdfa,
+     accent-border #99f6e4, green #15803d, amber #b45309, red #b91c1c.
+     Contrast on white, WCAG: accent 5.47, muted 7.58, faint 4.76,
+     text 17.85, red 6.47, amber 5.02, green 5.02 — all AA. */
+  --bg: oklch(1 0 0);
+  --surface: oklch(0.984 0.003 247.9);
+  --border: oklch(0.929 0.013 255.5);
+  --text: oklch(0.208 0.04 265.8);
+  --muted: oklch(0.446 0.037 257.3);
+  --faint: oklch(0.554 0.041 257.4);
+  --accent: oklch(0.511 0.086 186.4);
+  --accent-soft: oklch(0.984 0.014 180.7);
+  --accent-border: oklch(0.91 0.093 180.4);
+  --green: oklch(0.527 0.137 150.1);
+  --amber: oklch(0.555 0.146 49);
+  --red: oklch(0.505 0.19 27.5);
 }
 
 * { box-sizing: border-box; }
@@ -25,15 +32,16 @@ body {
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; }
 a:hover { text-decoration: underline; }
 
-h1 { font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; }
-h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; }
+h1 { font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; text-wrap: balance; }
+h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; text-wrap: balance; }
 h3 { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0 0 8px; }
-p { margin: 0 0 16px; }
+p { margin: 0 0 16px; text-wrap: pretty; }
 small, .caption { font-size: 13px; line-height: 1.5; color: var(--muted); }
 
 .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
@@ -55,12 +63,18 @@ section { padding: 64px 0; }
   min-height: 44px; padding: 10px 20px; border-radius: 8px;
   font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
   text-decoration: none; white-space: normal; text-align: center;
+  touch-action: manipulation;
   transition: background-color 120ms ease-out, border-color 120ms ease-out, transform 120ms ease-out, box-shadow 120ms ease-out;
 }
-.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:hover { text-decoration: none; }
+/* Hover lift only where a hover pointer exists: touch taps fire a false
+   hover, so the lift must not run there (review-animations §8). */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { transform: translateY(-1px); }
+}
 .btn:active { transform: translateY(0) scale(0.98); }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: #0d5f58; }
+.btn-primary:hover { background: oklch(0.439 0.073 185.8); }
 .btn-secondary { background: #fff; border-color: var(--border); color: var(--text); }
 .btn-secondary:hover { border-color: var(--faint); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -70,7 +84,7 @@ section { padding: 64px 0; }
 
 .card {
   background: #fff; border: 1px solid var(--border); border-radius: 8px;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px;
+  box-shadow: 0 1px 2px oklch(0.208 0.04 265.8 / 0.06); padding: 24px;
 }
 /* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule): frosted
    translucent panels for the hero score card, finding cards, step rows
@@ -79,11 +93,11 @@ section { padding: 64px 0; }
    screen-only: print forces plain white (see @media print below), and
    the PDF templates in lib/pdf-html.ts never use it. */
 .glass {
-  background: rgb(255 255 255 / 0.72);
+  background: oklch(1 0 0 / 0.72);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgb(255 255 255 / 0.65);
-  box-shadow: 0 8px 32px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.06);
+  border: 1px solid oklch(1 0 0 / 0.65);
+  box-shadow: 0 8px 32px oklch(0.208 0.04 265.8 / 0.08), 0 1px 2px oklch(0.208 0.04 265.8 / 0.06);
 }
 .callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 6px; padding: 16px 20px; }
 .evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; font-size: 14px; overflow-wrap: anywhere; }
@@ -129,11 +143,11 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
   border-radius: 6px; padding: 4px 10px;
 }
 .tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); }
-.tag-critical { color: var(--red); border-color: #fecaca; background: #fef2f2; }
-.tag-soon { color: var(--amber); border-color: #fde68a; background: #fffbeb; }
+.tag-critical { color: var(--red); border-color: oklch(0.885 0.059 18.3); background: oklch(0.971 0.013 17.4); }
+.tag-soon { color: var(--amber); border-color: oklch(0.924 0.115 95.7); background: oklch(0.987 0.021 95.3); }
 .tag-nice { color: var(--muted); background: var(--surface); }
 
-.site-header { border-bottom: 1px solid var(--border); background: rgb(255 255 255 / 0.8); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
+.site-header { border-bottom: 1px solid var(--border); background: oklch(1 0 0 / 0.8); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
 .site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
 .site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
@@ -175,7 +189,7 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     background: #fff;
     border: 1px solid var(--border);
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgb(15 23 42 / 0.16);
+    box-shadow: 0 8px 24px oklch(0.208 0.04 265.8 / 0.16);
     padding: 8px;
     margin: 0;
   }
@@ -188,10 +202,25 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .site-footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 14px; }
 .site-footer a { color: var(--muted); }
 
+#how-it-works { scroll-margin-top: 80px; }
+
+/* Skip link (web-design-guidelines): hidden until keyboard focus. */
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 100; background: #fff; padding: 8px 16px; }
+.skip-link:focus { left: 8px; top: 8px; }
+
+/* Mobile hero: the score card's category bars are demo detail, not the
+   visitor's task; hide them under 640px so the steps sit one screen down
+   instead of two and a half (critique P1). The score, grade, run facts
+   and the link to the full sample stay visible. */
+@media (max-width: 640px) {
+  .hero-score .score-bars { display: none; }
+}
+
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 .steps-flow { display: grid; gap: 20px; }
-.step-row { display: flex; gap: 16px; align-items: flex-start; background: rgb(255 255 255 / 0.72); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px; }
+/* Step rows carry the shared .glass class in the markup; layout only here. */
+.step-row { display: flex; gap: 16px; align-items: flex-start; border-radius: 8px; padding: 24px; }
 .step-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 600; }
 .two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
 @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
@@ -239,9 +268,9 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     right: 0;
     font-size: 11px;
     font-weight: 600;
-    color: #0f766e;
-    border-bottom: 1px solid #99f6e4;
-    background: #f0fdfa;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent-border);
+    background: var(--accent-soft);
     padding: 4px 0;
   }
   /* Glass and motion are screen-only: print shows plain white cards at

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -54,7 +54,7 @@ export function BuyButton({ className = "btn btn-primary" }: { className?: strin
   return (
     <span style={{ display: "inline-block" }}>
       <button type="button" className={className} onClick={buy} disabled={busy}>
-        {busy ? "Opening checkout" : "Buy DealNote — $49 one-time"}
+        {busy ? "Opening checkout…" : "Buy DealNote — $49 one-time"}
       </button>
       {message ? (
         <span className="caption" role="status" style={{ display: "block", marginTop: 8 }}>
@@ -118,7 +118,7 @@ export function severityClass(severity: Severity): string {
 
 export function ScoreBars({ result }: { result: AuditResult }) {
   return (
-    <div>
+    <div className="score-bars">
       {(result.categories ?? []).map((cat) => {
         const meta = CATEGORIES.find((m) => m.key === cat.key);
         if (!meta) return null;
@@ -136,11 +136,11 @@ export function ScoreBars({ result }: { result: AuditResult }) {
             <div className="score-bar">
               <motion.span
                 className="motion-fade"
-                style={{ background: gradeColor(cat.grade) }}
-                initial={{ width: 0 }}
-                whileInView={{ width: `${cat.score}%` }}
+                style={{ background: gradeColor(cat.grade), width: "100%", transformOrigin: "left" }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: cat.score / 100 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
+                transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
               />
             </div>
           </div>
@@ -150,7 +150,7 @@ export function ScoreBars({ result }: { result: AuditResult }) {
   );
 }
 
-export function ScoreSummary({ result, sampleLabel = false }: { result: AuditResult; sampleLabel?: boolean }) {
+export function ScoreSummary({ result, children }: { result: AuditResult; children?: ReactNode }) {
   return (
     <div className="card glass">
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
@@ -178,7 +178,7 @@ export function ScoreSummary({ result, sampleLabel = false }: { result: AuditRes
               Loaded in {(result.loadMs / 1000).toFixed(1)}s, page size {formatPageSize(result.pageBytes)}
             </p>
           ) : null}
-          {sampleLabel ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
+          {children}
         </div>
       </div>
       <div className="mt-24">

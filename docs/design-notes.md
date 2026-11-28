@@ -218,3 +218,48 @@ Velu ordered the plain look elevated after the Loop 4 reports: Apple glass style
 - **Bundle cost (measured 28 Nov 2026, `next build` First Load JS):** home 103 kB → 161 kB, /audit 119 kB → 177 kB, /sample 94.1 kB → 152 kB (+58 kB on pages that use Motion); /templates unchanged at 109 kB; /terms and /privacy unchanged at ~87.5 kB (CSS-only fade, no Motion JS). Shared chunks unchanged at 87.3 kB.
 - **Screenshot caveat:** `whileInView` reveals start at opacity 0, so a full-page screenshot taken without scrolling photographs below-fold sections blank. That is a capture artifact, not a live defect: scrolling through the page first (as a user does) reveals every section at opacity 1, verified in-browser 28 Nov 2026. The screenshot script scrolls through each page before capturing.
 - **Slop re-run (28 Nov 2026, after glass + motion):** Briskly-style ~5/100 and Jev-style ~3–5/100, unchanged from Loop 3. The only new slop-adjacent items are the hover-only spotlight wash and the glass blur, neither of which fires a Briskly/Jev rule in static screenshots; the frozen BuyButton em dash remains the single Jev partial tell.
+
+## 13. Loop 5 — 25-skill polish rules (28 Nov 2026)
+
+All 25 skills from https://recent.design/skills, applied or recorded with evidence in `docs/dealnote-loop5-skills-2026-11-28.md`. Standing rules from this pass:
+
+### Motion tokens (review-animations + userinterface-wiki + apple-design)
+
+- **One shared duration:** `DURATION` 0.25s in `components/motion-ui.tsx`; every element animates in at most 250 ms (Velu's under-400 ms, and under the 300 ms cap). No per-element durations.
+- **One shared easing:** `EASE = [0.23, 1, 0.32, 1]` (`cubic-bezier(0.23, 1, 0.32, 1)`) in MotionProvider and CountUp. Never a built-in named easing for entrances.
+- **Stagger 40 ms** between siblings (`Stagger` in `motion-ui.tsx`). Resolves the 30–80 ms (STANDARDS), <50 ms (wiki) and ~100 ms (make-interfaces-feel-better) conflict.
+- **Transform/opacity only.** Never animate `width`/`height` (layout). ScoreBars use `scaleX` with `transformOrigin: "left"`.
+- **One orchestrated entrance:** hero only. Below-fold sections do NOT each fade-and-slide-up (that is a generic AI tell, frontend-design). `Reveal` is used in the hero and nowhere else.
+- **Hover motion only where hover exists:** lift/press inside `@media (hover: hover) and (pointer: fine)`.
+- **Press feedback:** `:active` scale 0.98 on buttons (apple-design 0.95–0.98).
+- **Effect names (animation-vocabulary):** Stagger, Count-up, Fade + rise, Spotlight hover.
+
+### Tokens (oklch-skill + tailwind-design-system + extract-design-system)
+
+- **Colour tokens live in `:root` in `app/globals.css`, in OKLCH, one semantic name per role** (bg, surface, border, text, muted, faint, accent, accent-soft, accent-border, green, amber, red). Same colours as the hex originals, which stay in the `:root` comment. Contrast table in the Loop 5 doc §5 — all AA.
+- **Token scope:** `app/globals.css` only. `lib/audit.ts` grade colours and `lib/pdf-html.ts` stay hex (PDF path, hex-only brand-colour regex). One-off inline hex in TSX (icon colours, borders) is not a token and stays.
+- **No second styling system.** No Tailwind, no shadcn (DO_NOT_INSTALL, score 100 — see Loop 5 doc §2 row 16). Plain CSS + semantic tokens only.
+
+### Composition (vercel-composition-patterns)
+
+- **No boolean props that switch a variant.** Pass a `children` slot instead (e.g. `ScoreSummary` takes `children` for the SAMPLE stamp, not a `sampleLabel` boolean). A numeric `size` prop is a scale, not a boolean mode — fine.
+
+### Accessibility (web-design-guidelines + ui-skills)
+
+- **Skip link first in the DOM** (`<a href="#main" className="skip-link">` before Header; `<main id="main">`); hidden off-screen until focused.
+- **Anchored sections get `scroll-margin-top: 80px`** (sticky header height).
+- **Loading states end with "…"** ("Running audit…", "Opening checkout…").
+- **Buttons get `touch-action: manipulation`** (no double-tap zoom delay).
+- **Headings `text-wrap: balance`, paragraphs `text-wrap: pretty`, links `text-underline-offset: 3px`.**
+- **Recorded P3s (not fixed):** `aria-current` on nav links; menu button `aria-expanded` — both need client-component/JS state for a minor screen-reader cue.
+
+### Copy (critique + distill + quieter)
+
+- **H1 is the value proposition, not an instruction:** "Show the prospect what is wrong with their site, then sell the fix."
+- **One comparison line, not two captions:** the pricing card carries the SEOptimer anchor once, as a single footnote line ($39/mo, $468/12, checked 28 Nov 2026, example only).
+- **Mobile hero:** the score card's category bars are hidden under 640px (`.hero-score.score-bars`) so the steps are not pushed ~2.5 screens down.
+- **Pricing card (prototype winner, Checklist-first):** benefits as a 4-item check-icon list, then $49, then BuyButton, then the one-line anchor. The full comparison table was traded for a shorter buy path; no verified figure was lost.
+
+### Prototype discipline (prototype skill)
+
+- Divergent variants live on an isolated, unlinked route with the verbatim picker; the winner is picked against recorded criteria; **the prototype surface is deleted after promotion**. A prototype route must stay static (read `?v=` client-side inside Suspense) — a `searchParams` prop forces dynamic rendering, and on a dynamic route the CSS link only arrives via flight hints, which headless Chrome never inserted (variants rendered unstyled).
