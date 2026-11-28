@@ -62,7 +62,7 @@ export function BuyButton({ className = "btn btn-primary" }: { className?: strin
         {busy ? "Opening checkout…" : "Buy DealNote — $49 one-time"}
       </SakugaButton>
       {message ? (
-        <span className="caption" role="status" style={{ display: "block", marginTop: 8 }}>
+        <span className="caption" role="status" style={{ display: "block", marginTop: "0.5rem" }}>
           {message}
         </span>
       ) : null}
@@ -128,10 +128,10 @@ export function ScoreBars({ result }: { result: AuditResult }) {
         const meta = CATEGORIES.find((m) => m.key === cat.key);
         if (!meta) return null;
         return (
-          <div key={cat.key} style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <div key={cat.key} style={{ marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem" }}>
               <CategoryIcon icon={meta.icon} />
-              <span style={{ fontWeight: 600, fontSize: 14 }}>{meta.label}</span>
+              <span style={{ fontWeight: 600, fontSize: "0.875rem" }}>{meta.label}</span>
               <span className="caption">weight {meta.weight}%</span>
               <span className="tabular" style={{ marginLeft: "auto", fontWeight: 600 }}>
                 {cat.score}/100
@@ -158,9 +158,9 @@ export function ScoreBars({ result }: { result: AuditResult }) {
 export function ScoreSummary({ result, children }: { result: AuditResult; children?: ReactNode }) {
   return (
     <div className="card glass">
-      <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
-          <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
+          <div className="tabular" style={{ fontSize: "3rem", fontWeight: 600, lineHeight: 1 }}>
             {/* Neon P2-2 (28 Nov 2026): the headline score renders
                 immediately, no count-up. The counter flashed 68/100 B
                 mid-animation on /sample (and read 0 until scrolled to
@@ -168,12 +168,12 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
                 already showed the final B. CountUp stays in motion-ui
                 for other uses; the score itself is now static text. */}
             {result.overallScore}
-            <span style={{ fontSize: 20, color: "#4A3B5C" }}>/100</span>
+            <span style={{ fontSize: "1.25rem", color: "#4A3B5C" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
         </div>
         <GradeBadge grade={result.overallGrade} size={56} />
-        <div style={{ flex: "1 1 220px" }}>
+        <div style={{ flex: "1 1 13.75rem" }}>
           <p className="mb-8" title={result.url} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>
             <strong>{result.url}</strong>
           </p>
@@ -217,10 +217,10 @@ export function IssueList({ issues, showCategory = true }: { issues: Issue[]; sh
         const meta = CATEGORIES.find((m) => m.key === issue.category);
         return (
           <StaggerItem key={issue.id}>
-          <article className="card glass" style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <article className="card glass" style={{ marginBottom: "1rem" }}>
+            <div style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", flexWrap: "wrap" }}>
               <SeverityIcon severity={issue.severity} />
-              <div style={{ flex: "1 1 260px" }}>
+              <div style={{ flex: "1 1 16.25rem" }}>
                 <h3 className="mb-8">{issue.title}</h3>
                 <p className="mb-8">
                   <span className={severityClass(issue.severity)}>{issue.severity}</span>{" "}

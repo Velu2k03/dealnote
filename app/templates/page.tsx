@@ -175,7 +175,7 @@ export default function TemplatesPage() {
   const footerPreview = useMemo(() => canSpamFooter(brand), [brand]);
 
   return (
-    <section style={{ paddingTop: 48 }}>
+    <section style={{ paddingTop: "3rem" }}>
       {/* Sakuga controls used on this page, lazy-loaded after the first paint. */}
       <SakugaScripts names={["tabs", "radio", "checkbox"]} />
       <div className="container">
@@ -246,8 +246,8 @@ export default function TemplatesPage() {
         </p>
         <div className="template-grid">
           {PROPOSAL_TEMPLATES.map((t) => (
-            <div key={t.kind} className="card" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-              <FileText size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden style={{ flexShrink: 0, marginTop: 4 }} />
+            <div key={t.kind} className="card" style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
+              <FileText size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden style={{ flexShrink: 0, marginTop: "0.25rem" }} />
               <div style={{ flex: "1 1 auto" }}>
                 <h3 className="mt-0">{t.name} <span className="caption">({t.length}, {t.dealSize})</span></h3>
                 <p className="mb-8">{t.tagline}</p>
@@ -318,10 +318,10 @@ export default function TemplatesPage() {
         </p>
         <ol className="template-grid" style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {EMAIL_TEMPLATES.map((e, i) => (
-            <li key={e.kind} className="card" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+            <li key={e.kind} className="card" style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
               <span className="step-num" aria-hidden>{i + 1}</span>
               <div style={{ flex: "1 1 auto" }}>
-                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <h3 className="mt-0" style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                   <Mail size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> {e.name}
                 </h3>
                 <p className="mb-8">{e.purpose}</p>
@@ -369,7 +369,7 @@ export default function TemplatesPage() {
 
         {findingsMissing ? (
           <div className="card mt-24" role="alert" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
-            <p style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 18, fontWeight: 600, margin: "0 0 8px" }}>
+            <p style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "1.125rem", fontWeight: 600, margin: "0 0 0.5rem" }}>
               <TriangleAlert size={18} strokeWidth={1.5} color="#B45309" aria-hidden /> No audit findings found
             </p>
             <p className="mb-16">
@@ -386,7 +386,7 @@ export default function TemplatesPage() {
 
         {!(brand.postalAddress ?? "").trim() ? (
           <div className="card mt-24" role="alert">
-            <p style={{ fontSize: 18, fontWeight: 600, margin: "0 0 8px" }}>Your postal address is missing</p>
+            <p style={{ fontSize: "1.125rem", fontWeight: 600, margin: "0 0 0.5rem" }}>Your postal address is missing</p>
             <p className="mb-16">
               The CAN-SPAM footer on every email below needs your real postal address. Add it in your{" "}
               <Link href="/audit">brand profile on the audit page</Link> before you send anything, or the
@@ -424,7 +424,7 @@ export default function TemplatesPage() {
         </p>
         <div className="card">
           {CHECKLIST.map((item) => (
-            <div key={item} style={{ marginBottom: 8 }}>
+            <div key={item} style={{ marginBottom: "0.5rem" }}>
               <SakugaCheckbox
                 checked={checklistDone.includes(item)}
                 onChange={(next) => toggleChecklist(item, next)}

@@ -491,21 +491,27 @@ export default function AuditPage() {
       {/* Sakuga controls used on this page, lazy-loaded after the first
           paint. Toggle is ~506 KB (43 painted frames), so it loads last. */}
       <SakugaScripts names={["input", "checkbox", "radio", "slider", "progress", "rating", "toggle"]} />
-      <section style={{ paddingTop: 48 }}>
+      <section style={{ paddingTop: "3rem" }}>
         <div className="container audit-layout">
           <div className="reading">
             <h1>Run a teardown</h1>
-            <p>
-              Paste a public business website URL. The audit runs on the server, reads the homepage, and
-              scores six categories. The free result shows the overall score, grade, and top 2 findings.
-              Enter a license key to unlock the full report, the white-label preview, and the proposal.
-            </p>
+            {/* Copy clean-up (28 Nov 2026, Velu: too much text above the form.
+                Research first: SEOptimer's embed form is one headline + URL
+                + email, no explainer above the form; Krug: cut half the words,
+                then half again; detail lives behind a help link. The full
+                research is in docs/dealnote-audit-copy-research-2026-11-28.md
+                and the exact wording still goes to Neon in the Gemini web app,
+                Task mode, Gemini 4 Neon High, for a final decision. Nothing
+                legal was cut: robots.txt, no-login, and the lab-measurement
+                disclaimer live in the "How the audit works" details below and
+                in /terms. */}
+            <p>Paste a public website URL. Free result: score, grade, top 2 findings.</p>
           </div>
 
           <div className="card mt-24">
             <label htmlFor="audit-url">Business website URL</label>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
-              <div style={{ flex: "1 1 280px", minWidth: 0 }}>
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-start" }}>
+              <div style={{ flex: "1 1 17.5rem", minWidth: 0 }}>
                 <SakugaInput
                   label="Business website URL"
                   type="url"
@@ -525,18 +531,22 @@ export default function AuditPage() {
               </SakugaButton>
             </div>
             {error ? <p id="audit-url-error" className="field-error">{error}</p> : null}
-            <p className="caption mt-16 mb-8">
-              Public http or https addresses only. The audit reads the homepage and checks up to 10 internal
-              links. It never submits forms, logs in, or bypasses a login page. If the site&apos;s robots.txt
-              asks automated tools not to fetch the page, the audit will not run and no score will be given.
-            </p>
-            <p className="caption mt-8 mb-8">
-              Scores are DealNote&apos;s own measurements from this run, not Lighthouse, PageSpeed, or
-              search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page
-              SEO 20, Technical 15, Conversion 15, Trust &amp; local 15.
-            </p>
-            <label htmlFor="license-key">License key (optional, unlocks the full report)</label>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+            <p className="caption mt-16 mb-8">Public http or https addresses only.</p>
+            <details className="help mt-8 mb-8">
+              <summary>How the audit works</summary>
+              <p className="caption">
+                The audit runs on the server, reads the homepage, and checks up to 10 internal links. It
+                never submits forms, logs in, or bypasses a login page. If the site&apos;s robots.txt asks
+                automated tools not to fetch the page, the audit will not run and no score will be given.
+              </p>
+              <p className="caption">
+                Scores are DealNote&apos;s own measurements from this run, not Lighthouse, PageSpeed, or
+                search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page
+                SEO 20, Technical 15, Conversion 15, Trust &amp; local 15.
+              </p>
+            </details>
+            <label htmlFor="license-key">License key (optional)</label>
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
               <input
                 id="license-key"
                 type="text"
@@ -544,7 +554,7 @@ export default function AuditPage() {
                 placeholder="Paste your DealNote license key"
                 value={licenseKey}
                 onChange={(e) => saveLicenseKey(e.target.value.trim())}
-                style={{ flex: "1 1 280px" }}
+                style={{ flex: "1 1 17.5rem" }}
               />
               <BuyButton />
             </div>
@@ -566,7 +576,7 @@ export default function AuditPage() {
                   <span className={`progress-dot ${i < step ? "done" : i === step ? "active" : ""}`}>
                     {i < step ? <Check size={18} strokeWidth={1.5} aria-hidden /> : i + 1}
                   </span>
-                  <span style={{ paddingTop: 3 }}>{label}</span>
+                  <span style={{ paddingTop: "0.1875rem" }}>{label}</span>
                 </div>
               ))}
               <p className="caption mb-0">Audits usually take 10 to 30 seconds, depending on the site.</p>
@@ -600,7 +610,7 @@ export default function AuditPage() {
                   <h2 className="mt-32">{totalFindings !== null ? `Top findings (2 of ${totalFindings})` : "Top findings"}</h2>
                   <IssueList issues={displayed.issues.slice(0, 2)} />
                   <div className="card mt-24">
-                    <h3 style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <h3 style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
                       <Lock size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Full report locked
                     </h3>
                     <p>
@@ -610,7 +620,7 @@ export default function AuditPage() {
                         : ""}
                     </p>
                     <label htmlFor="license-key-locked">License key</label>
-                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
                       <input
                         id="license-key-locked"
                         type="text"
@@ -618,7 +628,7 @@ export default function AuditPage() {
                         placeholder="Paste your DealNote license key"
                         value={licenseKey}
                         onChange={(e) => saveLicenseKey(e.target.value.trim())}
-                        style={{ flex: "1 1 280px" }}
+                        style={{ flex: "1 1 17.5rem" }}
                       />
                       <SakugaButton onClick={runAudit} disabled={running}>
                         Unlock with this key
@@ -640,16 +650,16 @@ export default function AuditPage() {
                   </p>
                   {displayed.issues.length > 0 ? (
                     <>
-                      <div className="card" style={{ marginBottom: 16 }}>
+                      <div className="card" style={{ marginBottom: "1rem" }}>
                         <h3>Choose findings for the proposal</h3>
                         <p className="caption">
                           Top 3 are selected by default. Findings 4 to 10 work the same way. The proposal and
                           the PDF use only the findings you tick.
                         </p>
                         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-                          <legend className="caption" style={{ marginBottom: 8 }}>Findings to feature</legend>
+                          <legend className="caption" style={{ marginBottom: "0.5rem" }}>Findings to feature</legend>
                           {displayed.issues.map((issue) => (
-                            <div key={issue.id} style={{ marginBottom: 8 }}>
+                            <div key={issue.id} style={{ marginBottom: "0.5rem" }}>
                               <SakugaCheckbox
                                 checked={selectedIds.includes(issue.id)}
                                 onChange={() => toggleFinding(issue.id)}
@@ -688,7 +698,7 @@ export default function AuditPage() {
                   {displayed.couldNotCheck.length > 0 ? (
                     <div className="card mt-24">
                       <h3>Could not check</h3>
-                      <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+                      <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
                         {displayed.couldNotCheck.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
@@ -727,7 +737,7 @@ export default function AuditPage() {
                     stored only in this browser in v1. Client reports carry your brand only, never the DealNote name.
                   </p>
                   <p className="caption">{LOCAL_STORAGE_NOTICE}</p>
-                  <div style={{ marginBottom: 16 }}>
+                  <div style={{ marginBottom: "1rem" }}>
                     <SakugaToggle label="Show white-label preview" checked={showPreview} onChange={setShowPreview} />
                   </div>
                   {showPreview ? (
@@ -753,7 +763,7 @@ export default function AuditPage() {
                           behind on-demand disclosure; native details needs
                           no script and stays keyboard accessible). */}
                       <details className="mt-16">
-                        <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: 14, minHeight: 44, display: "flex", alignItems: "center" }}>
+                        <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: "0.875rem", minHeight: "2.75rem", display: "flex", alignItems: "center" }}>
                           More brand details
                         </summary>
                         <div className="form-grid mt-16">
@@ -770,7 +780,7 @@ export default function AuditPage() {
                             value={brand.postalAddress ?? ""}
                             onChange={(e) => saveBrand({ ...brand, postalAddress: e.target.value })}
                             rows={2}
-                            style={{ minHeight: 44 }}
+                            style={{ minHeight: "2.75rem" }}
                           />
                         </div>
                         <div>
@@ -794,8 +804,8 @@ export default function AuditPage() {
                           <input id="logo-url" type="url" placeholder="https://example.com/logo.png" value={brand.logoUrl ?? ""} onChange={(e) => saveBrand({ ...brand, logoUrl: e.target.value })} />
                         </div>
                         <div>
-                          <span className="btn btn-secondary" style={{ height: 48, padding: "0 20px", display: "inline-flex", alignItems: "center" }}>
-                            <label htmlFor="logo-file" style={{ margin: 0, cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+                          <span className="btn btn-secondary" style={{ height: "3rem", padding: "0 1.25rem", display: "inline-flex", alignItems: "center" }}>
+                            <label htmlFor="logo-file" style={{ margin: 0, cursor: "pointer", fontSize: "0.9375rem", fontWeight: 600 }}>
                               Upload logo (PNG/JPG)
                             </label>
                           </span>
@@ -823,14 +833,14 @@ export default function AuditPage() {
                         </div>
                       </details>
                     </div>
-                    <div className="card" style={{ borderTop: `4px solid ${brand.primaryColor}` }}>
+                    <div className="card" style={{ borderTop: `0.25rem solid ${brand.primaryColor}` }}>
                       {logoSrc ? (
                         <p className="mb-16">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={logoSrc} alt={`${brand.brandName} logo`} style={{ maxHeight: 48, maxWidth: "100%" }} />
                         </p>
                       ) : null}
-                      <p style={{ fontSize: 13, fontWeight: 600, color: brand.primaryColor, margin: "0 0 12px" }}>Report preview</p>
+                      <p style={{ fontSize: "0.8125rem", fontWeight: 600, color: brand.primaryColor, margin: "0 0 0.75rem" }}>Report preview</p>
                       <h3 style={{ color: brand.primaryColor }}>Website Teardown and Proposal</h3>
                       <p><strong>{displayed.url}</strong></p>
                       {/* Same stale-count fix as the proposal text
@@ -868,11 +878,11 @@ export default function AuditPage() {
                     work begins.
                   </p>
 
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginBottom: "1rem" }}>
                     <h3>1. Choose a proposal</h3>
                     <p className="caption">Eight structurally different documents, not one skeleton with a word swapped.</p>
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-                      <legend className="caption" style={{ marginBottom: 8 }}>Proposal template</legend>
+                      <legend className="caption" style={{ marginBottom: "0.5rem" }}>Proposal template</legend>
                       <SakugaRadio
                         label="Proposal template"
                         options={PROPOSAL_TEMPLATES.map((t) => ({
@@ -886,16 +896,16 @@ export default function AuditPage() {
                     </fieldset>
                   </div>
 
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginBottom: "1rem" }}>
                     <h3>2. Sections to include</h3>
                     <p className="caption">
                       Hide any section you do not need. About is off by default: if you have no past projects
                       yet, turn it on only when you have real work to show, or delete it.
                     </p>
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-                      <legend className="caption" style={{ marginBottom: 8 }}>Sections</legend>
+                      <legend className="caption" style={{ marginBottom: "0.5rem" }}>Sections</legend>
                       {templateDef.sections.map((key) => (
-                        <div key={key} style={{ marginBottom: 8 }}>
+                        <div key={key} style={{ marginBottom: "0.5rem" }}>
                           <SakugaCheckbox
                             checked={sections[key] === true}
                             onChange={(next) => setSections({ ...sections, [key]: next })}
@@ -907,7 +917,7 @@ export default function AuditPage() {
                     </fieldset>
                   </div>
 
-                  <div className="card" style={{ marginBottom: 16 }}>
+                  <div className="card" style={{ marginBottom: "1rem" }}>
                     <h3>3. What I would {templateKind === "retainer" ? "do monthly" : "fix"}</h3>
                     <p className="caption">
                       Edit any item, delete one, reorder with the arrows, or add your own. Ticking a finding
@@ -918,7 +928,7 @@ export default function AuditPage() {
                       <p>No fix items yet. Tick a finding above, or add your own item below.</p>
                     ) : (
                       fixItems.map((item, idx) => (
-                        <div key={`${item.title}-${idx}`} style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 12, marginBottom: 12 }}>
+                        <div key={`${item.title}-${idx}`} style={{ border: "1px solid #e2e8f0", borderRadius: "0.5rem", padding: 12, marginBottom: "0.75rem" }}>
                           <label htmlFor={`fix-title-${idx}`}>Fix title</label>
                           <input
                             id={`fix-title-${idx}`}
@@ -926,20 +936,20 @@ export default function AuditPage() {
                             value={item.title}
                             onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, title: e.target.value } : f)))}
                           />
-                          <label htmlFor={`fix-detail-${idx}`} style={{ marginTop: 8 }}>Detail</label>
+                          <label htmlFor={`fix-detail-${idx}`} style={{ marginTop: "0.5rem" }}>Detail</label>
                           <input
                             id={`fix-detail-${idx}`}
                             type="text"
                             value={item.detail}
                             onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, detail: e.target.value } : f)))}
                           />
-                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8, alignItems: "center" }}>
+                          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.5rem", alignItems: "center" }}>
                             <label htmlFor={`fix-phase-${idx}`} style={{ margin: 0 }}>Phase</label>
                             <select
                               id={`fix-phase-${idx}`}
                               value={item.phase}
                               onChange={(e) => setFixItems(fixItems.map((f, i) => (i === idx ? { ...f, phase: e.target.value } : f)))}
-                              style={{ maxWidth: 160 }}
+                              style={{ maxWidth: "10rem" }}
                             >
                               <option>Quick wins</option>
                               <option>Redesign</option>
@@ -958,14 +968,14 @@ export default function AuditPage() {
                         </div>
                       ))
                     )}
-                    <h4 style={{ fontSize: 15, margin: "16px 0 8px" }}>Add a fix item</h4>
+                    <h4 style={{ fontSize: "0.9375rem", margin: "1rem 0 0.5rem" }}>Add a fix item</h4>
                     <label htmlFor="new-fix-title">Title</label>
                     <input id="new-fix-title" type="text" value={newFixTitle} onChange={(e) => setNewFixTitle(e.target.value)} placeholder="e.g. Compress the hero image" />
-                    <label htmlFor="new-fix-detail" style={{ marginTop: 8 }}>Detail</label>
+                    <label htmlFor="new-fix-detail" style={{ marginTop: "0.5rem" }}>Detail</label>
                     <input id="new-fix-detail" type="text" value={newFixDetail} onChange={(e) => setNewFixDetail(e.target.value)} placeholder="e.g. Bring it below 200 KB in a modern format" />
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8, alignItems: "center" }}>
+                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.5rem", alignItems: "center" }}>
                       <label htmlFor="new-fix-phase" style={{ margin: 0 }}>Phase</label>
-                      <select id="new-fix-phase" value={newFixPhase} onChange={(e) => setNewFixPhase(e.target.value)} style={{ maxWidth: 160 }}>
+                      <select id="new-fix-phase" value={newFixPhase} onChange={(e) => setNewFixPhase(e.target.value)} style={{ maxWidth: "10rem" }}>
                         <option>Quick wins</option>
                         <option>Redesign</option>
                         <option>Ongoing</option>
@@ -986,16 +996,16 @@ export default function AuditPage() {
                   </div>
 
                   {templateKind === "redesign" || templateKind === "localseo" || templateKind === "landing" || templateKind === "newbuild" || templateKind === "ecommerce" ? (
-                    <div className="card" style={{ marginBottom: 16 }}>
+                    <div className="card" style={{ marginBottom: "1rem" }}>
                       <h3>4. Scope, timeline, and what is not included</h3>
                       <p className="caption">One item per line. The Not included list is pre-filled with concrete examples; keep or delete each line, never leave it blank.</p>
                       <label htmlFor="scope-lines">Scope and deliverables</label>
                       <textarea id="scope-lines" value={scopeText} onChange={(e) => setScopeText(e.target.value)} rows={5} />
-                      <label htmlFor="timeline-lines" style={{ marginTop: 12 }}>Timeline and milestones</label>
+                      <label htmlFor="timeline-lines" style={{ marginTop: "0.75rem" }}>Timeline and milestones</label>
                       <textarea id="timeline-lines" value={timelineText} onChange={(e) => setTimelineText(e.target.value)} rows={4} />
-                      <label htmlFor="not-included-lines" style={{ marginTop: 12 }}>Not included</label>
+                      <label htmlFor="not-included-lines" style={{ marginTop: "0.75rem" }}>Not included</label>
                       <textarea id="not-included-lines" value={notIncludedText} onChange={(e) => setNotIncludedText(e.target.value)} rows={5} />
-                      <label style={{ marginTop: 12 }}>Proposal valid for (days)</label>
+                      <label style={{ marginTop: "0.75rem" }}>Proposal valid for (days)</label>
                       <SakugaSlider
                         label="Proposal valid for, in days"
                         value={Number(expiryDays) || 14}
@@ -1015,19 +1025,19 @@ export default function AuditPage() {
                     {templateKind === "retainer" ? (
                       <div>
                         <label htmlFor="price-monthly">Monthly care plan price</label>
-                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: 160 }} />
+                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: "10rem" }} />
                       </div>
                     ) : templateKind === "quickfix" || templateKind === "fastclose" || templateKind === "landing" ? (
                       <div>
                         <label htmlFor="price-essential">Essential price</label>
-                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 160 }} />
+                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: "10rem" }} />
                       </div>
                     ) : templateKind === "localseo" ? (
                       <div>
                         <label htmlFor="price-essential">Essential price</label>
-                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 160 }} />
-                        <label htmlFor="price-monthly" style={{ marginTop: 12 }}>Monthly profile care price</label>
-                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: 160 }} />
+                        <input id="price-essential" type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: "10rem" }} />
+                        <label htmlFor="price-monthly" style={{ marginTop: "0.75rem" }}>Monthly profile care price</label>
+                        <input id="price-monthly" type="text" aria-label="Monthly price" placeholder="$____" value={prices.monthly} onChange={(e) => setPrices({ ...prices, monthly: e.target.value })} style={{ maxWidth: "10rem" }} />
                       </div>
                     ) : (
                       <div className="stack-table">
@@ -1038,21 +1048,21 @@ export default function AuditPage() {
                               <td data-label="Tier">Essential</td>
                               <td data-label="Includes">Quick wins, core pages, basic SEO setup</td>
                               <td data-label="Price">
-                                <input type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: 140 }} />
+                                <input type="text" aria-label="Essential price" placeholder="$____" value={prices.essential} onChange={(e) => setPrices({ ...prices, essential: e.target.value })} style={{ maxWidth: "8.75rem" }} />
                               </td>
                             </tr>
                             <tr>
                               <td data-label="Tier">Growth</td>
                               <td data-label="Includes">Everything in Essential, plus redesign, forms, and trust sections</td>
                               <td data-label="Price">
-                                <input type="text" aria-label="Growth price" placeholder="$____" value={prices.growth} onChange={(e) => setPrices({ ...prices, growth: e.target.value })} style={{ maxWidth: 140 }} />
+                                <input type="text" aria-label="Growth price" placeholder="$____" value={prices.growth} onChange={(e) => setPrices({ ...prices, growth: e.target.value })} style={{ maxWidth: "8.75rem" }} />
                               </td>
                             </tr>
                             <tr>
                               <td data-label="Tier">Premium</td>
                               <td data-label="Includes">Everything in Growth, plus ongoing support period</td>
                               <td data-label="Price">
-                                <input type="text" aria-label="Premium price" placeholder="$____" value={prices.premium} onChange={(e) => setPrices({ ...prices, premium: e.target.value })} style={{ maxWidth: 140 }} />
+                                <input type="text" aria-label="Premium price" placeholder="$____" value={prices.premium} onChange={(e) => setPrices({ ...prices, premium: e.target.value })} style={{ maxWidth: "8.75rem" }} />
                               </td>
                             </tr>
                           </tbody>
@@ -1060,7 +1070,7 @@ export default function AuditPage() {
                       </div>
                     )}
                     <p className="caption">Fill in the prices yourself before sending. Payment terms placeholder: 50% upfront, 50% on launch.</p>
-                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
                       <SakugaButton variant="secondary" onClick={copyProposal}>
                         {copied ? "Copied" : "Copy proposal text"}
                       </SakugaButton>
@@ -1160,16 +1170,22 @@ export default function AuditPage() {
             </div>
           ) : null}
 
-          <p className="caption mt-32">
-            <CheckCircle2 size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-            Audit method: direct fetch of the public homepage only. No Google Maps or Places data, no traffic
-            or ranking estimates, no invented figures. Scores are lab measurements on the run date and can vary
-            between runs.
-          </p>
-          <p className="caption">
-            <KeyRound size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-            <Link href="/templates">Sending checklist</Link>: read it before you email a proposal.
-          </p>
+          {/* Method + checklist notes (28 Nov 2026): these two lines sat
+              jammed against the footer with no separation, so on a phone
+              they read as part of the footer block. They now live in their
+              own separated block with a top border and breathing room. */}
+          <div className="footer-note" aria-label="Audit method and sending checklist">
+            <p className="caption">
+              <CheckCircle2 size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
+              Audit method: direct fetch of the public homepage only. No Google Maps or Places data, no traffic
+              or ranking estimates, no invented figures. Scores are lab measurements on the run date and can vary
+              between runs.
+            </p>
+            <p className="caption">
+              <KeyRound size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
+              <Link href="/templates">Sending checklist</Link>: read it before you email a proposal.
+            </p>
+          </div>
         </div>
       </section>
     </>

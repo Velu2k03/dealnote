@@ -37,7 +37,7 @@ export default function SamplePage() {
   };
 
   return (
-    <section style={{ paddingTop: 48 }}>
+    <section style={{ paddingTop: "3rem" }}>
       {/* Sakuga controls used on this page, lazy-loaded after the first
           paint. Toggle is loaded by BrandPreview's own SakugaToggle
           usage through the same lazy scripts on the audit page; here
@@ -59,7 +59,7 @@ export default function SamplePage() {
           (555) 019-4410, Santa Rosa, CA. Run date: 28 Nov 2026. Harbor &amp; Pine Digital is a
           fictional studio: on a real report your own brand goes here.
         </p>
-        <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="no-print" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <a href="/api/pdf/sample" className="btn btn-primary" download>
             Download sample report as PDF
           </a>
@@ -93,19 +93,19 @@ export default function SamplePage() {
         <h2 className="mt-32">What we would fix</h2>
         <div className="card glass">
           <h3>Quick wins</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Compress the hero image below 200 KB and serve it in a modern format.</li>
             <li>Point the broken drain-cleaning link at the correct service page or remove it from the menu.</li>
             <li>Write one short alt description per image, naming the service shown.</li>
             <li>Add a sitemap.xml and list it in robots.txt.</li>
           </ul>
           <h3>Redesign</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Cut the contact form to name, phone, and message, and ask for the address later.</li>
             <li>Make the phone number a clear call button in the mobile header.</li>
           </ul>
           <h3>Ongoing</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Add LocalBusiness schema with name, address, phone, and opening hours.</li>
           </ul>
         </div>
@@ -130,13 +130,13 @@ export default function SamplePage() {
 
         <h2 className="mt-32">Scope and deliverables</h2>
         <div className="card glass">
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             {DEFAULT_SCOPE.map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ul>
           <h3>Not included</h3>
-          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+          <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
             {NOT_INCLUDED_DEFAULT.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -145,7 +145,7 @@ export default function SamplePage() {
 
         <h2 className="mt-32">Timeline and milestones</h2>
         <div className="card glass">
-          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+          <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
             {DEFAULT_TIMELINE.map((line) => (
               <li key={line}>{line}</li>
             ))}
