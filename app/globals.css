@@ -252,6 +252,13 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr !important; } }
+/* Audit page on mobile (Neon P2-3): when a result exists, the score card
+   moves above the URL form so 45/100 is readable above the fold. The
+   DOM order is unchanged; only the visual order moves on small screens. */
+@media (max-width: 640px) {
+  .audit-layout { display: flex; flex-direction: column; }
+  .audit-layout .audit-results { order: -1; margin-top: 8px; }
+}
 /* Templates page (Neon redesign): 3-column horizontal step bar, and
    unified bordered cards in a 2-column grid for both 8 proposals and
    8 emails. */

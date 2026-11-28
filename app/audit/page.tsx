@@ -491,7 +491,7 @@ export default function AuditPage() {
           paint. Toggle is ~506 KB (43 painted frames), so it loads last. */}
       <SakugaScripts names={["input", "checkbox", "radio", "slider", "progress", "rating", "toggle"]} />
       <section style={{ paddingTop: 48 }}>
-        <div className="container">
+        <div className="container audit-layout">
           <div className="reading">
             <h1>Run a teardown</h1>
             <p>
@@ -588,7 +588,7 @@ export default function AuditPage() {
 
           {displayed ? (
             <>
-              <div className="mt-32">
+              <div className="mt-32 audit-results">
                 <ScoreSummary result={displayed}>
                   {displayed.isSample ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
                 </ScoreSummary>
