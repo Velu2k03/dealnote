@@ -142,7 +142,7 @@ export default function Home() {
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
                 <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>Teardown PDF and proposal PDF (coming with payment)</span>
+                <span>Teardown PDF and proposal PDF included with your licence</span>
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
                 <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
@@ -242,8 +242,8 @@ export default function Home() {
             <h3>How do I unlock the full report?</h3>
             <p>
               Buy DealNote once for $49 and you get a licence key. Enter the key on the audit page to unlock
-              the full findings, the white-label preview, and the proposal. PDF downloads are coming with
-              payment.
+              the full findings, the white-label preview, and the proposal. PDF downloads are included
+              with your licence.
             </p>
           </div>
           <p className="mt-32 mb-0">

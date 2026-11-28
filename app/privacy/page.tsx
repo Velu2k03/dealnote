@@ -12,7 +12,7 @@ export default function PrivacyPage() {
               <li>No accounts in v1, so no account information is collected.</li>
               <li>Your brand profile, tracker, and licence key stay only in your own browser.</li>
               <li>Vercel logs requests to run the service. One third-party script, the Ship or Die hackathon tracker, counts visits.</li>
-              <li>No payment is taken today. Payments, when live, will be handled by Polar.</li>
+              <li>Payment is taken by Lemon Squeezy, the merchant of record. DealNote never collects or sees card data.</li>
             </ul>
           </div>
 
@@ -54,10 +54,9 @@ export default function PrivacyPage() {
             traffic for the Ship or Die $100K Hackathon.
           </p>
           <p>
-            <strong>Payments.</strong> Payments are coming soon and will be handled by Polar, the merchant of
-            record. When payment goes live, Polar will collect the buyer&apos;s name, email, card details,
-            and billing address at checkout. DealNote never collects or sees card data. No payment is
-            taken today.
+            <strong>Payments.</strong> Payments are handled by Lemon Squeezy, the merchant of
+            record. Lemon Squeezy collects the buyer&apos;s name, email, card details,
+            and billing address at checkout. DealNote never collects or sees card data.
           </p>
 
           <h2>What is NOT collected</h2>
@@ -73,13 +72,12 @@ export default function PrivacyPage() {
             Your brand profile is used to show your brand on your own reports, on your own device. The
             outreach tracker is used so you can track the proposals you send, on your own device. Vercel
             server logs are used to operate the audit, keep the service running, and prevent abuse. When payment goes live, payment
-            details collected by Polar will be used to take and record your payment.
+            details collected by Lemon Squeezy are used to take and record your payment.
           </p>
 
           <h2>Who data is shared with</h2>
           <p>
-            Data is shared with Vercel (hosting) only today; when payment goes live, payment details will
-            also be shared with Polar (payments), for the purposes above. There is no other sharing,
+            Data is shared with Vercel (hosting) and Lemon Squeezy (payments), for the purposes above. There is no other sharing,
             and no sale of personal information.
           </p>
 
