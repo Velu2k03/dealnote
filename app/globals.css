@@ -249,6 +249,15 @@ td { padding: 0.75rem; border-bottom: 1px solid var(--border); vertical-align: t
 .footer-note { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: grid; gap: 0.5rem; }
 .footer-note p { margin: 0; }
 
+/* Neon /audit copy decision (28 Nov 2026): the utility row under the audit
+   bar holds two disclosures on one line, side by side on desktop, stacked
+   on a phone. Fluid flex, no fixed widths. */
+.utility-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.utility-row details.help { flex: 1 1 16rem; margin: 0; }
+
+/* 12px micro-label for the Website URL input label (Neon /audit copy). */
+.micro-label { font-size: 0.75rem; }
+
 /* Collapsible help (28 Nov 2026, /audit copy clean-up): detail that only
    some readers need lives behind a <details> element, not in the flow. */
 details.help { border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.75rem 1rem; background: var(--surface); }

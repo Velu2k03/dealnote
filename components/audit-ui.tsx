@@ -195,15 +195,16 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
       <div className="mt-24">
         <ScoreBars result={result} />
       </div>
+      {/* Neon /audit copy decision (28 Nov 2026): the 5-sentence score-model
+          paragraph is cut. One line under the score, plus a [?] popover with
+          the full model. Neon's text uses an em dash before "not"; a comma
+          is used here instead, so no new em dash enters rendered copy. */}
       <p className="caption mb-0">
-        Scores are DealNote&apos;s own measurements from this run, on the run date shown. They are not
-        Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
-        Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust &amp; local 15. This is
-        DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
-        D 60-69, F below 60.{" "}
+        DealNote lab measurement on the run date, not Lighthouse, PageSpeed, or a search-ranking score.
+        Scores can vary between runs.{" "}
         <SakugaTooltip
-          label="How the score works"
-          text="Six categories, each scored 0 to 100, weighted as shown and added up. A category only scores what the audit could actually read; anything it could not read never lowers the score."
+          label="?"
+          text="Scoring model: Six areas scored 0-100, weighted and summed: Speed 20, Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust and local 15. Unreadable checks never lower a score. Grades: A 90-100, B 80-89, C 70-79, D 60-69, F below 60. This is DealNote's own model, not an industry standard."
         />
       </p>
     </div>
@@ -227,7 +228,7 @@ export function IssueList({ issues, showCategory = true }: { issues: Issue[]; sh
                   {showCategory && meta ? <span className="tag">{meta.label}</span> : null}
                 </p>
                 <p className="mb-8">
-                  <strong>What was found: </strong>
+                  <strong>Found: </strong>
                   {issue.found}
                 </p>
                 <p className="mb-8">

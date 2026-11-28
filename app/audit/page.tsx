@@ -4,13 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Check,
-  CheckCircle2,
   ChevronDown,
   ChevronUp,
   Download,
   Eye,
   FileText,
-  KeyRound,
   Loader2,
   Lock,
   Mail,
@@ -509,14 +507,14 @@ export default function AuditPage() {
           </div>
 
           <div className="card mt-24">
-            <label htmlFor="audit-url">Business website URL</label>
+            <label htmlFor="audit-url" className="micro-label">Website URL</label>
             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "flex-start" }}>
               <div style={{ flex: "1 1 17.5rem", minWidth: 0 }}>
                 <SakugaInput
-                  label="Business website URL"
+                  label="Website URL"
                   type="url"
                   name="url"
-                  placeholder="https://www.example-plumbing.com"
+                  placeholder="https://example-plumbing.com"
                   value={url}
                   autoFocus
                   onInput={setUrl}
@@ -531,40 +529,58 @@ export default function AuditPage() {
               </SakugaButton>
             </div>
             {error ? <p id="audit-url-error" className="field-error">{error}</p> : null}
-            <p className="caption mt-16 mb-8">Public http or https addresses only.</p>
-            <details className="help mt-8 mb-8">
-              <summary>How the audit works</summary>
-              <p className="caption">
-                The audit runs on the server, reads the homepage, and checks up to 10 internal links. It
-                never submits forms, logs in, or bypasses a login page. If the site&apos;s robots.txt asks
-                automated tools not to fetch the page, the audit will not run and no score will be given.
-              </p>
-              <p className="caption">
-                Scores are DealNote&apos;s own measurements from this run, not Lighthouse, PageSpeed, or
-                search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page
-                SEO 20, Technical 15, Conversion 15, Trust &amp; local 15.
-              </p>
-            </details>
-            <label htmlFor="license-key">License key (optional)</label>
-            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <input
-                id="license-key"
-                type="text"
-                autoComplete="off"
-                placeholder="Paste your DealNote license key"
-                value={licenseKey}
-                onChange={(e) => saveLicenseKey(e.target.value.trim())}
-                style={{ flex: "1 1 17.5rem" }}
-              />
-              <BuyButton />
+            {/* Neon /audit copy decision (28 Nov 2026): one utility row, 1 line,
+                2 disclosures. "How the audit works" carries Neon's exact
+                wording; "Have a license key?" holds the key input + Save key.
+                The open License key input and duplicate Buy button that used
+                to sit in this card are cut; Buy stays in the result paywall
+                and the footer. */}
+            <div className="utility-row">
+              <details className="help">
+                <summary>How the audit works</summary>
+                <p className="caption">
+                  What we check: DealNote fetches the public homepage (http or https only) and checks up to
+                  10 internal links on the server. It never logs in, submits forms, or bypasses a login wall.
+                  If robots.txt disallows automated fetches, the audit stops and no score is given. No Google
+                  Maps/Places data, traffic estimates, or invented figures are used.
+                </p>
+                <p className="caption">
+                  How scoring works: Scores are DealNote&apos;s own lab measurements on the run date, not
+                  Lighthouse, PageSpeed, or search-ranking scores, and can vary between runs. Weights: Speed
+                  20, Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust and local 15. Grades:
+                  A 90-100, B 80-89, C 70-79, D 60-69, F below 60.
+                </p>
+              </details>
+              <details className="help">
+                <summary>Have a license key?</summary>
+                <label htmlFor="license-key" className="micro-label">License key</label>
+                <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+                  <input
+                    id="license-key"
+                    type="text"
+                    autoComplete="off"
+                    placeholder="Paste your license key"
+                    value={licenseKey}
+                    onChange={(e) => saveLicenseKey(e.target.value.trim())}
+                    style={{ flex: "1 1 17.5rem" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      saveLicenseKey(licenseKey.trim());
+                      showToast("License key saved in this browser.");
+                    }}
+                  >
+                    Save key
+                  </button>
+                </div>
+                <p className="caption mt-8 mb-0">
+                  Stored only in this browser. Lost your key? Check your Lemon Squeezy receipt email or email{" "}
+                  <a href="mailto:murugan@drvelu.com?subject=DealNote%20license%20key%20recovery">murugan@drvelu.com</a>.
+                </p>
+              </details>
             </div>
-            <p className="caption mt-8 mb-0">
-              Your license key is stored only in this browser. Full reports and PDF downloads unlock with a license key.
-              Lost your key? It is in the receipt email Lemon Squeezy sends after you buy, or email{" "}
-              <a href="mailto:murugan@drvelu.com?subject=DealNote%20license%20key%20recovery">murugan@drvelu.com</a>{" "}
-              and we will resend it.
-            </p>
-            <p className="caption mt-8 mb-0">{LOCAL_STORAGE_NOTICE}</p>
           </div>
 
           {running ? (
@@ -607,14 +623,14 @@ export default function AuditPage() {
 
               {locked ? (
                 <>
-                  <h2 className="mt-32">{totalFindings !== null ? `Top findings (2 of ${totalFindings})` : "Top findings"}</h2>
+                  <h2 className="mt-32">Top findings</h2>
                   <IssueList issues={displayed.issues.slice(0, 2)} />
                   <div className="card mt-24">
                     <h3 style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                      <Lock size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Full report locked
+                      <Lock size={18} strokeWidth={1.5} color="#4A3B5C" aria-hidden /> Unlock the full report
                     </h3>
                     <p>
-                      Full findings, white-label preview, proposal and PDF download unlock with a license key.
+                      All findings, white-label preview, proposal, and PDF downloads.
                       {totalFindings !== null && totalFindings > displayed.issues.length
                         ? ` This audit found ${totalFindings} findings in total.`
                         : ""}
@@ -631,18 +647,15 @@ export default function AuditPage() {
                         style={{ flex: "1 1 17.5rem" }}
                       />
                       <SakugaButton onClick={runAudit} disabled={running}>
-                        Unlock with this key
+                        Unlock
                       </SakugaButton>
                     </div>
-                    <p className="caption mt-16 mb-16">
-                      Enter your key and run the audit again to see the full report.
-                    </p>
                     <BuyButton />
                   </div>
                 </>
               ) : (
                 <>
-                  <h2 className="mt-32">Findings ({displayed.issues.length})</h2>
+                  <h2 className="mt-32">Top findings</h2>
                   <p className="reading">
                     Each finding shows what was found, why it matters, and the fix. Findings are ordered by
                     severity: Critical first. Tick the findings to feature in the proposal below. Findings are
@@ -1158,32 +1171,18 @@ export default function AuditPage() {
           ) : null}
 
           {!displayed && !running && !fetchFailed ? (
-            <div className="card mt-24">
-              <h2 className="mb-8">No audit yet</h2>
-              <p className="mb-16">
-                Run an audit above, or look at the sample first. The sample uses a fictional business and
-                fictional data, and is clearly marked SAMPLE.
-              </p>
-              <Link href="/sample" className="btn btn-secondary">
-                <Eye size={18} strokeWidth={1.5} aria-hidden /> View the sample report
-              </Link>
-            </div>
+            <p className="mt-24">
+              Want to see a finished report first? <Link href="/sample">View sample report</Link> (fictional data).
+            </p>
           ) : null}
 
-          {/* Method + checklist notes (28 Nov 2026): these two lines sat
-              jammed against the footer with no separation, so on a phone
-              they read as part of the footer block. They now live in their
-              own separated block with a top border and breathing room. */}
-          <div className="footer-note" aria-label="Audit method and sending checklist">
+          {/* Pre-footer (Neon /audit copy decision, 28 Nov 2026): 1 line only.
+              The "Audit method: direct fetch..." paragraph was a duplicate and
+              is cut from the visible pre-footer; the method lives behind
+              "How the audit works" above. */}
+          <div className="footer-note" aria-label="Sending checklist">
             <p className="caption">
-              <CheckCircle2 size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-              Audit method: direct fetch of the public homepage only. No Google Maps or Places data, no traffic
-              or ranking estimates, no invented figures. Scores are lab measurements on the run date and can vary
-              between runs.
-            </p>
-            <p className="caption">
-              <KeyRound size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-              <Link href="/templates">Sending checklist</Link>: read it before you email a proposal.
+              Before you email a prospect, read the <Link href="/templates">Sending checklist</Link>.
             </p>
           </div>
         </div>
