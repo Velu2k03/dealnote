@@ -5,7 +5,7 @@
 //
 // Request:  { "licenseKey": "...." }
 // Response: { valid: true, keyId, email?, auditsUsed, auditsRemaining,
-//             auditsPerMonth: 30, source: "polar" | "dev" }
+//             auditsPerMonth: 30, source: "lemonsqueezy" | "dev" }
 //           { valid: false, reason }   (HTTP 200 either way: this is a
 //           check, not an auth gate; /api/audit returns 401 for bad keys.)
 

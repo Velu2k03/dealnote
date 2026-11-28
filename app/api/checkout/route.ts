@@ -1,14 +1,16 @@
-// DealNote checkout: POST /api/checkout creates a Polar checkout session.
+// DealNote checkout: POST /api/checkout creates a Lemon Squeezy checkout.
 // Brand-new code for DealNote. No code copied from any other product.
 //
-// $49 one-time via Polar.sh (Starter 5% + $0.50). No Stripe checkout on top.
-// When Polar is not configured, this returns { notConfigured: true } with a
-// plain message and HTTP 503. It never returns a fake success or a fake URL.
-// Optional fallback: if POLAR_CHECKOUT_URL (a hosted Polar checkout link
-// created in the Polar dashboard) is set, that link is returned instead.
+// $49 one-time via Lemon Squeezy (5% + $0.50, merchant of record).
+// When Lemon Squeezy is not configured, this returns
+// { notConfigured: true } with a plain message and HTTP 503. It never
+// returns a fake success or a fake URL.
+// Optional fallback: if LEMONSQUEEZY_CHECKOUT_URL (a hosted Lemon
+// Squeezy checkout link created in the dashboard) is set, that link
+// is returned instead.
 
 import { NextResponse } from "next/server";
-import { getPolarClient } from "@/lib/license";
+import { createLemonSqueezyCheckout, isLemonSqueezyConfigured } from "@/lib/lemonsqueezy";
 
 export const runtime = "nodejs";
 
@@ -21,26 +23,11 @@ export async function POST(request: Request) {
   }
   const email = typeof body.email === "string" ? body.email.trim() : "";
 
-  const token = process.env.POLAR_ACCESS_TOKEN;
-  const productId = process.env.POLAR_PRODUCT_ID;
-  const hostedLink = process.env.POLAR_CHECKOUT_URL;
-
-  if (token && productId) {
-    const polar = getPolarClient();
-    if (!polar) {
-      return NextResponse.json(
-        { notConfigured: true, error: "Checkout is not configured yet. Polar is not set up on this build." },
-        { status: 503 },
-      );
-    }
+  if (isLemonSqueezyConfigured()) {
     const origin = new URL(request.url).origin;
     try {
-      const checkout = await polar.checkouts.create({
-        products: [productId],
-        success_url: `${origin}/audit?checkout_id={CHECKOUT_ID}`,
-        ...(email ? { customer_email: email } : {}),
-      });
-      return NextResponse.json({ url: checkout.url, checkoutId: checkout.id });
+      const checkout = await createLemonSqueezyCheckout({ email, origin });
+      return NextResponse.json({ url: checkout.url, checkoutId: checkout.checkoutId });
     } catch {
       return NextResponse.json(
         { error: "Checkout could not be started. Try again in a moment." },
@@ -49,6 +36,7 @@ export async function POST(request: Request) {
     }
   }
 
+  const hostedLink = process.env.LEMONSQUEEZY_CHECKOUT_URL;
   if (hostedLink) {
     return NextResponse.json({ url: hostedLink, hostedLink: true });
   }

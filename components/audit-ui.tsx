@@ -18,7 +18,7 @@ import { CATEGORIES, gradeColor } from "@/lib/audit";
 import { CountUp, Stagger, StaggerItem } from "./motion-ui";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
-  "Checkout is not connected yet — payment opens once the Polar account is set up.";
+  "Checkout is not connected yet — payment opens once the Lemon Squeezy account is set up.";
 
 /** Buy button. POSTs to /api/checkout (owned by the checkout agent) and
  *  follows the checkout URL it returns. Shows a plain message when the

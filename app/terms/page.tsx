@@ -34,8 +34,8 @@ export default function TermsPage() {
           <p>
             You can buy DealNote from the Buy button on the home page and the audit page. You get a licence
             key, which you enter on the audit page to unlock the full report, the white-label preview, and
-            the proposal. Until payment is connected, the audit tool and the sample report are free to try,
-            and full paid PDF downloads are not yet available.
+            the proposal. The audit tool and the sample report are free to try; full reports and PDF downloads
+            unlock with a licence key.
           </p>
           <p>
             This service is for adults 18 or over, or the age of majority where you live.
@@ -125,7 +125,7 @@ export default function TermsPage() {
 
           <h2>Changes</h2>
           <p>
-            The product is new and will change. Features listed as coming soon, including paid PDF downloads,
+            The product is new and will change. Features listed as coming soon
             are not promised for a specific date. If a feature you paid for stops working,
             report it and the refund rule above applies.
           </p>
