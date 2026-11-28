@@ -4,7 +4,7 @@ export default function TermsPage() {
       <div className="container">
         <div className="reading">
           <h1>Terms, Acceptable Use, and Refund policy</h1>
-          <p className="caption">Last updated: 27 Nov 2026. This text is general information, not legal advice.</p>
+          <p className="caption">Last updated: 28 Nov 2026. This text is general information, not legal advice.</p>
 
           <h2>What DealNote is</h2>
           <p>

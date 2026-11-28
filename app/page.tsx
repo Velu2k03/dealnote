@@ -20,10 +20,20 @@ export default function Home() {
                 wrong with their site, then sell the fix. The report carries your brand, your logo, and your
                 contact details, not ours.
               </p>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <Link href="/audit" className="btn btn-primary">
+              <form method="get" action="/audit" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <input
+                  name="url"
+                  type="url"
+                  required
+                  aria-label="Business website URL"
+                  placeholder="https://www.example-plumbing.com"
+                  style={{ flex: "1 1 280px" }}
+                />
+                <button className="btn btn-primary" type="submit">
                   Run a free audit
-                </Link>
+                </button>
+              </form>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
                 <Link href="/sample" className="btn btn-secondary">
                   See a sample report
                 </Link>

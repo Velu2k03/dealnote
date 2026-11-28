@@ -6,7 +6,6 @@ const LINKS = [
   { href: "/sample", label: "Sample report" },
   { href: "/templates", label: "Proposal templates" },
   { href: "/terms", label: "Terms" },
-  { href: "/privacy", label: "Privacy" },
 ];
 
 // One <nav> landmark at every size (modern-web-guidance `navbar`): under

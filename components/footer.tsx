@@ -24,7 +24,7 @@ export default function Footer() {
         </p>
         <p>
           DealNote is made by Velu Murugan (DrVelu), Santa Rosa City, Laguna, Philippines. Last updated
-          27 Nov 2026.
+          28 Nov 2026.
         </p>
         <p className="mb-0">
           <BuyButton className="btn btn-secondary" />

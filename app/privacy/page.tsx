@@ -4,7 +4,7 @@ export default function PrivacyPage() {
       <div className="container">
         <div className="reading">
           <h1>Privacy Policy</h1>
-          <p className="caption">Last updated: 27 Nov 2026. This page is general information, not legal advice.</p>
+          <p className="caption">Last updated: 28 Nov 2026. This page is general information, not legal advice.</p>
 
           <h2>Who operates DealNote</h2>
           <p>
@@ -44,9 +44,10 @@ export default function PrivacyPage() {
             traffic for the Ship or Die $100K Hackathon.
           </p>
           <p>
-            <strong>Payments.</strong> Payments are handled by Polar, the merchant of record. Polar collects
-            the buyer&apos;s name, email, card details, and billing address at checkout. DealNote never
-            collects or sees card data.
+            <strong>Payments.</strong> Payments are coming soon and will be handled by Polar, the merchant of
+            record. When payment goes live, Polar will collect the buyer&apos;s name, email, card details,
+            and billing address at checkout. DealNote never collects or sees card data. No payment is
+            taken today.
           </p>
 
           <h2>What is NOT collected</h2>
@@ -61,14 +62,15 @@ export default function PrivacyPage() {
           <p>
             Your brand profile is used to show your brand on your own reports, on your own device. The
             outreach tracker is used so you can track the proposals you send, on your own device. Vercel
-            server logs are used to operate the audit, keep the service running, and prevent abuse. Payment
-            details collected by Polar are used to take and record your payment.
+            server logs are used to operate the audit, keep the service running, and prevent abuse. When payment goes live, payment
+            details collected by Polar will be used to take and record your payment.
           </p>
 
           <h2>Who data is shared with</h2>
           <p>
-            Data is shared with Vercel (hosting) and Polar (payments) only, for the purposes above. There
-            is no other sharing, and no sale of personal information.
+            Data is shared with Vercel (hosting) only today; when payment goes live, payment details will
+            also be shared with Polar (payments), for the purposes above. There is no other sharing,
+            and no sale of personal information.
           </p>
 
           <h2>How to delete your data</h2>

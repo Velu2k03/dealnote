@@ -139,8 +139,20 @@ function reportShell(opts: {
   <p class="meta">${escapeHtml(opts.prospectUrl)} &middot; ${escapeHtml(opts.runDate)}</p>
   ${opts.isSample ? `<p><span class="sample-stamp">SAMPLE</span></p><p class="meta">Sample report. The business, address, phone number, and website in this report are fictional, and the findings are sample findings written to show the report format. Nothing in this report describes a real business.</p>` : ""}
   ${opts.body}
-  <div class="footer">${escapeHtml(footerLine(b, opts.runDate, opts.prospectUrl))}</div>
 </body></html>`;
+}
+
+/** Contact block for the end of a report: name + email always (PDF routes
+ *  refuse to generate until the brand is real), phone / call link /
+ *  website only when the buyer filled them in, so no placeholder contact
+ *  detail can ever reach a real PDF. */
+function contactBlock(brand: BrandProfile): string {
+  const phone = brand.contactPhone.trim() ? ` &middot; ${escapeHtml(brand.contactPhone)}` : "";
+  const cta = brand.ctaLink.trim()
+    ? `<p><a href="${escapeHtml(brand.ctaLink)}">${escapeHtml(brand.ctaText)}</a></p>`
+    : "";
+  const site = brand.website.trim() ? `<p class="meta">${escapeHtml(brand.website)}</p>` : "";
+  return `<p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)}${phone}</p>${cta}${site}`;
 }
 
 function categoryRows(result: AuditResult): string {
@@ -192,8 +204,7 @@ export function teardownReportHtml(opts: {
   ${result.couldNotCheck.length > 0 ? `<h2>What this report could not check</h2><ul>${result.couldNotCheck.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` : ""}
   <h2>What happens next</h2>
   <div class="cta"><p>${escapeHtml(introLine)}</p>
-  <p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)} &middot; ${escapeHtml(brand.contactPhone)}</p>
-  <p><a href="${escapeHtml(brand.ctaLink)}">${escapeHtml(brand.ctaText)}</a></p></div>`;
+  ${contactBlock(brand)}</div>`;
   return reportShell({ title: "Website Teardown Report", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
 }
 
@@ -299,9 +310,7 @@ export function proposalHtml(opts: {
   if (on("nextstep")) {
     const expiry = (opts.expiryDays ?? "").trim() || "[14/30]";
     body += `<h2>What happens next</h2>
-  <div class="cta"><p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)} &middot; ${escapeHtml(brand.contactPhone)}</p>
-  <p><a href="${escapeHtml(brand.ctaLink)}">${escapeHtml(brand.ctaText)}</a></p>
-  <p class="meta">${escapeHtml(brand.website)}</p></div>
+  <div class="cta">${contactBlock(brand)}</div>
   <p>Reply to this email by [date] to book a 15-minute call. This proposal is valid for ${escapeHtml(expiry)} days from the date above.</p>
   <p class="meta">${escapeHtml(NON_BINDING_TEXT)}</p>`;
   }

@@ -34,18 +34,20 @@ export interface RateLimitResult {
   resetAt: number;
 }
 
-/** Best-effort client IP: first x-forwarded-for entry, then x-real-ip.
- *  Note: X-Forwarded-For is client-supplied and can be rotated, so this
- *  limit is a throttle, not a security boundary. On Vercel the platform
- *  sets X-Forwarded-For; a single spoofed entry cannot be distinguished
- *  from the real chain without trusting the platform header. */
+/** Best-effort client IP. On Vercel the platform sets `x-real-ip` to the
+ *  connecting client, which cannot be spoofed by the caller the way the
+ *  first `x-forwarded-for` entry can, so it is preferred when present.
+ *  `x-forwarded-for` is only a fallback (local dev, other hosts). Either
+ *  way this limit is a throttle, not a security boundary. */
 export function getClientIp(request: Request): string {
+  const realIp = request.headers.get("x-real-ip")?.trim();
+  if (realIp) return realIp;
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     const first = forwarded.split(",")[0]?.trim();
     if (first) return first;
   }
-  return request.headers.get("x-real-ip")?.trim() || "unknown";
+  return "unknown";
 }
 
 /**
@@ -94,5 +96,28 @@ export async function checkFreeRateLimitAsync(ip: string, now: number = Date.now
     };
   } catch {
     return checkFreeRateLimit(ip, now);
+  }
+}
+
+/**
+ * Refund one counted free audit, for when the audit itself failed (robots
+ * 403, fetch failure). A failed fetch must not burn one of the 5 free
+ * audits. Best-effort: never throws, never lets the count go below 0.
+ */
+export async function refundFreeRateLimit(ip: string, now: number = Date.now()): Promise<void> {
+  const redis = getRedisClient();
+  if (redis) {
+    const key = `dealnote:ratelimit:${ip}`;
+    try {
+      const count = await redis.decr(key);
+      if (count < 0) await redis.set(key, "0", { ex: 60 * 60 });
+      return;
+    } catch {
+      // Fall through to the in-memory refund.
+    }
+  }
+  const entry = windows.get(ip);
+  if (entry && now - entry.windowStart < WINDOW_MS && entry.count > 0) {
+    entry.count -= 1;
   }
 }

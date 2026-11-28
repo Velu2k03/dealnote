@@ -232,17 +232,17 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
     kind: "cold",
     name: "Cold Intro",
     timing: "First touch",
-    purpose: "First email to a prospect you have never spoken to. Leads with the three biggest findings and the attached report.",
+    purpose: "First email to a prospect you have never spoken to. Leads with the biggest findings and the attached report.",
     subjects: [
-      "Your website, reviewed: 3 quick wins for [Business]",
-      "I found 3 things on [Business].com",
-      "[Business] website - quick audit + suggestions",
+      "3 quick wins for [Business]",
+      "Your website: 3 quick wins",
+      "[Business] website quick audit",
     ],
     body: ({ brand, business, findings }) =>
       [
         `Hi [Name],`,
         ``,
-        `I reviewed ${business} website and put together a short teardown showing what is working and what is costing you calls. The three biggest items are ${findingList(findings, 3)}.`,
+        `I reviewed ${business} website and put together a short teardown showing what is working and what is costing you calls. The biggest items are ${findingList(findings, 3)}.`,
         ``,
         `The full report is attached. If you would like, I can fix these and rebuild the site so the phone rings more often. No obligation, just a 15-minute call if it is useful.`,
         ``,
@@ -297,12 +297,12 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
     name: "Day 3 Single-Fix Bump",
     timing: "Day 3 after the first email, same thread",
     purpose: "Short bump. Adds one new finding or one concrete fix, and offers the 15-minute walkthrough again.",
-    subjects: ["Re: Your website review", "The [#1 finding] on [Business].com"],
+    subjects: ["Your website review", "The [#1 finding] on [Business].com"],
     body: ({ brand, business, findings }) =>
       [
         `Hi [Name],`,
         ``,
-        `Just checking my note about ${business} website landed. The one finding I would fix first is ${findings[0] ?? "[finding 1]"}.`,
+        `Just checking that my note about ${business} website landed. The one finding I would fix first is ${findings[0] ?? "[finding 1]"}.`,
         ``,
         `Happy to walk you through it in 15 minutes, or I can just send the short report again.`,
         ``,
@@ -369,7 +369,7 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
     name: "Post-Proposal Nudge",
     timing: "48-72 hours after sending the proposal, same thread",
     purpose: "Short nudge after a proposal has been sent. Asks one question about the proposal and offers the call, without re-pitching the whole job.",
-    subjects: ["Re: Your website proposal", "Any questions on the proposal?"],
+    subjects: ["Your website proposal", "Any questions on the proposal?"],
     body: ({ brand, business, findings }) =>
       [
         `Hi [Name],`,
