@@ -14,7 +14,7 @@ const browser = await puppeteer.launch({
 async function headerProbe(width) {
   const page = await browser.newPage();
   await page.setViewport({ width, height: 900, deviceScaleFactor: 1 });
-  await page.goto(`${base}/`, { waitUntil: "networkidle0", timeout: 60000 });
+  await page.goto(`${base}/`, { waitUntil: "domcontentloaded", timeout: 90000 });
   await new Promise((r) => setTimeout(r, 1200));
   const m = await page.evaluate(() => {
     const menu = document.querySelector("#site-menu");
@@ -52,7 +52,7 @@ async function headerProbe(width) {
   }
   if (width === 1280) {
     // wordmark click navigates home (click at its centre)
-    await page.goto(`${base}/sample`, { waitUntil: "networkidle0" });
+    await page.goto(`${base}/sample`, { waitUntil: "domcontentloaded" });
     await new Promise((r) => setTimeout(r, 600));
     await page.click(".wordmark");
     await new Promise((r) => setTimeout(r, 800));
@@ -67,7 +67,7 @@ await headerProbe(390);
 // Print stamp: render /sample to PDF, check SAMPLE on every page.
 const page = await browser.newPage();
 await page.setViewport({ width: 1280, height: 900 });
-await page.goto(`${base}/sample`, { waitUntil: "networkidle0", timeout: 60000 });
+await page.goto(`${base}/sample`, { waitUntil: "domcontentloaded", timeout: 90000 });
 await new Promise((r) => setTimeout(r, 1000));
 await page.emulateMediaType("print");
 await page.pdf({ path: "/tmp/dnloop4fix/sample-print.pdf", format: "A4", printBackground: true });

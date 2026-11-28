@@ -161,4 +161,17 @@ The +58 kB is the Motion runtime on pages that use it; /templates (no motion) an
 
 ## 9. Merge + deploy + live verification
 
-*(Filled in after the merge; see the live-verification rows below.)*
+- **Commit:** `93cd2fd` on branch `dealnote-loop4-fixes` (all Loop 4 audit reports, fix code, glass + motion, screenshots, both reports).
+- **Merge:** `ba46893` — merge to main, pushed to GitHub Velu2k03/dealnote (main + branch both pushed 28 Nov 2026 ~07:00 Manila).
+- **Live verification (28 Nov 2026 ~07:02 Manila, after Vercel auto-deploy):**
+  - All 6 pages + `/robots.txt` + `/sitemap.xml` return **200** (home 55,695 B; /audit 19,410 B; /sample 55,168 B; /templates 40,109 B; /terms 29,186 B; /privacy 25,102 B; robots 78 B; sitemap 1,098 B).
+  - Tracker snippet byte-verbatim on all 6 pages (2 hits per page: 1 script tag + 1 escaped RSC-payload copy, as in prior rounds).
+  - 0 "verified", 0 future dates (2027/2028) in live HTML.
+  - New content live: "Download sample report as PDF" + "To be quoted" on /sample; SEOptimer "$468 over 12" block on home; Summary boxes on /terms and /privacy; "Before you send: checklist" on /templates.
+  - Live sample PDF: `GET /api/pdf/sample` 200, 71,632 B, valid PDF 1.4, 3 pages; SAMPLE stamp present (renders as spaced "S AMP LE" in pdftotext because the stamp uses letter-spacing, same as the local build) plus the sample disclaimer sentence.
+  - Header live: **HTML + CSS check, not a live screenshot.** Headless Chrome via the Kane egress proxy timed out on the live site (`net::ERR_TIMED_OUT`, three attempts; curl reaches the site fine at 200). The proxy restart needs `PROXY_AUTH_BASIC`, which this round did not have. Live HTML confirms the fix is deployed: exactly one `popover=` attribute in the page (on the mobile list only), the plain `.site-menu-desktop` list present with all 4 links, the wordmark present, and the live CSS contains `.site-menu-mobile{display:none}` and the glass rules. Local proof (chrome-headless-shell 158, §2.1) stands. A live screenshot / real-Chrome check remains recommended.
+  - No live POSTs were run (Velu-gated P0-1); no payment touched (P0-2).
+
+## 10. 25-skill polish pass — Loop 5 scope (Velu, 28 Nov 2026)
+
+After this round shipped, Velu ordered a polish pass using all 25 skills from https://recent.design/skills, with no permission gate. Per his fallback instruction, the Loop 4 round shipped first; the skill pass is named Loop 5 scope. Per-skill table (skill, source, SkillSpector verdict, used/skipped with evidence, what changed) is recorded in `docs/dealnote-loop5-skills-2026-11-28.md` as the pass runs; no skill is silently skipped. Skills already installed from earlier loops (canvas-design, frontend-design, web-design-guidelines, unslop, impeccable, logo-design, image-prompt-design, image-qc, modern-web-guidance, prompt-engineering, ui-ux-pro-max, design-taste-frontend, extract-design, theme-factory, brand-guidelines) are re-used, not reinstalled blindly.
