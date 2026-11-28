@@ -156,7 +156,7 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
           <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
-            <CountUp to={result.overallScore} />
+            <CountUp to={result.overallScore} immediate />
             <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
