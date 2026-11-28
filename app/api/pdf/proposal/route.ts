@@ -22,6 +22,7 @@
 import { NextResponse } from "next/server";
 import {
   DEFAULT_BRAND,
+  brandValidationError,
   isValidAuditUrl,
   proposalItemsFromIssues,
   type BrandProfile,
@@ -139,6 +140,10 @@ export async function POST(request: Request) {
   }
 
   const brand = mergeBrand(body.brand);
+  const brandError = brandValidationError(brand);
+  if (brandError) {
+    return NextResponse.json({ error: brandError }, { status: 400 });
+  }
   const template: ProposalKind =
     body.template === "quickfix" ||
     body.template === "retainer" ||

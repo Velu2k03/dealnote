@@ -87,8 +87,8 @@ export default function AuditPage() {
   const [licenseKey, setLicenseKey] = useState("");
   const [logoError, setLogoError] = useState("");
   const [prices, setPrices] = useState({ essential: "", growth: "", premium: "", monthly: "" });
-  const [templateKind, setTemplateKind] = useState<ProposalKind>("redesign");
-  const [sections, setSections] = useState<Record<SectionKey, boolean>>(defaultSections("redesign"));
+  const [templateKind, setTemplateKind] = useState<ProposalKind>("quickfix");
+  const [sections, setSections] = useState<Record<SectionKey, boolean>>(defaultSections("quickfix"));
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [fixItems, setFixItems] = useState<ProposalItem[]>([]);
   const [newFixTitle, setNewFixTitle] = useState("");
@@ -102,6 +102,13 @@ export default function AuditPage() {
   const [pdfMessage, setPdfMessage] = useState("");
 
   useEffect(() => {
+    // Hero form on the home page links here as /audit?url=... : prefill it.
+    try {
+      const q = new URLSearchParams(window.location.search).get("url");
+      if (q) setUrl(q);
+    } catch {
+      // Keep the URL box empty.
+    }
     setTracker(loadTracker());
     try {
       const raw = localStorage.getItem(BRAND_KEY);
@@ -419,6 +426,7 @@ export default function AuditPage() {
                 id="audit-url"
                 type="url"
                 inputMode="url"
+                autoFocus
                 placeholder="https://www.example-plumbing.com"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
@@ -455,6 +463,7 @@ export default function AuditPage() {
             <p className="caption mt-8 mb-0">
               Your licence key is stored only in this browser. Full reports and PDF downloads unlock with a licence key.
             </p>
+            <p className="caption mt-8 mb-0">{LOCAL_STORAGE_NOTICE}</p>
           </div>
 
           {running ? (
@@ -753,7 +762,7 @@ export default function AuditPage() {
 
                   <div className="card" style={{ marginBottom: 16 }}>
                     <h3>1. Choose a proposal</h3>
-                    <p className="caption">Six structurally different documents, not one skeleton with a word swapped.</p>
+                    <p className="caption">Eight structurally different documents, not one skeleton with a word swapped.</p>
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
                       <legend className="caption" style={{ marginBottom: 8 }}>Proposal template</legend>
                       {PROPOSAL_TEMPLATES.map((t) => (
@@ -954,7 +963,7 @@ export default function AuditPage() {
                         <Download size={18} strokeWidth={1.5} aria-hidden /> {pdfBusy ? "Generating PDF" : "Download proposal PDF"}
                       </button>
                       <Link href="/templates" className="btn btn-secondary">
-                        <Mail size={18} strokeWidth={1.5} aria-hidden /> See proposal templates
+                        <Mail size={18} strokeWidth={1.5} aria-hidden /> Open the proposal templates page
                       </Link>
                     </div>
                     {pdfMessage ? <p className="caption mt-16" role="status">{pdfMessage}</p> : null}

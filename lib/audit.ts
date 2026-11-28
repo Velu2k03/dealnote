@@ -329,20 +329,46 @@ export interface BrandProfile {
 }
 
 export const DEFAULT_BRAND: BrandProfile = {
-  brandName: "Your Studio",
-  contactName: "Alex Rivera",
-  contactEmail: "hello@yourstudio.example",
-  contactPhone: "(555) 010-4471",
-  website: "https://www.yourstudio.example",
+  // Deliberately obvious placeholders, never a believable fake person:
+  // PDF routes refuse to generate until the buyer replaces the three
+  // required fields (studio, name, email) with real values.
+  brandName: "[Your studio]",
+  contactName: "[Your name]",
+  contactEmail: "[your email]",
+  contactPhone: "",
+  website: "",
   primaryColor: "#0F766E",
   accentColor: "#155E75",
   ctaText: "Book a free 15-minute call",
-  ctaLink: "https://cal.com/yourstudio/intro",
+  ctaLink: "",
   introLine: "I reviewed your website and found several quick wins.",
   postalAddress: "",
   logoUrl: "",
   logoDataUrl: "",
 };
+
+/** True when a brand field is still the obvious placeholder (or empty).
+ *  A paid PDF must never go out signed by a placeholder. */
+export function isPlaceholderBrandField(value: string): boolean {
+  const v = (value ?? "").trim();
+  return v === "" || v.startsWith("[");
+}
+
+/** Error message when a brand cannot go on a real PDF, else null. The
+ *  studio name, contact name, and contact email are required and must be
+ *  real values; phone / website / call link are optional and simply
+ *  omitted when blank. */
+export function brandValidationError(brand: BrandProfile): string | null {
+  const missing: string[] = [];
+  if (isPlaceholderBrandField(brand.brandName)) missing.push("your studio name");
+  if (isPlaceholderBrandField(brand.contactName)) missing.push("your name");
+  if (isPlaceholderBrandField(brand.contactEmail)) missing.push("your contact email");
+  if (missing.length === 0) return null;
+  return (
+    `Fill in your brand profile first: ${missing.join(", ")} ${missing.length === 1 ? "is" : "are"} ` +
+    `still a placeholder. A PDF must not go out signed by a placeholder.`
+  );
+}
 
 export interface ProposalItem {
   phase: string;

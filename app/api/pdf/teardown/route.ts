@@ -13,7 +13,7 @@
 //   never faked.
 
 import { NextResponse } from "next/server";
-import { DEFAULT_BRAND, isValidAuditUrl, type BrandProfile } from "@/lib/audit";
+import { DEFAULT_BRAND, brandValidationError, isValidAuditUrl, type BrandProfile } from "@/lib/audit";
 import { runPaidAuditCached } from "@/app/api/audit/route";
 import { footerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
 
@@ -65,6 +65,10 @@ export async function POST(request: Request) {
   }
 
   const brand = mergeBrand(body.brand);
+  const brandError = brandValidationError(brand);
+  if (brandError) {
+    return NextResponse.json({ error: brandError }, { status: 400 });
+  }
   const html = teardownReportHtml({ result: paid.result, brand, runDate: paid.result.fetchedAt });
 
   let pdf: Buffer;

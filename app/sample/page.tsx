@@ -21,7 +21,7 @@ export default function SamplePage() {
           page describes a real business.
         </p>
         <p className="reading">
-          Prepared by Your Studio, Alex Rivera, hello@yourstudio.example. Run date: 27 Nov 2026.
+          Prepared by [Your studio], [Your name], [your email]. Run date: 27 Nov 2026.
         </p>
         <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           <PrintButton />

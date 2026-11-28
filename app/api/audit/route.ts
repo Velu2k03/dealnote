@@ -15,7 +15,7 @@ import {
   tryConsumeAudit,
   type LicenseRecord,
 } from "@/lib/entitlements";
-import { checkFreeRateLimitAsync, getClientIp } from "@/lib/ratelimit";
+import { checkFreeRateLimitAsync, getClientIp, refundFreeRateLimit } from "@/lib/ratelimit";
 import { getCachedAudit, setCachedAudit } from "@/lib/audit-cache";
 
 export const runtime = "nodejs";
@@ -551,6 +551,9 @@ export async function POST(request: Request) {
 
   const audited = await runFullAudit(url);
   if (!audited.ok) {
+    // A failed audit (robots 403, fetch failure) must not burn one of
+    // the 5 free audits: refund the count taken above.
+    await refundFreeRateLimit(ip);
     return NextResponse.json(
       { error: audited.error, ...(audited.sampleAvailable ? { sampleAvailable: true } : {}) },
       { status: audited.status },

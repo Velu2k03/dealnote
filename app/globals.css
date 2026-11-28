@@ -167,8 +167,6 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
-.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 860px) { .steps-grid { grid-template-columns: 1fr; } }
 .steps-flow { display: grid; gap: 20px; }
 .step-row { display: flex; gap: 16px; align-items: flex-start; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 2px rgb(15 23 42 / 0.06); padding: 24px; }
 .step-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 600; }
