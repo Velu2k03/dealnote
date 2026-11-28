@@ -143,8 +143,17 @@ Method: same as `docs/dealnote-slop-check-2026-11-27.md` and Loop 4 — Briskly 
 
 - **Velu-gated P0s (unchanged, not fixable in code):** P0-1 live free-audit POST unproven (needs Velu approval to run live POSTs); P0-2 payment on hold, no live purchase path.
 - **P3s recorded in this loop (not fixed):** `aria-current` on nav links (would require making the server Header a client component); menu button `aria-expanded` (needs JS state on the native popover). Minor screen-reader cues; no visual or functional impact.
-- **Next steps for the parent:** commit on `dealnote-loop5-polish`, merge to main, push to GitHub Velu2k03/dealnote, wait for Vercel auto-deploy, verify live (all 6 pages + `/robots.txt` + `/sitemap.xml` 200, tracker snippet byte-verbatim on all 6 pages, 0 "verified", no future dates, header correct live — screenshot if possible, else live HTML check + local proof; the Kane proxy live-Chrome timeout from Loop 4 may recur), update the tracker sheet, report back.
+- **Done (see §12):** committed on `dealnote-loop5-polish` (`9b2a742`), merged to main (`66c4ab2`), pushed to GitHub Velu2k03/dealnote; meta-description follow-up committed (`cb1dab7`), merged (`3f65d74`), pushed; Vercel auto-deployed both; live verification passed (§12); tracker sheet updated.
 
 ## 11. Addendum — meta descriptions follow the H1 (28 Nov 2026, post-merge)
 
 Live verification caught that the meta description, Open Graph description, Twitter description and og image alt in `app/layout.tsx` still carried the old instruction wording ("Paste any business website URL…") after the H1 was rewritten. Same critique P1 (H1 is an instruction not the value proposition), applied to the search/social snippet. All four strings rewritten to the value proposition using only existing copy (the H1 + the hero paragraph's words); no new claims. Bundle unchanged (home 161 kB). Committed as a follow-up on `dealnote-loop5-meta`, merged to main.
+
+## 12. Live verification (28 Nov 2026, after Vercel auto-deploy)
+
+- **Deploys:** merge `66c4ab2` (Loop 5) + merge `3f65d74` (meta follow-up), both auto-deployed by Vercel. Live home confirmed the new H1, the V3 pricing copy and 0 `stack-table` after the first deploy; the new meta description after the second.
+- **All 6 pages + `/robots.txt` + `/sitemap.xml`:** 200.
+- **Tracker snippet:** 2 occurrences per page on home, /audit, /sample, /templates, /terms (1 script tag + 1 escaped RSC-payload copy, byte-verbatim); 4 on /privacy (the extra 2 are the page's own prose disclosing the tracker — expected).
+- **Copy honesty (live HTML, all 6 pages):** 0 "verified", 0 future dates (2027/2028).
+- **Header live (HTML + CSS check):** exactly one `popover=` attribute per page (mobile list only), `.site-menu-desktop` present with all 4 links, wordmark present. Live screenshot in headless Chrome was NOT possible in this session: the Kane egress proxy on 127.0.0.1:8888 is down (died in a service restart) so Chrome fails with `ERR_PROXY_CONNECTION_FAILED`, and direct egress fails with `ERR_TUNNEL_CONNECTION_FAILED`. Restarting the proxy needs `PROXY_AUTH_BASIC`, which this session does not have and did not hunt for. Local Chrome proof at 1280 + 390 (§8) stands, as in Loop 4; a real-Chrome live screenshot remains recommended.
+- **Live sample PDF:** GET `/api/pdf/sample` 200, 71,632 B (same size as Loop 4's live check), valid PDF 1.4, 3 pages, SAMPLE stamp present (pdftotext, letter-spaced "S AMP LE" as in Loop 4).
