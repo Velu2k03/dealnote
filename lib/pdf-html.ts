@@ -378,7 +378,7 @@ export function proposalHtml(opts: {
     body += `<p class="section-label">What we would fix</p><h2>${escapeHtml(fixHeading)}</h2>${phaseSections || "<p>No fix items were listed for this site in this run.</p>"}`;
   }
   if (on("scope") && scopeLines.length > 0) {
-    body += `<div class="page-break"></div><p class="section-label">Scope</p><h2>Scope and deliverables</h2><ul>${scopeLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><h3>Not included</h3><ul>${notIncluded.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
+    body += `<p class="section-label">Scope</p><h2>Scope and deliverables</h2><ul>${scopeLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><h3>Not included</h3><ul>${notIncluded.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
   }
   if (on("timeline") && timelineLines.length > 0) {
     body += `<h2>Timeline and milestones</h2><ul>${timelineLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><p class="meta">Start date: [fill in]. Timings assume the client provides content and access on time.</p>`;
