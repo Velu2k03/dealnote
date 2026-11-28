@@ -22,9 +22,8 @@ export default function TermsPage() {
             website URL, and DealNote fetches that public homepage, checks it, and produces a white-label
             teardown report plus a proposal draft under your brand. Price: $49 one-time. No subscription. No
             per-report fee. Fair-use limit: 30 audits per month per buyer. That limit is a fair-use
-            limit, enforced on a best-effort basis: usage is counted per licence key, and the count is
-            durable once the Upstash Redis store is configured; until then it may reset when the hosting
-            restarts.
+            limit, enforced on a best-effort basis: usage is counted per license key, and the count may
+            reset when the hosting restarts.
           </p>
           <p>
             Lifetime means the lifetime of the product. If DealNote is discontinued, lifetime
@@ -32,10 +31,11 @@ export default function TermsPage() {
             14 days.
           </p>
           <p>
-            You can buy DealNote from the Buy button on the home page and the audit page. You get a licence
-            key, which you enter on the audit page to unlock the full report, the white-label preview, and
-            the proposal. The audit tool and the sample report are free to try; full reports and PDF downloads
-            unlock with a licence key.
+            You can buy DealNote from the Buy button on the home page and the audit page. Payments are
+            taken by Lemon Squeezy, the merchant of record; DealNote never sees your card details. You get
+            a license key, which you enter on the audit page to unlock the full report, the white-label
+            preview, and the proposal. The audit tool and the sample report are free to try; full reports
+            and PDF downloads unlock with a license key.
           </p>
           <p>
             This service is for adults 18 or over, or the age of majority where you live.
@@ -121,6 +121,12 @@ export default function TermsPage() {
             Your brand profile, logo, and proposal text are yours. Reports you generate carry your brand
             only. DealNote does not put its name on client reports. In v1, your brand profile is stored only
             in your own browser.
+          </p>
+
+          <h2>Governing law</h2>
+          <p>
+            These terms are governed by the laws of the Philippines, where DealNote is operated from.
+            Any dispute about these terms or the product will be handled under those laws.
           </p>
 
           <h2>Changes</h2>

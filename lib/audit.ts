@@ -211,7 +211,7 @@ export function sampleAudit(): AuditResult {
   const sample: AuditResult = {
     url: SAMPLE_BUSINESS.site,
     finalUrl: SAMPLE_BUSINESS.site,
-    fetchedAt: "27 Nov 2026",
+    fetchedAt: "28 Nov 2026",
     status: 200,
     https: true,
     loadMs: 2840,

@@ -17,7 +17,7 @@
 //   not be fetched from this sandbox).
 // - SpotlightCard: React Bits SpotlightCard pattern, restrained to one
 //   faint teal wash that follows the pointer on the pricing card only.
-//   No glow, no colour gradient as decoration.
+//   No glow, no color gradient as decoration.
 //
 // Reduced motion: <MotionConfig reducedMotion="user"> in the layout
 // disables transform/layout animation for users who ask for it, while
@@ -113,7 +113,11 @@ export function CountUp({ to }: { to: number }) {
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const reduce = useReducedMotion();
   const value = useMotionValue(reduce ? to : 0);
-  const rounded = useTransform(value, (v) => String(Math.round(v)));
+  // Ceiling, not rounding: the counter must land cleanly on the final
+  // value instead of flashing the value below it at the end of the
+  // animation (Neon whole-site audit P2-1: the sample score read 82
+  // before settling on 83). The final value is exact either way.
+  const rounded = useTransform(value, (v) => String(Math.ceil(v)));
   useEffect(() => {
     if (!inView) return;
     if (reduce) {

@@ -10,7 +10,7 @@ export default function PrivacyPage() {
             <p className="mb-0"><strong>Summary:</strong></p>
             <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
               <li>No accounts in v1, so no account information is collected.</li>
-              <li>Your brand profile, tracker, and licence key stay only in your own browser.</li>
+              <li>Your brand profile, tracker, and license key stay only in your own browser.</li>
               <li>Vercel logs requests to run the service. One third-party script, the Ship or Die hackathon tracker, counts visits.</li>
               <li>Payment is taken by Lemon Squeezy, the merchant of record. DealNote never collects or sees card data.</li>
             </ul>
@@ -30,11 +30,10 @@ export default function PrivacyPage() {
           </p>
           <p>
             <strong>Your brand profile and outreach tracker.</strong> When you type in your brand details
-            (brand name, contact name, email, phone, website, colours, logo, call to action) or track a
-            proposal, that information is stored only in your own browser&apos;s local storage, under the
-            keys <code>dealnote-brand-v1</code> and <code>dealnote-proposals-v1</code>. It is never sent to
-            DealNote or to anyone else. Your licence key, if you enter one, is stored the same way, in your
-            own browser only.
+            (brand name, contact name, email, phone, website, colors, logo, call to action) or track a
+            proposal, that information is stored only in your own browser&apos;s local storage. It is never
+            sent to DealNote or to anyone else. Your license key, if you enter one, is stored the same
+            way, in your own browser only.
           </p>
           <p>
             <strong>Vercel server logs.</strong> DealNote is hosted by Vercel. When you visit the site or
@@ -50,8 +49,8 @@ export default function PrivacyPage() {
             <strong>One third-party script: the Ship or Die hackathon traffic tracker.</strong> The site
             loads no analytics, no advertising tracker, and no other third-party script. The one exception
             is the Ship or Die hackathon traffic tracker, installed 27 Nov 2026. It loads{" "}
-            <code>https://www.ship-or-die.com/hackathon/verify.js</code> and counts visits to verify
-            traffic for the Ship or Die $100K Hackathon.
+            <code>https://www.ship-or-die.com/hackathon/verify.js</code>, a traffic script that counts
+            visits to verify traffic for the Ship or Die hackathon.
           </p>
           <p>
             <strong>Payments.</strong> Payments are handled by Lemon Squeezy, the merchant of
@@ -71,19 +70,20 @@ export default function PrivacyPage() {
           <p>
             Your brand profile is used to show your brand on your own reports, on your own device. The
             outreach tracker is used so you can track the proposals you send, on your own device. Vercel
-            server logs are used to operate the audit, keep the service running, and prevent abuse. When payment goes live, payment
-            details collected by Lemon Squeezy are used to take and record your payment.
+            server logs are used to operate the audit, keep the service running, and prevent abuse.
+            Payment details collected by Lemon Squeezy are used to take and record your payment.
           </p>
 
           <h2>Who data is shared with</h2>
           <p>
-            Data is shared with Vercel (hosting) and Lemon Squeezy (payments), for the purposes above. There is no other sharing,
+            Data is shared with Vercel (hosting), Lemon Squeezy (payments), and Ship or Die (the
+            hackathon traffic script, which counts visits), for the purposes above. There is no other sharing,
             and no sale of personal information.
           </p>
 
           <h2>How to delete your data</h2>
           <p>
-            To delete your brand profile, outreach tracker, and licence key, clear this site&apos;s data in
+            To delete your brand profile, outreach tracker, and license key, clear this site&apos;s data in
             your browser settings (local storage). For log-deletion requests, email{" "}
             <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a>.
           </p>

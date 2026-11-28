@@ -1,4 +1,4 @@
-// DealNote licence-key validation (Lemon Squeezy, server-side only).
+// DealNote license-key validation (Lemon Squeezy, server-side only).
 // Brand-new code for DealNote. No code copied from any other product.
 //
 // Two modes:
@@ -12,7 +12,7 @@
 //    key is hardcoded anywhere in this repo; without that env var,
 //    every key is rejected.
 //
-// Lemon Squeezy generates the licence key itself (licence keys enabled
+// Lemon Squeezy generates the license key itself (license keys enabled
 // on the product) and emails it to the buyer in the receipt, so there
 // is no key generation or storage of raw keys on DealNote's side.
 
@@ -34,7 +34,7 @@ function timingSafeKeyEqual(a: string, b: string): boolean {
 }
 
 /**
- * Validate a licence key server-side.
+ * Validate a license key server-side.
  * - Lemon Squeezy configured: validated against the License API.
  *   An active key returns valid with its Lemon Squeezy id, buyer
  *   email, customer id and order id. Anything else returns
@@ -46,7 +46,7 @@ function timingSafeKeyEqual(a: string, b: string): boolean {
  */
 export async function validateLicenseKey(rawKey: string): Promise<LicenseValidation> {
   const key = (rawKey ?? "").trim();
-  if (!key) return { valid: false, reason: "Enter a licence key." };
+  if (!key) return { valid: false, reason: "Enter a license key." };
 
   const ls = await validateLemonSqueezyLicenseKey(key);
   if (ls.valid) {
@@ -72,5 +72,5 @@ export async function validateLicenseKey(rawKey: string): Promise<LicenseValidat
     return { valid: true, keyId: "dev", source: "dev" };
   }
   if (ls.valid === false && ls.reason) return { valid: false, reason: ls.reason };
-  return { valid: false, reason: "That licence key was not recognised. Check it and try again." };
+  return { valid: false, reason: "That license key was not recognised. Check it and try again." };
 }

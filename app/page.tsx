@@ -18,9 +18,9 @@ export default function Home() {
               <p className="eyebrow">For web design freelancers and small agencies</p>
               <h1>Show the prospect what is wrong with their site, then sell the fix.</h1>
               <p style={{ color: "#475569" }}>
-                Get a teardown report plus a ready-to-send proposal in about a minute. Show the prospect what is
-                wrong with their site, then sell the fix. The report carries your brand, your logo, and your
-                contact details, not ours.
+                Paste any business website URL. In about a minute you get a white-label teardown report plus
+                a ready-to-send proposal, scored across speed, mobile, SEO, technical health, conversion,
+                and trust, under your own brand, logo, and contact details, not ours.
               </p>
               <form method="get" action="/audit" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <input
@@ -142,7 +142,7 @@ export default function Home() {
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
                 <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
-                <span>Teardown PDF and proposal PDF included with your licence</span>
+                <span>Teardown PDF and proposal PDF included with your license</span>
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
                 <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
@@ -167,7 +167,7 @@ export default function Home() {
               with the report URL, the finding, and why. See the refund section in the terms.
             </p>
             <p className="caption mb-0">
-              The audit tool is free to try. Full reports and PDF downloads unlock with a licence key.
+              The audit tool is free to try. Full reports and PDF downloads unlock with a license key.
             </p>
             </div>
           </SpotlightCard>
@@ -219,8 +219,8 @@ export default function Home() {
             </p>
             <h3>Does the client see the DealNote name?</h3>
             <p>
-              No. Reports carry your brand name, logo, colours, and contact details. The DealNote name
-              appears only in this app and on the sample report, which is labelled as a sample.
+              No. Reports carry your brand name, logo, colors, and contact details. The DealNote name
+              appears only in this app and on the sample report, which is labeled as a sample.
             </p>
             <h3>Can I edit the proposal before sending it?</h3>
             <p>
@@ -241,9 +241,16 @@ export default function Home() {
             </p>
             <h3>How do I unlock the full report?</h3>
             <p>
-              Buy DealNote once for $49 and you get a licence key. Enter the key on the audit page to unlock
+              Buy DealNote once for $49 and you get a license key. Enter the key on the audit page to unlock
               the full findings, the white-label preview, and the proposal. PDF downloads are included
-              with your licence.
+              with your license.
+            </p>
+            <h3>What if I lose my license key?</h3>
+            <p>
+              Your license key is in the receipt email Lemon Squeezy sends after you buy, and on your
+              Lemon Squeezy My Orders page. If you cannot find it, email{" "}
+              <a href="mailto:murugan@drvelu.com?subject=DealNote%20license%20key%20recovery">murugan@drvelu.com</a>{" "}
+              from the email you bought with and we will resend it.
             </p>
           </div>
           <p className="mt-32 mb-0">

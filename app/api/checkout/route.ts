@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     {
       notConfigured: true,
-      error: "Checkout is not configured yet. The $49 one-time licence is coming soon; the free preview still works.",
+      error: "Checkout is not configured yet. The $49 one-time license checkout opens once the store product is connected; the free preview still works.",
     },
     { status: 503 },
   );

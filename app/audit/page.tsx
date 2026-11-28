@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -101,11 +101,25 @@ export default function AuditPage() {
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfMessage, setPdfMessage] = useState("");
 
+  // Guard so the hero-form auto-run fires exactly once, even under
+  // React StrictMode double effects in development.
+  const autoRanRef = useRef(false);
+
   useEffect(() => {
-    // Hero form on the home page links here as /audit?url=... : prefill it.
+    // Hero form on the home page links here as /audit?url=... : prefill it
+    // and run the audit straight away (Neon whole-site audit P1-1: the
+    // form used to prefill but never run, so the visitor had to press
+    // Run a second time). runAuditFor is defined below; the effect runs
+    // after the whole component body, so the closure sees it.
     try {
       const q = new URLSearchParams(window.location.search).get("url");
-      if (q) setUrl(q);
+      if (q) {
+        setUrl(q);
+        if (!autoRanRef.current && isValidAuditUrl(q).ok) {
+          autoRanRef.current = true;
+          runAuditFor(q);
+        }
+      }
     } catch {
       // Keep the URL box empty.
     }
@@ -119,7 +133,7 @@ export default function AuditPage() {
     try {
       setLicenseKey(localStorage.getItem(LICENSE_KEY) ?? "");
     } catch {
-      // No stored licence key.
+      // No stored license key.
     }
   }, []);
 
@@ -161,8 +175,8 @@ export default function AuditPage() {
     reader.readAsDataURL(file);
   };
 
-  const runAudit = async () => {
-    const check = isValidAuditUrl(url);
+  const runAuditFor = async (targetUrl: string) => {
+    const check = isValidAuditUrl(targetUrl);
     if (!check.ok) {
       setError(check.error);
       return;
@@ -184,6 +198,8 @@ export default function AuditPage() {
           ...(licenseKey ? { "x-dealnote-license": licenseKey } : {}),
         },
         body: JSON.stringify({ url: check.url, licenseKey: licenseKey || undefined }),
+        // check.url is the normalised target URL, so the request never
+        // depends on the url state having caught up with setUrl.
       });
       const data = (await res.json()) as AuditResult & {
         error?: string;
@@ -214,19 +230,28 @@ export default function AuditPage() {
           (totalKnown !== null && Array.isArray(data.issues) && totalKnown > data.issues.length);
         setIsTeaser(teaser);
         setTotalFindings(totalKnown);
-        // A teaser only carries the top 2 findings, so only a full result
-        // feeds the template auto-fill and the intro-line finding count.
+        // Store the findings for the templates page even for a free
+        // teaser: the teaser carries the top 2 real findings, and the
+        // templates page fills in from them instead of forcing a re-run
+        // (Neon whole-site audit P1-2). The stored record also carries
+        // the URL and score so /templates can show a live preview line.
+        // Only a full result feeds the intro-line finding count, because
+        // a teaser must not claim the total count from 2 findings.
+        try {
+          localStorage.setItem(
+            LAST_FINDINGS_KEY,
+            JSON.stringify({
+              url: audit.url,
+              score: audit.overallScore,
+              grade: audit.overallGrade,
+              findings: audit.issues.map((i) => i.title),
+              fetchedAt: audit.fetchedAt,
+            }),
+          );
+        } catch {
+          // Finding auto-fill is a convenience; a failed save is not fatal.
+        }
         if (!teaser) {
-          try {
-            // Store every finding title, not just the top 3, so the
-            // templates page and the proposal generator can use findings 4-10.
-            localStorage.setItem(
-              LAST_FINDINGS_KEY,
-              JSON.stringify(audit.issues.map((i) => i.title)),
-            );
-          } catch {
-            // Finding auto-fill is a convenience; a failed save is not fatal.
-          }
           // Keep the default intro line honest: if the buyer has not edited it,
           // state the real finding count for this audit instead of the sample's 7.
           // A 0-findings audit never claims "found 0 quick wins".
@@ -249,9 +274,11 @@ export default function AuditPage() {
     }
   };
 
+  const runAudit = () => runAuditFor(url);
+
   const displayed: AuditResult | null = result ?? (showSample ? sampleAudit() : null);
   // Sample audits are always fully visible. A live result is locked when
-  // the server returned a teaser; the full result shows only with a licence key.
+  // the server returned a teaser; the full result shows only with a license key.
   const locked = result !== null && isTeaser && !displayed?.isSample;
 
   // When a new audit (or the sample) appears, select the top 3 findings by
@@ -350,7 +377,7 @@ export default function AuditPage() {
   const downloadProposalPdf = async () => {
     if (!displayed) return;
     if (!licenseKey.trim()) {
-      setPdfMessage("A licence key is required to download the proposal PDF. Enter your key above, or buy DealNote ($49 one-time).");
+      setPdfMessage("A license key is required to download the proposal PDF. Enter your key above, or buy DealNote ($49 one-time).");
       return;
     }
     setPdfBusy(true);
@@ -415,7 +442,7 @@ export default function AuditPage() {
             <p>
               Paste a public business website URL. The audit runs on the server, reads the homepage, and
               scores six categories. The free result shows the overall score, grade, and top 2 findings.
-              Enter a licence key to unlock the full report, the white-label preview, and the proposal.
+              Enter a license key to unlock the full report, the white-label preview, and the proposal.
             </p>
           </div>
 
@@ -452,13 +479,13 @@ export default function AuditPage() {
               search-ranking scores. Scores can vary between runs. Weights: Speed 20, Mobile 15, On-page
               SEO 20, Technical 15, Conversion 15, Trust &amp; local 15.
             </p>
-            <label htmlFor="license-key">Licence key (optional, unlocks the full report)</label>
+            <label htmlFor="license-key">License key (optional, unlocks the full report)</label>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
               <input
                 id="license-key"
                 type="text"
                 autoComplete="off"
-                placeholder="Paste your DealNote licence key"
+                placeholder="Paste your DealNote license key"
                 value={licenseKey}
                 onChange={(e) => saveLicenseKey(e.target.value.trim())}
                 style={{ flex: "1 1 280px" }}
@@ -466,7 +493,10 @@ export default function AuditPage() {
               <BuyButton className="btn btn-secondary" />
             </div>
             <p className="caption mt-8 mb-0">
-              Your licence key is stored only in this browser. Full reports and PDF downloads unlock with a licence key.
+              Your license key is stored only in this browser. Full reports and PDF downloads unlock with a license key.
+              Lost your key? It is in the receipt email Lemon Squeezy sends after you buy, or email{" "}
+              <a href="mailto:murugan@drvelu.com?subject=DealNote%20license%20key%20recovery">murugan@drvelu.com</a>{" "}
+              and we will resend it.
             </p>
             <p className="caption mt-8 mb-0">{LOCAL_STORAGE_NOTICE}</p>
           </div>
@@ -517,18 +547,18 @@ export default function AuditPage() {
                       <Lock size={18} strokeWidth={1.5} color="#475569" aria-hidden /> Full report locked
                     </h3>
                     <p>
-                      Full findings, white-label preview, proposal and PDF download unlock with a licence key.
+                      Full findings, white-label preview, proposal and PDF download unlock with a license key.
                       {totalFindings !== null && totalFindings > displayed.issues.length
                         ? ` This audit found ${totalFindings} findings in total.`
                         : ""}
                     </p>
-                    <label htmlFor="license-key-locked">Licence key</label>
+                    <label htmlFor="license-key-locked">License key</label>
                     <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                       <input
                         id="license-key-locked"
                         type="text"
                         autoComplete="off"
-                        placeholder="Paste your DealNote licence key"
+                        placeholder="Paste your DealNote license key"
                         value={licenseKey}
                         onChange={(e) => saveLicenseKey(e.target.value.trim())}
                         style={{ flex: "1 1 280px" }}
@@ -692,11 +722,11 @@ export default function AuditPage() {
                           <input id="cta-text" type="text" value={brand.ctaText} onChange={(e) => saveBrand({ ...brand, ctaText: e.target.value })} />
                         </div>
                         <div>
-                          <label htmlFor="primary-color">Primary brand colour</label>
+                          <label htmlFor="primary-color">Primary brand color</label>
                           <input id="primary-color" type="color" value={brand.primaryColor} onChange={(e) => saveBrand({ ...brand, primaryColor: e.target.value })} />
                         </div>
                         <div>
-                          <label htmlFor="accent-color">Accent colour</label>
+                          <label htmlFor="accent-color">Accent color</label>
                           <input id="accent-color" type="color" value={brand.accentColor} onChange={(e) => saveBrand({ ...brand, accentColor: e.target.value })} />
                         </div>
                         <div>
@@ -975,8 +1005,8 @@ export default function AuditPage() {
                     </div>
                     {pdfMessage ? <p className="caption mt-16" role="status">{pdfMessage}</p> : null}
                     <p className="caption mt-16 mb-0">
-                      The PDF carries your logo and brand colours, the selected findings quoted from the audit,
-                      and your edited fix list. It needs a licence key; the audit above must be unlocked first.
+                      The PDF carries your logo and brand colors, the selected findings quoted from the audit,
+                      and your edited fix list. It needs a license key; the audit above must be unlocked first.
                       A PDF reuses the audit above and does not use another audit. A PDF downloaded without
                       running the audit first uses 1 audit.
                     </p>

@@ -1,5 +1,5 @@
 // DealNote sample teardown PDF: GET /api/pdf/sample
-// No licence key, no payment, no live audit: it renders the fictional
+// No license key, no payment, no live audit: it renders the fictional
 // sample audit from lib/audit.ts (isSample: true) through the same
 // teardown template as the paid PDF, so the file carries the SAMPLE
 // stamp on page 1 and the sample disclaimer in its footer. The brand is

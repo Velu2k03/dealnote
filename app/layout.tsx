@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/site";
 import Footer from "@/components/footer";
@@ -40,13 +41,22 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <head
-        dangerouslySetInnerHTML={{
-          __html:
-            '<script defer src="https://www.ship-or-die.com/hackathon/verify.js" data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"></script>',
-        }}
-      />
       <body>
+        {/* Ship or Die hackathon traffic tracker. It MUST load through
+            next/script, never through a hand-written <head> with
+            dangerouslySetInnerHTML: a custom <head> makes React's head
+            management remove Next's own stylesheet <link> on every
+            client-side navigation, so soft navigation rendered unstyled
+            Times New Roman and sometimes crashed with removeChild
+            errors (Neon whole-site audit P0-1, reproduced locally
+            28 Nov 2026). The script tag itself is unchanged: same
+            src, same data-site value, byte-identical to the snippet
+            from the Ship or Die dashboard. */}
+        <Script
+          src="https://www.ship-or-die.com/hackathon/verify.js"
+          data-site="d40c7a78322ccb335a973aa331f31294d5cbddcb"
+          strategy="afterInteractive"
+        />
         <MotionProvider>
           <a href="#main" className="skip-link">Skip to content</a>
           <Header />

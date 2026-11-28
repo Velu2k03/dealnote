@@ -9,13 +9,13 @@
 //   but not processed twice.
 // - order_created: stores the purchase (order id, customer id,
 //   product/variant id, amount) and, best-effort, looks up the
-//   licence key Lemon Squeezy generated for that order and stores
+//   license key Lemon Squeezy generated for that order and stores
 //   its hash in the entitlement store. Lemon Squeezy emails the key
 //   to the buyer in the receipt; a key is also provisioned lazily
 //   the first time it validates on /api/audit, so a failed lookup
 //   here never blocks a paying customer.
 // - order_refunded: marks the purchase refunded and revokes the
-//   licence record(s) for that customer / order.
+//   license record(s) for that customer / order.
 // - Every other event type is acknowledged (200) and ignored.
 //
 // NOTE: this is the ONLY writer of entitlements from payments. The
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         paidAt: new Date().toISOString(),
       });
 
-      // Licence-key provisioning, best-effort. Only for our product
+      // License-key provisioning, best-effort. Only for our product
       // when the product id is configured. The key is stored hashed,
       // never raw.
       if (!productId || !itemProductId || itemProductId === productId) {
@@ -134,7 +134,7 @@ export async function POST(request: Request) {
       if (attrs.customer_id !== undefined) {
         await entitlementStore.revokeByCustomerId(String(attrs.customer_id));
       }
-      // Also revoke by the stored licence key for this order, if any.
+      // Also revoke by the stored license key for this order, if any.
       const key = orderId ? await getLicenseKeyForOrder(orderId).catch(() => null) : null;
       if (key) await entitlementStore.revokeByKeyHash(hashLicenseKey(key));
     }
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
 }
 
 /**
- * Find the licence key Lemon Squeezy generated for this order and
+ * Find the license key Lemon Squeezy generated for this order and
  * store its hash. Returns false when no key is found yet (e.g. the
  * grant has not landed); the key is then provisioned lazily on
  * first validation instead.
