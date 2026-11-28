@@ -19,20 +19,20 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://dealnote-blue.vercel.app"),
   title: "DealNote: website teardown and proposal generator for web designers",
   description:
-    "Paste any business website URL. Get a white-label teardown report plus a ready-to-send proposal in about a minute, under your own brand.",
+    "Show the prospect what is wrong with their site, then sell the fix. DealNote turns any business website into a white-label teardown report plus a ready-to-send proposal in about a minute, under your own brand.",
   openGraph: {
     title: "DealNote: website teardown and proposal generator",
     description:
-      "Paste any business website URL. Get a teardown report plus a ready-to-send proposal.",
+      "Show the prospect what is wrong with their site, then sell the fix.",
     url: "https://dealnote-blue.vercel.app",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DealNote: paste any business URL. Get a teardown report plus a ready-to-send proposal." }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DealNote: show the prospect what is wrong with their site, then sell the fix." }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DealNote: website teardown and proposal generator",
     description:
-      "Paste any business website URL. Get a teardown report plus a ready-to-send proposal.",
+      "Show the prospect what is wrong with their site, then sell the fix.",
     images: ["/og.png"],
   },
 };
