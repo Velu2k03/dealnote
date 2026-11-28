@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/site";
 import Footer from "@/components/footer";
 import { MotionProvider } from "@/components/motion-ui";
+import { SakugaScripts, SakugaToastHost } from "@/components/sakuga";
 
 // Font choice, recorded: Inter, loaded via next/font/google so the named
 // font is the rendered font (weights 400/500/600/700). Previously the CSS
@@ -62,7 +63,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main id="main">{children}</main>
           <Footer />
+          <SakugaToastHost />
         </MotionProvider>
+        {/* Sakuga VFX (28 Nov 2026, MIT): button, toast and tooltip are
+            used on every page, so they load afterInteractive; the rest
+            load lazily per page in components/sakuga.tsx. No Sakuga
+            element is rendered on /terms or /privacy, so those pages
+            keep their simple fade only. */}
+        <SakugaScripts names={["button", "toast", "tooltip"]} strategy="afterInteractive" />
       </body>
     </html>
   );

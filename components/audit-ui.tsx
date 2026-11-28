@@ -16,6 +16,7 @@ import { motion } from "motion/react";
 import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
 import { CATEGORIES, gradeColor } from "@/lib/audit";
 import { CountUp, Stagger, StaggerItem } from "./motion-ui";
+import { SakugaButton, SakugaTooltip } from "./sakuga";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
   "Checkout is not connected yet. Payment opens once the Lemon Squeezy account is set up.";
@@ -53,9 +54,13 @@ export function BuyButton({ className = "btn btn-primary" }: { className?: strin
 
   return (
     <span style={{ display: "inline-block" }}>
-      <button type="button" className={className} onClick={buy} disabled={busy}>
+      <SakugaButton
+        variant={className.includes("btn-secondary") ? "secondary" : undefined}
+        onClick={buy}
+        disabled={busy}
+      >
         {busy ? "Opening checkout…" : "Buy DealNote — $49 one-time"}
-      </button>
+      </SakugaButton>
       {message ? (
         <span className="caption" role="status" style={{ display: "block", marginTop: 8 }}>
           {message}
@@ -189,7 +194,11 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
         Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
         Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust &amp; local 15. This is
         DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
-        D 60-69, F below 60.
+        D 60-69, F below 60.{" "}
+        <SakugaTooltip
+          label="How the score works"
+          text="Six categories, each scored 0 to 100, weighted as shown and added up. A category only scores what the audit could actually read; anything it could not read never lowers the score."
+        />
       </p>
     </div>
   );

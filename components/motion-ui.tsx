@@ -16,7 +16,7 @@
 //   (the component source tab on reactbits.dev is JS-rendered and could
 //   not be fetched from this sandbox).
 // - SpotlightCard: React Bits SpotlightCard pattern, restrained to one
-//   faint teal wash that follows the pointer on the pricing card only.
+//   faint pink wash that follows the pointer on the pricing card only.
 //   No glow, no color gradient as decoration.
 //
 // Reduced motion: <MotionConfig reducedMotion="user"> in the layout
@@ -140,11 +140,11 @@ export function CountUp({ to, immediate = false }: { to: number; immediate?: boo
   );
 }
 
-/** One faint teal wash following the pointer. Pricing card only. */
+/** One faint pink wash following the pointer. Pricing card only. */
 export function SpotlightCard({ children, className }: { children: ReactNode; className?: string }) {
   const x = useMotionValue(-400);
   const y = useMotionValue(-400);
-  const background = useMotionTemplate`radial-gradient(240px circle at ${x}px ${y}px, rgb(15 118 110 / 0.07), transparent 70%)`;
+  const background = useMotionTemplate`radial-gradient(240px circle at ${x}px ${y}px, rgb(190 24 93 / 0.07), transparent 70%)`;
   return (
     <motion.div
       className={className}

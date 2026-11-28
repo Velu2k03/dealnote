@@ -19,9 +19,19 @@ import {
   type EmailKind,
   type ProposalKind,
 } from "@/lib/templates";
+import {
+  SakugaCheckbox,
+  SakugaRadio,
+  SakugaScripts,
+  SakugaTabs,
+  SakugaTooltip,
+  showToast,
+} from "@/components/sakuga";
 
 const LAST_FINDINGS_KEY = "dealnote-last-findings-v1";
 const BRAND_KEY = "dealnote-brand-v1";
+const DEFAULT_TEMPLATE_KEY = "dealnote-default-template-v1";
+const CHECKLIST_KEY = "dealnote-checklist-v1";
 
 const CHECKLIST = [
   "The subject line matches the body (no fake \"Re:\" or \"Fwd:\").",
@@ -53,9 +63,22 @@ export default function TemplatesPage() {
   const [emailDrafts, setEmailDrafts] = useState<Partial<Record<EmailKind, string>>>({});
   const [copied, setCopied] = useState<string>("");
   const [copyWarning, setCopyWarning] = useState<string>("");
+  const [activeTab, setActiveTab] = useState(0);
+  const [defaultTemplate, setDefaultTemplate] = useState<ProposalKind>("quickfix");
+  const [checklistDone, setChecklistDone] = useState<string[]>([]);
 
   useEffect(() => {
     setBrand(loadBrand());
+    try {
+      const savedDefault = localStorage.getItem(DEFAULT_TEMPLATE_KEY);
+      if (savedDefault && PROPOSAL_TEMPLATES.some((t) => t.kind === savedDefault)) {
+        setDefaultTemplate(savedDefault as ProposalKind);
+      }
+      const savedChecklist = localStorage.getItem(CHECKLIST_KEY);
+      if (savedChecklist) setChecklistDone(JSON.parse(savedChecklist) as string[]);
+    } catch {
+      // Keep the defaults.
+    }
     try {
       const raw = localStorage.getItem(LAST_FINDINGS_KEY);
       if (raw) {
@@ -78,6 +101,26 @@ export default function TemplatesPage() {
       // No audit findings stored; placeholders stay as written.
     }
   }, []);
+
+  const saveDefaultTemplate = (kind: ProposalKind) => {
+    setDefaultTemplate(kind);
+    try {
+      localStorage.setItem(DEFAULT_TEMPLATE_KEY, kind);
+    } catch {
+      // Default template is a convenience; a failed save is not fatal.
+    }
+    showToast("Default proposal saved. The audit page will open with it.");
+  };
+
+  const toggleChecklist = (item: string, done: boolean) => {
+    const next = done ? [...checklistDone, item] : checklistDone.filter((x) => x !== item);
+    setChecklistDone(next);
+    try {
+      localStorage.setItem(CHECKLIST_KEY, JSON.stringify(next));
+    } catch {
+      // Checklist state is a convenience; a failed save is not fatal.
+    }
+  };
 
   const findingsMissing = findings.length === 0;
   const business = "[Business]";
@@ -122,6 +165,7 @@ export default function TemplatesPage() {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(key);
+      showToast("Copied.");
       setTimeout(() => setCopied(""), 2000);
     } catch {
       setCopied("");
@@ -132,13 +176,21 @@ export default function TemplatesPage() {
 
   return (
     <section style={{ paddingTop: 48 }}>
+      {/* Sakuga controls used on this page, lazy-loaded after the first paint. */}
+      <SakugaScripts names={["tabs", "radio", "checkbox"]} />
       <div className="container">
         <div className="reading">
           <h1>Proposal templates</h1>
-          <p>8 proposals + 8 emails. Pick one, fill in the blanks, send it.</p>
+          <p>
+            8 proposals + 8 emails. Pick one, fill in the blanks, send it.{" "}
+            <SakugaTooltip
+              label="How the templates fit together"
+              text="Three first touches for three relationships, then Day 3 and Day 7 follow-ups, a Day 14 breakup, and two warm sends. Every email carries the CAN-SPAM footer from your brand profile."
+            />
+          </p>
         </div>
         {lastAudit ? (
-          <div className="card mt-24" style={{ background: "#F0FDF9", borderColor: "#99F6E4" }}>
+          <div className="card mt-24" style={{ background: "#FDF2F8", borderColor: "#F9A8D4" }}>
             <p className="mb-0">
               <strong>Latest audit filled in:</strong> {lastAudit.url}, score {lastAudit.score}/{lastAudit.grade}.
               The {findings.length} finding{findings.length === 1 ? "" : "s"} below come from that audit, so the
@@ -171,6 +223,21 @@ export default function TemplatesPage() {
           </div>
         </div>
 
+        <div className="mt-32">
+          <SakugaTabs
+            label="Template sections"
+            options={[
+              { value: "proposals", label: "Proposals" },
+              { value: "emails", label: "Emails" },
+              { value: "checklist", label: "Checklist" },
+            ]}
+            selected={activeTab}
+            onChange={(d) => setActiveTab(d.index)}
+          />
+        </div>
+
+        {activeTab === 0 ? (
+        <>
         <h2 className="mt-32">Proposals: 8 documents, 8 deals</h2>
         <p className="reading">
           Each proposal is a structurally different document for a different deal, not the same skeleton
@@ -206,6 +273,23 @@ export default function TemplatesPage() {
           until you fill them in. No guarantee of client wins.
         </p>
 
+        <div className="card mt-24">
+          <h3 className="mt-0">Default proposal</h3>
+          <p className="caption">
+            The audit page opens with this proposal selected. It is stored only in this browser.
+          </p>
+          <SakugaRadio
+            label="Default proposal"
+            options={PROPOSAL_TEMPLATES.map((t) => ({
+              value: t.kind,
+              label: `${t.name} (${t.length})`,
+              selected: t.kind === defaultTemplate,
+            }))}
+            value={defaultTemplate}
+            onChange={(v) => saveDefaultTemplate(v as ProposalKind)}
+          />
+        </div>
+
         {openProposal ? (
           <div className="card mt-24">
             <h3>{PROPOSAL_TEMPLATES.find((t) => t.kind === openProposal)?.name} - full text</h3>
@@ -221,7 +305,11 @@ export default function TemplatesPage() {
             {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
           </div>
         ) : null}
+        </>
+        ) : null}
 
+        {activeTab === 1 ? (
+        <>
         <h2 className="mt-32">Emails: 8, one sequence</h2>
         <p className="reading">
           Three first touches for three different relationships, then Day 3 and Day 7 follow-ups in the
@@ -276,6 +364,8 @@ export default function TemplatesPage() {
             {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
           </div>
         ) : null}
+        </>
+        ) : null}
 
         {findingsMissing ? (
           <div className="card mt-24" role="alert" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
@@ -325,17 +415,27 @@ export default function TemplatesPage() {
           Do not send marketing texts to a prospect unless you already have their prior express written consent.
         </p>
 
+        {activeTab === 2 ? (
+        <>
         <h2 className="mt-32">Before you send: checklist</h2>
+        <p className="caption">
+          Tick each item as you check it. Your ticks are stored only in this browser.{" "}
+          {checklistDone.length} of {CHECKLIST.length} checked.
+        </p>
         <div className="card">
-          <ul style={{ listStyle: "none", paddingLeft: 0, marginBottom: 0 }}>
-            {CHECKLIST.map((item) => (
-              <li key={item} style={{ marginBottom: 8 }}>
-                <CheckSquare size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom", marginRight: 8 }} />
+          {CHECKLIST.map((item) => (
+            <div key={item} style={{ marginBottom: 8 }}>
+              <SakugaCheckbox
+                checked={checklistDone.includes(item)}
+                onChange={(next) => toggleChecklist(item, next)}
+              >
                 {item}
-              </li>
-            ))}
-          </ul>
+              </SakugaCheckbox>
+            </div>
+          ))}
         </div>
+        </>
+        ) : null}
 
         <p className="mt-32 mb-0">
           <Link href="/audit" className="btn btn-primary">Generate a proposal from an audit</Link>

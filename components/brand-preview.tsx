@@ -10,6 +10,7 @@
 
 import { useEffect, useState } from "react";
 import { DEFAULT_BRAND, type BrandProfile } from "@/lib/audit";
+import { SakugaToggle } from "@/components/sakuga";
 
 const BRAND_KEY = "dealnote-brand-v1";
 
@@ -26,6 +27,7 @@ function loadBrand(): BrandProfile {
 export default function BrandPreview() {
   const [brand, setBrand] = useState<BrandProfile>(DEFAULT_BRAND);
   const [logoError, setLogoError] = useState("");
+  const [showPreview, setShowPreview] = useState(true);
 
   useEffect(() => {
     setBrand(loadBrand());
@@ -60,7 +62,7 @@ export default function BrandPreview() {
 
   const logoSrc = brand.logoDataUrl || brand.logoUrl || "";
   const name = brand.brandName === DEFAULT_BRAND.brandName ? "Your Studio" : brand.brandName;
-  const color = brand.primaryColor || "#0F766E";
+  const color = brand.primaryColor || "#BE185D";
 
   return (
     <div className="card glass mt-24 no-print">
@@ -70,6 +72,10 @@ export default function BrandPreview() {
         below. This is the same brand profile the audit page uses, stored only in this browser, so it
         carries straight into your real reports and proposal PDFs.
       </p>
+      <div style={{ marginBottom: 16 }}>
+        <SakugaToggle label="Show brand preview" checked={showPreview} onChange={setShowPreview} />
+      </div>
+      {showPreview ? (
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
         <div>
           <label htmlFor="preview-brand-name">Brand / business name</label>
@@ -87,7 +93,7 @@ export default function BrandPreview() {
           <input
             id="preview-brand-color"
             type="color"
-            value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#0F766E"}
+            value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#BE185D"}
             onChange={(e) => saveBrand({ ...brand, primaryColor: e.target.value })}
             style={{ width: 56, height: 40, padding: 4 }}
           />
@@ -98,6 +104,8 @@ export default function BrandPreview() {
           {logoError ? <p className="field-error mt-8" role="alert">{logoError}</p> : null}
         </div>
       </div>
+      ) : null}
+      {showPreview ? (
       <div
         className="mt-24"
         style={{ borderTop: `3px solid ${color}`, paddingTop: 16, background: "#fff" }}
@@ -110,11 +118,12 @@ export default function BrandPreview() {
           ) : null}
           <p style={{ fontSize: 20, fontWeight: 700, color, margin: 0 }}>{name}</p>
         </div>
-        <p className="mt-8 mb-0" style={{ color: "#475569" }}>
+        <p className="mt-8 mb-0" style={{ color: "#55507A" }}>
           Website Teardown and Proposal — prepared by {name}. This is how your brand looks on a client
           report. The DealNote name never appears on client reports.
         </p>
       </div>
+      ) : null}
     </div>
   );
 }

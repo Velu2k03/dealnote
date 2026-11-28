@@ -8,7 +8,7 @@
 //   already has a cached paid audit for this URL (within 24 h): the
 //   cached result is reused and no quota is consumed.
 // - Returns application/pdf rendered from the shared template in
-//   lib/pdf-html.ts (white/slate, deep teal #0F766E, no gradients).
+//   lib/pdf-html.ts (white/slate, pink #BE185D, no gradients).
 // - If Chromium cannot render at runtime, returns a clear 501. A PDF is
 //   never faked.
 

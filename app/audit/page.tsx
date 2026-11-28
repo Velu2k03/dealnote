@@ -41,6 +41,19 @@ import {
   type SectionKey,
 } from "@/lib/templates";
 import { BuyButton, IssueList, ScoreSummary } from "@/components/audit-ui";
+import {
+  SakugaButton,
+  SakugaCheckbox,
+  SakugaInput,
+  SakugaProgress,
+  SakugaRadio,
+  SakugaRating,
+  SakugaScripts,
+  SakugaSlider,
+  SakugaToggle,
+  showToast,
+  type SakugaEl,
+} from "@/components/sakuga";
 
 type TrackerStatus = "Not Sent" | "Sent" | "Replied" | "Closed";
 
@@ -56,6 +69,7 @@ const TRACKER_KEY = "dealnote-proposals-v1";
 const BRAND_KEY = "dealnote-brand-v1";
 const LICENSE_KEY = "dealnote-license-v1";
 const LAST_FINDINGS_KEY = "dealnote-last-findings-v1";
+const RATING_KEY = "dealnote-rating-v1";
 
 const STEPS = ["Validating the URL", "Fetching the homepage", "Checking links and page details", "Scoring the six categories"];
 
@@ -100,6 +114,9 @@ export default function AuditPage() {
   const [expiryDays, setExpiryDays] = useState("");
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfMessage, setPdfMessage] = useState("");
+  const [showPreview, setShowPreview] = useState(true);
+  const [rating, setRating] = useState(0);
+  const runBtnRef = useRef<SakugaEl | null>(null);
 
   // Guard so the hero-form auto-run fires exactly once, even under
   // React StrictMode double effects in development.
@@ -125,6 +142,12 @@ export default function AuditPage() {
     }
     setTracker(loadTracker());
     try {
+      const savedRating = Number(localStorage.getItem(RATING_KEY) ?? "0");
+      if (savedRating >= 1 && savedRating <= 5) setRating(savedRating);
+    } catch {
+      // No saved rating.
+    }
+    try {
       const raw = localStorage.getItem(BRAND_KEY);
       if (raw) setBrand({ ...DEFAULT_BRAND, ...(JSON.parse(raw) as BrandProfile) });
     } catch {
@@ -135,7 +158,28 @@ export default function AuditPage() {
     } catch {
       // No stored license key.
     }
+    try {
+      const savedDefault = localStorage.getItem("dealnote-default-template-v1");
+      if (savedDefault && PROPOSAL_TEMPLATES.some((t) => t.kind === savedDefault)) {
+        const kind = savedDefault as ProposalKind;
+        setTemplateKind(kind);
+        setSections(defaultSections(kind));
+      }
+    } catch {
+      // Keep the default template.
+    }
   }, []);
+
+  const saveRating = (next: number) => {
+    setRating(next);
+    try {
+      if (next > 0) localStorage.setItem(RATING_KEY, String(next));
+      else localStorage.removeItem(RATING_KEY);
+    } catch {
+      // Rating is a convenience; a failed save is not fatal.
+    }
+    if (next > 0) showToast("Thanks for rating this teardown.");
+  };
 
   const saveTracker = (next: TrackedProposal[]) => {
     setTracker(next);
@@ -214,6 +258,11 @@ export default function AuditPage() {
       } else {
         const audit = data as AuditResult;
         setResult(audit);
+        // The Sakuga run button lands its check only when the audit
+        // actually worked (the skill's done() rule).
+        if (runBtnRef.current && typeof runBtnRef.current.done === "function") {
+          (runBtnRef.current.done as () => void)();
+        }
         // Teaser detection: the server marks a teaser response, or reports
         // more findings than it returned. Anything else is a full result.
         // The client renders only what the server returned, never more.
@@ -345,6 +394,7 @@ export default function AuditPage() {
       updatedAt: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
     };
     saveTracker([entry, ...tracker]);
+    showToast("Proposal added to the tracker.");
   };
 
   const setStatus = (id: string, status: TrackerStatus) => {
@@ -414,6 +464,7 @@ export default function AuditPage() {
       a.click();
       URL.revokeObjectURL(href);
       setPdfMessage("Proposal PDF downloaded.");
+      showToast("Proposal PDF downloaded.");
     } catch {
       setPdfMessage("The proposal PDF could not be downloaded. Check your connection and try again.");
     } finally {
@@ -425,6 +476,7 @@ export default function AuditPage() {
     try {
       await navigator.clipboard.writeText(proposalText);
       setCopied(true);
+      showToast("Proposal text copied.");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
@@ -435,6 +487,9 @@ export default function AuditPage() {
 
   return (
     <>
+      {/* Sakuga controls used on this page, lazy-loaded after the first
+          paint. Toggle is ~506 KB (43 painted frames), so it loads last. */}
+      <SakugaScripts names={["input", "checkbox", "radio", "slider", "progress", "rating", "toggle"]} />
       <section style={{ paddingTop: 48 }}>
         <div className="container">
           <div className="reading">
@@ -448,25 +503,25 @@ export default function AuditPage() {
 
           <div className="card mt-24">
             <label htmlFor="audit-url">Business website URL</label>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <input
-                id="audit-url"
-                type="url"
-                inputMode="url"
-                autoFocus
-                placeholder="https://www.example-plumbing.com"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") runAudit();
-                }}
-                style={{ flex: "1 1 280px" }}
-                aria-describedby={error ? "audit-url-error" : undefined}
-              />
-              <button className="btn btn-primary" onClick={runAudit} disabled={running} style={{ flex: "0 0 auto" }}>
-                {running ? <Loader2 size={18} strokeWidth={1.5} aria-hidden /> : <Play size={18} strokeWidth={1.5} aria-hidden />}
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
+              <div style={{ flex: "1 1 280px", minWidth: 0 }}>
+                <SakugaInput
+                  label="Business website URL"
+                  type="url"
+                  name="url"
+                  placeholder="https://www.example-plumbing.com"
+                  value={url}
+                  autoFocus
+                  onInput={setUrl}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") runAudit();
+                  }}
+                  ariaLabel="Business website URL"
+                />
+              </div>
+              <SakugaButton ref={runBtnRef} onClick={runAudit} disabled={running}>
                 {running ? "Running audit…" : "Run audit"}
-              </button>
+              </SakugaButton>
             </div>
             {error ? <p id="audit-url-error" className="field-error">{error}</p> : null}
             <p className="caption mt-16 mb-8">
@@ -504,6 +559,7 @@ export default function AuditPage() {
           {running ? (
             <div className="card mt-24" aria-live="polite">
               <h2>Running the audit</h2>
+              <SakugaProgress label="Running the audit" progress={(step + 1) / STEPS.length} />
               {STEPS.map((label, i) => (
                 <div key={label} className="progress-step">
                   <span className={`progress-dot ${i < step ? "done" : i === step ? "active" : ""}`}>
@@ -563,9 +619,9 @@ export default function AuditPage() {
                         onChange={(e) => saveLicenseKey(e.target.value.trim())}
                         style={{ flex: "1 1 280px" }}
                       />
-                      <button className="btn btn-primary" onClick={runAudit} disabled={running}>
+                      <SakugaButton onClick={runAudit} disabled={running}>
                         Unlock with this key
-                      </button>
+                      </SakugaButton>
                     </div>
                     <p className="caption mt-16 mb-16">
                       Enter your key and run the audit again to see the full report.
@@ -592,15 +648,14 @@ export default function AuditPage() {
                         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
                           <legend className="caption" style={{ marginBottom: 8 }}>Findings to feature</legend>
                           {displayed.issues.map((issue) => (
-                            <label key={issue.id} className="check-row" htmlFor={`finding-${issue.id}`}>
-                              <input
-                                type="checkbox"
-                                id={`finding-${issue.id}`}
+                            <div key={issue.id} style={{ marginBottom: 8 }}>
+                              <SakugaCheckbox
                                 checked={selectedIds.includes(issue.id)}
                                 onChange={() => toggleFinding(issue.id)}
-                              />
-                              <span><strong>{issue.title}</strong> <span className="caption">({issue.severity})</span></span>
-                            </label>
+                              >
+                                {`${issue.title} (${issue.severity})`}
+                              </SakugaCheckbox>
+                            </div>
                           ))}
                         </fieldset>
                         {selectedIds.length === 0 ? (
@@ -610,7 +665,7 @@ export default function AuditPage() {
                       <IssueList issues={displayed.issues} />
                     </>
                   ) : (
-                    <div className="card" role="alert" style={{ borderColor: "#99f6e4", background: "#f0fdfa" }}>
+                    <div className="card" role="alert" style={{ borderColor: "#F9A8D4", background: "#FDF2F8" }}>
                       <h3>This site is in good shape</h3>
                       <p className="mb-16">
                         The audit found no material issues on the homepage in this run. A teardown pitch that
@@ -671,6 +726,10 @@ export default function AuditPage() {
                     stored only in this browser in v1. Client reports carry your brand only, never the DealNote name.
                   </p>
                   <p className="caption">{LOCAL_STORAGE_NOTICE}</p>
+                  <div style={{ marginBottom: 16 }}>
+                    <SakugaToggle label="Show white-label preview" checked={showPreview} onChange={setShowPreview} />
+                  </div>
+                  {showPreview ? (
                   <div className="two-col">
                     <div className="card">
                       <div className="form-grid">
@@ -780,6 +839,7 @@ export default function AuditPage() {
                       </p>
                     </div>
                   </div>
+                  ) : null}
 
                   {showGenerator ? (
                     <>
@@ -802,19 +862,16 @@ export default function AuditPage() {
                     <p className="caption">Eight structurally different documents, not one skeleton with a word swapped.</p>
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
                       <legend className="caption" style={{ marginBottom: 8 }}>Proposal template</legend>
-                      {PROPOSAL_TEMPLATES.map((t) => (
-                        <label key={t.kind} className="check-row" htmlFor={`template-${t.kind}`}>
-                          <input
-                            type="radio"
-                            id={`template-${t.kind}`}
-                            name="proposal-template"
-                            checked={templateKind === t.kind}
-                            onChange={() => changeTemplate(t.kind)}
-                            style={{ accentColor: "#0F766E" }}
-                          />
-                          <span><strong>{t.name}</strong> ({t.length}) - {t.tagline}</span>
-                        </label>
-                      ))}
+                      <SakugaRadio
+                        label="Proposal template"
+                        options={PROPOSAL_TEMPLATES.map((t) => ({
+                          value: t.kind,
+                          label: `${t.name} (${t.length}) - ${t.tagline}`,
+                          selected: t.kind === templateKind,
+                        }))}
+                        value={templateKind}
+                        onChange={(v) => changeTemplate(v as ProposalKind)}
+                      />
                     </fieldset>
                   </div>
 
@@ -827,15 +884,14 @@ export default function AuditPage() {
                     <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
                       <legend className="caption" style={{ marginBottom: 8 }}>Sections</legend>
                       {templateDef.sections.map((key) => (
-                        <label key={key} className="check-row" htmlFor={`section-${key}`}>
-                          <input
-                            type="checkbox"
-                            id={`section-${key}`}
+                        <div key={key} style={{ marginBottom: 8 }}>
+                          <SakugaCheckbox
                             checked={sections[key] === true}
-                            onChange={(e) => setSections({ ...sections, [key]: e.target.checked })}
-                          />
-                          <span>{SECTION_LABELS[key]}</span>
-                        </label>
+                            onChange={(next) => setSections({ ...sections, [key]: next })}
+                          >
+                            {SECTION_LABELS[key]}
+                          </SakugaCheckbox>
+                        </div>
                       ))}
                     </fieldset>
                   </div>
@@ -928,16 +984,17 @@ export default function AuditPage() {
                       <textarea id="timeline-lines" value={timelineText} onChange={(e) => setTimelineText(e.target.value)} rows={4} />
                       <label htmlFor="not-included-lines" style={{ marginTop: 12 }}>Not included</label>
                       <textarea id="not-included-lines" value={notIncludedText} onChange={(e) => setNotIncludedText(e.target.value)} rows={5} />
-                      <label htmlFor="expiry-days" style={{ marginTop: 12 }}>Proposal valid for (days)</label>
-                      <input
-                        id="expiry-days"
-                        type="text"
-                        inputMode="numeric"
-                        placeholder="14 or 30"
-                        value={expiryDays}
-                        onChange={(e) => setExpiryDays(e.target.value.replace(/[^0-9]/g, "").slice(0, 3))}
-                        style={{ maxWidth: 160 }}
+                      <label style={{ marginTop: 12 }}>Proposal valid for (days)</label>
+                      <SakugaSlider
+                        label="Proposal valid for, in days"
+                        value={Number(expiryDays) || 14}
+                        min={0}
+                        max={90}
+                        step={1}
+                        unit=" days"
+                        onChange={(v) => setExpiryDays(v === 0 ? "" : String(v))}
                       />
+                      <p className="caption mt-8 mb-0">0 days means no expiry date is shown. The slider shows the value as you drag it.</p>
                     </div>
                   ) : null}
 
@@ -993,12 +1050,12 @@ export default function AuditPage() {
                     )}
                     <p className="caption">Fill in the prices yourself before sending. Payment terms placeholder: 50% upfront, 50% on launch.</p>
                     <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                      <button type="button" className="btn btn-secondary" onClick={copyProposal}>
-                        <FileText size={18} strokeWidth={1.5} aria-hidden /> {copied ? "Copied" : "Copy proposal text"}
-                      </button>
-                      <button type="button" className="btn btn-primary" onClick={downloadProposalPdf} disabled={pdfBusy}>
-                        <Download size={18} strokeWidth={1.5} aria-hidden /> {pdfBusy ? "Generating PDF" : "Download proposal PDF"}
-                      </button>
+                      <SakugaButton variant="secondary" onClick={copyProposal}>
+                        {copied ? "Copied" : "Copy proposal text"}
+                      </SakugaButton>
+                      <SakugaButton onClick={downloadProposalPdf} disabled={pdfBusy}>
+                        {pdfBusy ? "Generating PDF" : "Download proposal PDF"}
+                      </SakugaButton>
                       <Link href="/templates" className="btn btn-secondary">
                         <Mail size={18} strokeWidth={1.5} aria-hidden /> Open the proposal templates page
                       </Link>
@@ -1020,9 +1077,9 @@ export default function AuditPage() {
                   </p>
                   <p className="caption">{LOCAL_STORAGE_NOTICE}</p>
                   <div className="card">
-                    <button className="btn btn-primary" onClick={addToTracker}>
-                      <Send size={18} strokeWidth={1.5} aria-hidden /> Add this proposal to the tracker
-                    </button>
+                    <SakugaButton onClick={addToTracker}>
+                      Add this proposal to the tracker
+                    </SakugaButton>
                     {tracker.length === 0 ? (
                       <p className="mt-16 mb-0">No proposals tracked yet.</p>
                     ) : (
@@ -1064,6 +1121,16 @@ export default function AuditPage() {
                       </p>
                     </div>
                   ) : null}
+
+                  <div className="card mt-32">
+                    <h3 className="mt-0">Rate this teardown</h3>
+                    <p className="caption">
+                      Your rating is stored only in this browser. It is not a testimonial and is never
+                      shown to anyone else; it is here so you can mark how useful this run was.
+                    </p>
+                    <SakugaRating label="Rate this teardown" value={rating} onChange={saveRating} />
+                    {rating > 0 ? <p className="caption mt-8 mb-0">You rated this teardown {rating} out of 5.</p> : null}
+                  </div>
                 </>
               )}
             </>

@@ -1,9 +1,11 @@
 // DealNote PDF HTML templates (shared by /api/pdf/teardown and /api/pdf/proposal).
 // Brand-new code for DealNote. No code copied from any other product.
 //
-// Design tokens: white / slate, deep teal #0F766E, Inter / system font.
+// Design tokens: white / slate-violet, pink #BE185D, Inter / system font.
 // No gradients, no glows, no emoji. The HTML is rendered to PDF by
 // Puppeteer (Chromium); it is plain printable HTML, no JavaScript.
+// Pink brand header/footer follows the site brand color (28 Nov 2026
+// Sakuga direction); no effects in PDFs.
 
 import type { AuditResult, BrandProfile, ProposalItem } from "@/lib/audit";
 import { CATEGORIES } from "@/lib/audit";
@@ -17,10 +19,10 @@ import {
 } from "@/lib/templates";
 
 /** Buyer brand color, validated to a #rrggbb hex; anything else falls
- *  back to DealNote teal so a bad value can never break the PDF. */
+ *  back to DealNote pink so a bad value can never break the PDF. */
 export function brandAccent(brand: BrandProfile): string {
   const c = (brand.primaryColor ?? "").trim();
-  return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#0F766E";
+  return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#BE185D";
 }
 
 /** Logo for the PDF: only an uploaded data URL is embedded. A remote
