@@ -6,8 +6,10 @@
 //         selectedIssueIds? } (brand = BrandProfile fields, partial
 // allowed; missing fields fall back to DEFAULT_BRAND).
 // - Requires a valid licence key: missing or invalid key -> 402, quota
-//   exhausted -> 402. The audit is re-run server-side and counts against
-//   the 30/month quota, exactly like /api/audit. The buyer's edited fix
+//   exhausted -> 402. The audit is NOT re-run when the licence key
+//   already has a cached paid audit for this URL (within 24 h): the
+//   cached result is reused and no quota is consumed. Only a first PDF
+//   for a URL runs the audit, exactly like /api/audit.
 //   list (items) is used when supplied and valid; otherwise fix items are
 //   built from the audit findings (proposalItemsFromIssues), never invented.
 //   Only the buyer-selected findings appear in the proposal.
@@ -25,8 +27,8 @@ import {
   type BrandProfile,
   type ProposalItem,
 } from "@/lib/audit";
-import { runPaidAudit } from "@/app/api/audit/route";
-import { htmlToPdfBuffer, proposalHtml } from "@/lib/pdf-html";
+import { runPaidAuditCached } from "@/app/api/audit/route";
+import { footerLine, htmlToPdfBuffer, proposalHtml } from "@/lib/pdf-html";
 import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NOT_INCLUDED_DEFAULT, type ProposalKind, type SectionKey } from "@/lib/templates";
 
 export const runtime = "nodejs";
@@ -125,7 +127,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const paid = await runPaidAudit(check.url, licenseKey);
+  const paid = await runPaidAuditCached(check.url, licenseKey);
   if (!paid.ok) {
     // PDF export is a paid feature: an invalid key is a payment problem (402),
     // while audit failures (robots 403, fetch 502, ...) pass through as-is.
@@ -138,7 +140,18 @@ export async function POST(request: Request) {
 
   const brand = mergeBrand(body.brand);
   const template: ProposalKind =
-    body.template === "quickfix" || body.template === "retainer" ? (body.template as ProposalKind) : "redesign";
+    body.template === "quickfix" ||
+    body.template === "retainer" ||
+    body.template === "localseo" ||
+    body.template === "landing" ||
+    body.template === "fastclose" ||
+    body.template === "newbuild" ||
+    body.template === "ecommerce"
+      ? (body.template as ProposalKind)
+      : "redesign";
+  // A 0-findings audit gets no fix proposal: only the Retainer Opener,
+  // which is care for a healthy site, is honest for it.
+  const effectiveTemplate = paid.result.issues.length === 0 && template !== "retainer" ? "retainer" : template;
   const items = parseItems(body.items) ?? proposalItemsFromIssues(paid.result.issues);
   const selectedIssueIds = Array.isArray(body.selectedIssueIds)
     ? body.selectedIssueIds.filter((v): v is string => typeof v === "string").slice(0, 20)
@@ -149,11 +162,11 @@ export async function POST(request: Request) {
     brand,
     runDate: paid.result.fetchedAt,
     items,
-    template,
+    template: effectiveTemplate,
     sections: parseSections(body.sections),
     prices: parsePrices(body.prices),
-    scopeLines: parseStringList(body.scopeLines, template === "redesign" ? DEFAULT_SCOPE : []),
-    timelineLines: parseStringList(body.timelineLines, template === "redesign" ? DEFAULT_TIMELINE : []),
+    scopeLines: parseStringList(body.scopeLines, effectiveTemplate === "redesign" || effectiveTemplate === "localseo" || effectiveTemplate === "landing" || effectiveTemplate === "newbuild" || effectiveTemplate === "ecommerce" ? DEFAULT_SCOPE : []),
+    timelineLines: parseStringList(body.timelineLines, effectiveTemplate === "redesign" || effectiveTemplate === "newbuild" || effectiveTemplate === "ecommerce" ? DEFAULT_TIMELINE : []),
     notIncluded: parseStringList(body.notIncluded, NOT_INCLUDED_DEFAULT),
     expiryDays,
     selectedIssueIds,
@@ -161,7 +174,7 @@ export async function POST(request: Request) {
 
   let pdf: Buffer;
   try {
-    pdf = await htmlToPdfBuffer(html);
+    pdf = await htmlToPdfBuffer(html, footerLine(brand, paid.result.fetchedAt, paid.result.url));
   } catch {
     return NextResponse.json(
       { error: "PDF export is not available in this build." },

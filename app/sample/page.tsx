@@ -2,6 +2,7 @@ import { Printer } from "lucide-react";
 import { SAMPLE_BUSINESS, sampleAudit } from "@/lib/audit";
 import { IssueList, ScoreSummary } from "@/components/audit-ui";
 import PrintButton from "@/components/print-button";
+import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NON_BINDING_TEXT, NOT_INCLUDED_DEFAULT } from "@/lib/templates";
 
 export default function SamplePage() {
   const sample = sampleAudit();
@@ -29,13 +30,6 @@ export default function SamplePage() {
 
         <div className="mt-32">
           <ScoreSummary result={sample} />
-          <p className="caption mt-16">
-            Scores are DealNote&apos;s own measurements from this run, on the run date shown. They are not
-            Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
-            Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust, local and social 15. This is
-            DealNote&apos;s scoring model, not an industry standard. Grades: A 90–100, B 80–89, C 70–79,
-            D 60–69, F below 60.
-          </p>
         </div>
 
         <h2 className="mt-32">What we found, in plain language</h2>
@@ -47,6 +41,13 @@ export default function SamplePage() {
 
         <h2 className="mt-32">All findings</h2>
         <IssueList issues={sample.issues.slice(3)} />
+
+        <h2 className="mt-32">Understanding the problem</h2>
+        <p className="reading">
+          The audit found {sample.issues.length} issues on the homepage. These issues may be turning away
+          visitors who would otherwise call, book, or visit. No dollar-loss figure is claimed here: the
+          cost is the visitors who leave without contacting you.
+        </p>
 
         <h2 className="mt-32">What we would fix</h2>
         <div className="card">
@@ -84,6 +85,55 @@ export default function SamplePage() {
             Prices are blank placeholders in this sample. The freelancer fills them in before sending.
             Payment terms placeholder: 50% upfront, 50% on launch. This proposal is valid until [date].
           </p>
+        </div>
+
+        <h2 className="mt-32">Scope and deliverables</h2>
+        <div className="card">
+          <ul style={{ paddingLeft: 20 }}>
+            {DEFAULT_SCOPE.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <h3>Not included</h3>
+          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+            {NOT_INCLUDED_DEFAULT.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+
+        <h2 className="mt-32">Timeline and milestones</h2>
+        <div className="card">
+          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+            {DEFAULT_TIMELINE.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+          <p className="caption mt-16 mb-0">
+            Start date: [fill in]. Timings assume the client provides content and access on time.
+          </p>
+        </div>
+
+        <h2 className="mt-32">About [Your Studio Name]</h2>
+        <div className="card">
+          <p>
+            [Your Studio Name] is a web design studio run by [Your Name], based in [Your City]. We build
+            and fix websites for local businesses, and this sample shows the format every proposal uses.
+          </p>
+          <p className="mb-0">
+            [PAST PROJECT - Replace with a real project or delete this section. Never invent a client, a
+            quote, or a result.]
+          </p>
+        </div>
+
+        <h2 className="mt-32">Terms</h2>
+        <div className="card">
+          <p>
+            This proposal includes 2 rounds of design revisions. Additional revisions or work outside the
+            scope described above will be quoted separately. Ownership of the finished site passes to the
+            client on final payment.
+          </p>
+          <p className="mb-0">{NON_BINDING_TEXT}</p>
         </div>
 
         <div className="card mt-32">

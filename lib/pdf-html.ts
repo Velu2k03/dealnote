@@ -39,8 +39,11 @@ function logoImg(brand: BrandProfile): string {
 // a PDF is never faked.
 // ---------------------------------------------------------------------------
 
-/** Render printable HTML to a PDF buffer with headless Chromium. */
-export async function htmlToPdfBuffer(html: string): Promise<Buffer> {
+/** Render printable HTML to a PDF buffer with headless Chromium.
+ *  When `footerText` is given, it is printed on EVERY page via
+ *  displayHeaderFooter (the footer disclaimer is a legal requirement,
+ *  not a last-page note). Page numbers are included. */
+export async function htmlToPdfBuffer(html: string, footerText?: string): Promise<Buffer> {
   const chromium = (await import("@sparticuz/chromium")).default;
   const puppeteer = (await import("puppeteer-core")).default;
   const executablePath = await chromium.executablePath();
@@ -56,6 +59,11 @@ export async function htmlToPdfBuffer(html: string): Promise<Buffer> {
       format: "A4",
       printBackground: true,
       margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
+      displayHeaderFooter: Boolean(footerText),
+      headerTemplate: "<div></div>",
+      footerTemplate: footerText
+        ? `<div style="width:100%;font-size:8px;color:#64748b;padding:0 15mm;text-align:center;">${escapeHtml(footerText)} &middot; Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>`
+        : "<div></div>",
     });
     return Buffer.from(pdf);
   } finally {
@@ -166,6 +174,10 @@ export function teardownReportHtml(opts: {
   runDate: string;
 }): string {
   const { result, brand, runDate } = opts;
+  const introLine =
+    result.issues.length === 0 && /found (\d+|several) quick wins/i.test(brand.introLine)
+      ? "I reviewed your website and found it in good shape."
+      : brand.introLine;
   const body = `
   <div class="score-box">
     <p class="meta">Overall score</p>
@@ -179,7 +191,7 @@ export function teardownReportHtml(opts: {
   ${issueBlocks(result)}
   ${result.couldNotCheck.length > 0 ? `<h2>What this report could not check</h2><ul>${result.couldNotCheck.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` : ""}
   <h2>What happens next</h2>
-  <div class="cta"><p>${escapeHtml(brand.introLine)}</p>
+  <div class="cta"><p>${escapeHtml(introLine)}</p>
   <p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)} &middot; ${escapeHtml(brand.contactPhone)}</p>
   <p><a href="${escapeHtml(brand.ctaLink)}">${escapeHtml(brand.ctaText)}</a></p></div>`;
   return reportShell({ title: "Website Teardown Report", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
@@ -218,15 +230,33 @@ export function proposalHtml(opts: {
   const timelineLines = opts.timelineLines?.length ? opts.timelineLines : [];
   const notIncluded = opts.notIncluded?.length ? opts.notIncluded : NOT_INCLUDED_DEFAULT;
   const title =
-    template === "quickfix" ? "Quick-Fix Pitch" : template === "retainer" ? "Monthly Care Proposal" : "Website Fix Proposal";
-  const fixHeading = template === "retainer" ? "What we would do monthly" : "What we would fix";
+    template === "quickfix"
+      ? "Quick-Fix Pitch"
+      : template === "retainer"
+        ? "Monthly Care Proposal"
+        : template === "localseo"
+          ? "Local SEO & GBP Refresh Proposal"
+          : template === "landing"
+            ? "Landing Page Proposal"
+            : template === "fastclose"
+              ? "One-Page Fast-Close Quote"
+              : "Website Fix Proposal";
+  const fixHeading = template === "retainer" ? "What we would do monthly" : template === "localseo" ? "What we would fix (local search and profile)" : template === "landing" ? "What the new page would fix" : "What we would fix";
+  // A 0-findings audit must never claim "found N quick wins" in the PDF:
+  // the cover line is replaced with the good-shape wording instead.
+  const introLine =
+    result.issues.length === 0 && /found (\d+|several) quick wins/i.test(brand.introLine)
+      ? "I reviewed your website and found it in good shape."
+      : brand.introLine;
 
   const investment =
     template === "retainer"
       ? `<p>Monthly care plan: <strong>${escapeHtml(priceOrBlank(prices.monthly ?? ""))}</strong> per month, 3-month minimum, 30-day cancel after that.</p><p>Updates, backups, quarterly restore test, up to 2 hours of small changes per month.</p>`
-      : template === "quickfix"
+      : template === "quickfix" || template === "fastclose" || template === "landing"
         ? `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr></tbody></table><p class="meta">Quick wins only. Payment terms: 50% upfront, 50% on completion.</p>`
-        : `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr><tr><td>Growth</td><td>${escapeHtml(priceOrBlank(prices.growth ?? ""))}</td></tr><tr><td>Premium</td><td>${escapeHtml(priceOrBlank(prices.premium ?? ""))}</td></tr></tbody></table><p class="meta">Payment terms: 50% upfront, 50% on launch. For larger projects, milestone terms of 30% / 40% / 30% can be used instead. Edit these terms to match your agreement. This is not legal advice.</p>`;
+        : template === "localseo"
+          ? `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr><tr><td>Monthly profile care</td><td>${escapeHtml(priceOrBlank(prices.monthly ?? ""))}</td></tr></tbody></table><p class="meta">Payment terms: 50% upfront, 50% on completion.</p>`
+          : `<table><thead><tr><th>Tier</th><th>Price</th></tr></thead><tbody><tr><td>Essential</td><td>${escapeHtml(priceOrBlank(prices.essential ?? ""))}</td></tr><tr><td>Growth</td><td>${escapeHtml(priceOrBlank(prices.growth ?? ""))}</td></tr><tr><td>Premium</td><td>${escapeHtml(priceOrBlank(prices.premium ?? ""))}</td></tr></tbody></table><p class="meta">Payment terms: 50% upfront, 50% on launch. For larger projects, milestone terms of 30% / 40% / 30% can be used instead. Edit these terms to match your agreement. This is not legal advice.</p>`;
 
   const phases = template === "retainer" ? ["Ongoing"] : ["Quick wins", "Redesign", "Ongoing"];
   const phaseSections = phases
@@ -243,7 +273,7 @@ export function proposalHtml(opts: {
     <p><span class="score-big">${result.overallScore} / 100</span> &nbsp; <span class="grade" style="color:${gradeColor(result.overallGrade)};">Grade ${escapeHtml(result.overallGrade)}</span></p>
     <p class="meta">Homepage: ${escapeHtml(result.finalUrl)}</p>
   </div>
-  <p>${escapeHtml(brand.introLine)}</p>`;
+  <p>${escapeHtml(introLine)}</p>`;
 
   if (on("found")) {
     body += `<h2>What we found</h2>${shownResult.issues.length === 0 ? "<p>No material issues were found on the homepage in this run. The opportunity is keeping the site in good shape, not fixing what is not broken.</p>" : issueBlocks(shownResult)}`;

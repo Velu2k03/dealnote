@@ -119,18 +119,137 @@ export default function TemplatesPage() {
       <div className="container">
         <div className="reading">
           <h1>Proposal templates</h1>
-          <p>
-            3 proposals + 5 emails + editable blocks. Each proposal is a structurally different document
-            for a different deal, not the same skeleton with a word swapped. Prices are blank placeholders
-            you fill in. These templates are starting text you adapt, not legal advice. Get your own
-            contract reviewed if you need one.
-          </p>
-          <p>
-            You are responsible for your own outreach law. Only email people in line with the rules that
-            apply to you and to them. See the sending checklist below. DealNote provides no cold SMS scripts.
-            Do not send marketing texts to a prospect unless you already have their prior express written consent.
-          </p>
+          <p>8 proposals + 8 emails. Pick one, fill in the blanks, send it.</p>
         </div>
+        <div className="steps-flow mt-24" aria-label="How templates fit the workflow">
+          <div className="step-row">
+            <span className="step-num" aria-hidden>1</span>
+            <div>
+              <h2 className="mt-0">Audit done</h2>
+              <p className="mb-0">Run an audit first; the real findings fill in here.</p>
+            </div>
+          </div>
+          <div className="step-row">
+            <span className="step-num" aria-hidden>2</span>
+            <div>
+              <h2 className="mt-0">Customize</h2>
+              <p className="mb-0">Pick a proposal, edit the fix list, fill in the blank prices.</p>
+            </div>
+          </div>
+          <div className="step-row">
+            <span className="step-num" aria-hidden>3</span>
+            <div>
+              <h2 className="mt-0">Export PDF</h2>
+              <p className="mb-0">Download the white-label PDF and send the emails.</p>
+            </div>
+          </div>
+        </div>
+
+        <h2 className="mt-32">Proposals: 8 documents, 8 deals</h2>
+        <p className="reading">
+          Each proposal is a structurally different document for a different deal, not the same skeleton
+          with a word swapped. Prices are blank placeholders you fill in. These templates are starting
+          text you adapt, not legal advice. Get your own contract reviewed if you need one.
+        </p>
+        <div className="steps-flow">
+          {PROPOSAL_TEMPLATES.map((t) => (
+            <div key={t.kind} className="step-row">
+              <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden style={{ flexShrink: 0, marginTop: 4 }} />
+              <div style={{ flex: "1 1 auto" }}>
+                <h3 className="mt-0">{t.name} <span className="caption">({t.length}, {t.dealSize})</span></h3>
+                <p className="mb-8">{t.tagline}</p>
+                <p className="mb-8"><strong>Sections ({t.sections.length}): </strong>{t.sections.join(", ")}</p>
+                <p className="mb-16">{t.investmentNote}</p>
+                <p className="mb-0">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    aria-expanded={openProposal === t.kind}
+                    onClick={() => setOpenProposal(openProposal === t.kind ? null : t.kind)}
+                  >
+                    {openProposal === t.kind ? "Hide full text" : "View full text"}
+                  </button>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="caption mt-16">
+          Every proposal is editable in the generator on the audit page: pick which findings to feature,
+          edit, delete, reorder, or add fix items, and hide any section. Prices always stay blank ($____)
+          until you fill them in. No guarantee of client wins.
+        </p>
+
+        {openProposal ? (
+          <div className="card mt-24">
+            <h3>{PROPOSAL_TEMPLATES.find((t) => t.kind === openProposal)?.name} - full text</h3>
+            <p className="caption">
+              Template text with placeholders. Findings fill in from your latest audit; prices stay blank.
+            </p>
+            <pre className="evidence" style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{proposalText(openProposal)}</pre>
+            <p className="mt-16 mb-0">
+              <button type="button" className="btn btn-secondary" onClick={() => copyText(`proposal-${openProposal}`, proposalText(openProposal))}>
+                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `proposal-${openProposal}` ? "Copied" : "Copy proposal text"}
+              </button>
+            </p>
+            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
+          </div>
+        ) : null}
+
+        <h2 className="mt-32">Emails: 8, one sequence</h2>
+        <p className="reading">
+          Three first touches for three different relationships, then Day 3 and Day 7 follow-ups in the
+          same thread, a Day 14 breakup, and two warm sends after a call or a proposal. Every email,
+          including follow-ups, carries the CAN-SPAM footer with your postal address from your brand profile.
+        </p>
+        <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 16 }}>
+          {EMAIL_TEMPLATES.map((e, i) => (
+            <li key={e.kind} className="card" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <span className="step-num" aria-hidden>{i + 1}</span>
+              <div style={{ flex: "1 1 auto" }}>
+                <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <Mail size={18} strokeWidth={1.5} color="#475569" aria-hidden /> {e.name}
+                </h3>
+                <p className="mb-8">{e.purpose}</p>
+                <p className="mb-8"><strong>When: </strong>{e.timing}</p>
+                <p className="mb-16"><strong>Subject lines: </strong>{e.subjects.join(" / ")}</p>
+                <p className="mb-0">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    aria-expanded={openEmail === e.kind}
+                    onClick={() => setOpenEmail(openEmail === e.kind ? null : e.kind)}
+                  >
+                    {openEmail === e.kind ? "Hide email" : "View and edit email"}
+                  </button>
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        {openEmail ? (
+          <div className="card mt-24">
+            <h3>{EMAIL_TEMPLATES.find((e) => e.kind === openEmail)?.name}</h3>
+            <p className="caption">
+              Edit the body below before you copy it. If it still contains a [finding] placeholder, the copy
+              button will warn you instead of copying.
+            </p>
+            <label htmlFor="email-draft">Email text</label>
+            <textarea
+              id="email-draft"
+              value={emailText(openEmail)}
+              onChange={(ev) => setEmailDrafts({ ...emailDrafts, [openEmail]: ev.target.value })}
+              rows={14}
+            />
+            <p className="mt-16 mb-0">
+              <button type="button" className="btn btn-secondary" onClick={() => copyText(`email-${openEmail}`, emailText(openEmail))}>
+                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `email-${openEmail}` ? "Copied" : "Copy email"}
+              </button>
+            </p>
+            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
+          </div>
+        ) : null}
 
         {findingsMissing ? (
           <div className="card mt-24" role="alert" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
@@ -160,102 +279,6 @@ export default function TemplatesPage() {
           </div>
         ) : null}
 
-        <h2 className="mt-32">Proposals: 3 documents, 3 deals</h2>
-        <div className="steps-grid">
-          {PROPOSAL_TEMPLATES.map((t) => (
-            <div key={t.kind} className="card">
-              <FileText size={18} strokeWidth={1.5} color="#475569" aria-hidden />
-              <h3 className="mt-16">{t.name}</h3>
-              <p>{t.tagline}</p>
-              <p className="mb-8"><strong>Length: </strong>{t.length}</p>
-              <p className="mb-8"><strong>Deal: </strong>{t.dealSize}</p>
-              <p className="mb-8"><strong>Sections: </strong>{t.sections.length} ({t.sections.join(", ")})</p>
-              <p className="mb-16">{t.investmentNote}</p>
-              <p className="mb-0">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  aria-expanded={openProposal === t.kind}
-                  onClick={() => setOpenProposal(openProposal === t.kind ? null : t.kind)}
-                >
-                  {openProposal === t.kind ? "Hide full text" : "View full text"}
-                </button>
-              </p>
-            </div>
-          ))}
-        </div>
-        <p className="caption mt-16">
-          Every proposal is editable in the generator on the audit page: pick which findings to feature,
-          edit, delete, reorder, or add fix items, and hide any section. Prices always stay blank ($____)
-          until you fill them in. No guarantee of client wins.
-        </p>
-
-        {openProposal ? (
-          <div className="card mt-24">
-            <h3>{PROPOSAL_TEMPLATES.find((t) => t.kind === openProposal)?.name} - full text</h3>
-            <p className="caption">
-              Template text with placeholders. Findings fill in from your latest audit; prices stay blank.
-            </p>
-            <pre className="evidence" style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{proposalText(openProposal)}</pre>
-            <p className="mt-16 mb-0">
-              <button type="button" className="btn btn-secondary" onClick={() => copyText(`proposal-${openProposal}`, proposalText(openProposal))}>
-                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `proposal-${openProposal}` ? "Copied" : "Copy proposal text"}
-              </button>
-            </p>
-            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
-          </div>
-        ) : null}
-
-        <h2 className="mt-32">Emails: 5, one sequence</h2>
-        <p className="reading">
-          Three first touches for three different relationships, then a two-email follow-up sequence.
-          Follow-ups go in the same thread as the first email. Every email, including follow-ups, carries
-          the CAN-SPAM footer with your postal address from your brand profile.
-        </p>
-        <div className="steps-grid">
-          {EMAIL_TEMPLATES.map((e) => (
-            <div key={e.kind} className="card">
-              <Mail size={18} strokeWidth={1.5} color="#475569" aria-hidden />
-              <h3 className="mt-16">{e.name}</h3>
-              <p>{e.purpose}</p>
-              <p className="mb-8"><strong>When: </strong>{e.timing}</p>
-              <p className="mb-16"><strong>Subject lines: </strong>{e.subjects.join(" / ")}</p>
-              <p className="mb-0">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  aria-expanded={openEmail === e.kind}
-                  onClick={() => setOpenEmail(openEmail === e.kind ? null : e.kind)}
-                >
-                  {openEmail === e.kind ? "Hide email" : "View and edit email"}
-                </button>
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {openEmail ? (
-          <div className="card mt-24">
-            <h3>{EMAIL_TEMPLATES.find((e) => e.kind === openEmail)?.name}</h3>
-            <p className="caption">
-              Edit the body below before you copy it. If it still contains a [finding] placeholder, the copy
-              button will warn you instead of copying.
-            </p>
-            <label htmlFor="email-draft">Email text</label>
-            <textarea
-              id="email-draft"
-              value={emailText(openEmail)}
-              onChange={(ev) => setEmailDrafts({ ...emailDrafts, [openEmail]: ev.target.value })}
-              rows={14}
-            />
-            <p className="mt-16 mb-0">
-              <button type="button" className="btn btn-secondary" onClick={() => copyText(`email-${openEmail}`, emailText(openEmail))}>
-                <Copy size={18} strokeWidth={1.5} aria-hidden /> {copied === `email-${openEmail}` ? "Copied" : "Copy email"}
-              </button>
-            </p>
-            {copyWarning ? <p className="field-error mt-16" role="alert">{copyWarning}</p> : null}
-          </div>
-        ) : null}
 
         <h2 className="mt-32">CAN-SPAM footer (on every email)</h2>
         <div className="card">
@@ -269,6 +292,12 @@ export default function TemplatesPage() {
             operate. Only email people in line with the rules that apply to you.
           </p>
         </div>
+
+        <p className="reading mt-32">
+          You are responsible for your own outreach law. Only email people in line with the rules that
+          apply to you and to them. See the sending checklist below. DealNote provides no cold SMS scripts.
+          Do not send marketing texts to a prospect unless you already have their prior express written consent.
+        </p>
 
         <h2 className="mt-32">Before you send: 60-second checklist</h2>
         <div className="card">

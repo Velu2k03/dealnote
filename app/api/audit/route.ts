@@ -15,7 +15,8 @@ import {
   tryConsumeAudit,
   type LicenseRecord,
 } from "@/lib/entitlements";
-import { checkFreeRateLimit, getClientIp } from "@/lib/ratelimit";
+import { checkFreeRateLimitAsync, getClientIp } from "@/lib/ratelimit";
+import { getCachedAudit, setCachedAudit } from "@/lib/audit-cache";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -41,6 +42,51 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Respons
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Fetch a small public text file (robots.txt / sitemap.xml) following at
+ * most MAX_REDIRECTS redirects, re-validating every hop with the same
+ * public-only blocklist as the main fetch. Previously these two fetches
+ * used redirect:"follow" with no re-validation, so a redirect to a
+ * private address was followed. Only the fetched text is consumed.
+ */
+async function fetchPublicTextWithRedirects(url: string, timeoutMs: number): Promise<Response> {
+  let current = url;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    let response: Response;
+    try {
+      response = await fetch(current, {
+        signal: controller.signal,
+        redirect: "manual",
+        headers: {
+          "user-agent": "DealNote/1.0 (website teardown; contact murugan@drvelu.com)",
+          accept: "text/html,application/xhtml+xml",
+        },
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (isRedirectStatus(response.status)) {
+      const location = response.headers.get("location");
+      if (!location) return response;
+      if (hop === MAX_REDIRECTS) throw new Error("too many redirects");
+      let next: string;
+      try {
+        next = new URL(location, current).toString();
+      } catch {
+        throw new Error("bad redirect");
+      }
+      const check = isValidAuditUrl(next);
+      if (!check.ok) throw new Error("redirect to non-public address");
+      current = check.url;
+      continue;
+    }
+    return response;
+  }
+  throw new Error("too many redirects");
 }
 
 // ---------------------------------------------------------------------------
@@ -88,8 +134,18 @@ export function isPathDisallowedByRobots(robotsText: string, path: string): bool
   const group = specific ?? groups.find((g) => g.agents.includes("*"));
   if (!group) return false;
 
+  // Robots patterns support the standard wildcards: "*" matches any
+  // run of characters and a trailing "$" anchors the end of the path.
+  // The match length used for longest-rule wins is the literal prefix
+  // length (pattern with "*" and "$" stripped).
+  const patternMatches = (pattern: string, p: string): boolean => {
+    const anchored = pattern.endsWith("$");
+    const core = anchored ? pattern.slice(0, -1) : pattern;
+    const escaped = core.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+    return new RegExp(`^${escaped}${anchored ? "$" : ""}`).test(p);
+  };
   const longest = (rules: string[]) =>
-    rules.filter((r) => path.startsWith(r)).reduce((m, r) => Math.max(m, r.length), 0);
+    rules.filter((r) => patternMatches(r, path)).reduce((m, r) => Math.max(m, r.replace(/[*$]/g, "").length), 0);
   const disallowLen = longest(group.disallows);
   if (disallowLen === 0) return false;
   const allowLen = longest(group.allows);
@@ -175,7 +231,7 @@ export async function runFullAudit(
   let robotsText: string | null = null;
   let hasRobots: boolean | null = null;
   try {
-    const robotsRes = await fetchWithTimeout(`${parsed.origin}/robots.txt`, ROBOTS_TIMEOUT_MS);
+    const robotsRes = await fetchPublicTextWithRedirects(`${parsed.origin}/robots.txt`, ROBOTS_TIMEOUT_MS);
     hasRobots = robotsRes.ok;
     if (robotsRes.ok) robotsText = await robotsRes.text();
   } catch {
@@ -242,22 +298,21 @@ export async function runFullAudit(
   // Sitemap check; a missing file is a finding, not a failure.
   let hasSitemap: boolean | null = null;
   try {
-    const sitemapRes = await fetchWithTimeout(`${new URL(finalUrl).origin}/sitemap.xml`, 5000);
+    const sitemapRes = await fetchPublicTextWithRedirects(`${new URL(finalUrl).origin}/sitemap.xml`, 5000);
     hasSitemap = sitemapRes.ok;
   } catch {
     hasSitemap = null;
   }
 
   // Broken internal links: first 10 unique internal links, HEAD then GET, 5 s each.
+  // A HEAD that returns 405/403/501 is NOT a broken link on its own: many
+  // servers refuse HEAD while serving GET fine, so retry with GET before
+  // calling the link broken. Other 4xx HEAD responses are broken as-is.
   const brokenLinks: { url: string; status: number | string }[] = [];
   const uniqueInternal = [...new Set(internalLinksOf(html, finalUrl))].slice(0, 10);
   const linkChecks = await Promise.allSettled(
     uniqueInternal.map(async (linkUrl) => {
-      try {
-        const head = await fetchWithTimeout(linkUrl, 5000);
-        if (head.status >= 400) return { url: linkUrl, status: head.status };
-        return null;
-      } catch {
+      const getCheck = async () => {
         try {
           const get = await fetchWithTimeout(linkUrl, 5000);
           if (get.status >= 400) return { url: linkUrl, status: get.status };
@@ -265,6 +320,18 @@ export async function runFullAudit(
         } catch {
           return { url: linkUrl, status: "unreachable" };
         }
+      };
+      try {
+        const head = await fetchWithTimeout(linkUrl, 5000);
+        if (head.status >= 400) {
+          if (head.status === 405 || head.status === 403 || head.status === 501) {
+            return getCheck();
+          }
+          return { url: linkUrl, status: head.status };
+        }
+        return null;
+      } catch {
+        return getCheck();
       }
     }),
   );
@@ -275,6 +342,14 @@ export async function runFullAudit(
   // Pure analysis: HTML in, scores and issues out. This is the piece
   // being ported to Rust, checked against the original at every step.
   const analysis = analyzePage({ html, finalUrl, loadMs, hasRobots, hasSitemap, brokenLinks });
+  // Findings are ordered by severity, Critical first, so the copy that
+  // says so is true. Done here (not only in analyzePage) because the
+  // Rust port of analyzePage may supply the analysis instead.
+  const severityRank: Record<string, number> = { Critical: 0, "Fix soon": 1, "Nice to have": 2 };
+  analysis.issues.sort((a, b) => (severityRank[a.severity] ?? 2) - (severityRank[b.severity] ?? 2));
+  analysis.issues.forEach((issue, idx) => {
+    issue.id = `i${idx + 1}`;
+  });
   const https = finalUrl.startsWith("https://");
 
   const result: AuditResult = {
@@ -362,12 +437,55 @@ export async function runPaidAudit(url: string, licenseKey: string): Promise<Pai
     };
   }
   await entitlementStore.set(record);
+  // Cache the paid result so a PDF download for the same URL reuses it
+  // instead of re-running the audit and burning another audit.
+  await setCachedAudit(keyHash, audited.result.url, audited.result);
   return {
     ok: true,
     result: audited.result,
     auditsUsed: record.auditsUsed,
     auditsRemaining: remainingAudits(record),
   };
+}
+
+/**
+ * Paid audit for the PDF routes: reuse the cached result from the audit
+ * that produced the report (same licence key + URL, within 24 h) and do
+ * NOT consume quota. Only when there is no cached result does this fall
+ * back to runPaidAudit, which runs the audit and consumes one audit.
+ * The licence key is still validated and revocation/quota are still
+ * checked before any cached result is used; the cache never grants access.
+ */
+export async function runPaidAuditCached(url: string, licenseKey: string): Promise<PaidAuditResult> {
+  const check = isValidAuditUrl(url);
+  if (!check.ok) return { ok: false, status: 400, error: check.error };
+  const validation = await validateLicenseKey(licenseKey);
+  if (!validation.valid) {
+    return { ok: false, status: 401, error: validation.reason };
+  }
+  const keyHash = hashLicenseKey(licenseKey);
+  const record: LicenseRecord | null = await entitlementStore.getByKeyHash(keyHash);
+  if (!record) return runPaidAudit(url, licenseKey);
+  if (record.revoked) {
+    return { ok: false, status: 401, error: "That licence key was revoked after a refund. Contact support if this is wrong." };
+  }
+  if (remainingAudits(record) <= 0) {
+    return {
+      ok: false,
+      status: 402,
+      error: `This licence key has used all ${AUDITS_PER_MONTH} audits for this month. The quota resets on the 1st of next month.`,
+    };
+  }
+  const cached = await getCachedAudit(keyHash, check.url);
+  if (cached) {
+    return {
+      ok: true,
+      result: cached,
+      auditsUsed: record.auditsUsed,
+      auditsRemaining: remainingAudits(record),
+    };
+  }
+  return runPaidAudit(url, licenseKey);
 }
 
 // ---------------------------------------------------------------------------
@@ -382,11 +500,9 @@ export function teaserFor(result: AuditResult) {
     fetchedAt: result.fetchedAt,
     overallScore: result.overallScore,
     overallGrade: result.overallGrade,
-    categories: result.categories,
     issues: result.issues.slice(0, 2),
-    totalIssues: result.issues.length,
     message:
-      "This is a free preview: the overall score and the top 2 findings. The full report, including every finding and the ready-to-send proposal, needs a DealNote licence ($49 one-time, 30 audits a month).",
+      "This is a free preview: the overall score and the top 2 findings. The full report, including every finding and the ready-to-send proposal, needs a DealNote licence ($49 one-time).",
   };
 }
 
@@ -424,7 +540,7 @@ export async function POST(request: Request) {
 
   // Free path: 5 audits per IP per hour, teaser only.
   const ip = getClientIp(request);
-  const limit = checkFreeRateLimit(ip);
+  const limit = await checkFreeRateLimitAsync(ip);
   if (!limit.allowed) {
     const retryAfter = Math.max(1, Math.ceil((limit.resetAt - Date.now()) / 1000));
     return NextResponse.json(

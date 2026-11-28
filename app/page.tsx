@@ -29,7 +29,7 @@ export default function Home() {
                 </Link>
               </div>
               <p className="caption mt-24">
-                $49 one-time, with no subscription and no per-report fee. Fair-use limit: 30 audits per month.
+                $49 one-time, with no subscription and no per-report fee.
               </p>
             </div>
             <div>
@@ -112,7 +112,7 @@ export default function Home() {
             </p>
             <p>One payment of $49, with no subscription and no per-report fee.</p>
             <ul style={{ paddingLeft: 20 }}>
-              <li>30 audits per month fair-use limit</li>
+              <li>30 audits a month fair-use limit, about $1.63 per audit</li>
               <li>White-label reports under your brand</li>
               <li>Teardown PDF and proposal PDF (coming with payment)</li>
               <li>Proposal templates included</li>
@@ -123,6 +123,11 @@ export default function Home() {
             </p>
             <p className="mb-16">
               <BuyButton />
+            </p>
+            <p className="caption">
+              Bad report? Report it within 14 days for a replacement or refund. Email{" "}
+              <a href="mailto:murugan@drvelu.com?subject=DealNote%20refund%20request">murugan@drvelu.com</a>{" "}
+              with the report URL, the finding, and why. See the refund section in the terms.
             </p>
             <p className="caption mb-0">
               The audit tool is free to try. Full reports and PDF downloads unlock with a licence key.
@@ -170,8 +175,9 @@ export default function Home() {
           <div className="reading mt-24">
             <h3>Is the $49 really one-time?</h3>
             <p>
-              Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is 30 audits
-              per month. Lifetime means the lifetime of the product, as stated in the terms.
+              Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is
+              stated on the pricing card above and in the terms. Lifetime means the lifetime of the product,
+              as stated in the terms.
             </p>
             <h3>Does the client see the DealNote name?</h3>
             <p>
@@ -186,8 +192,8 @@ export default function Home() {
             <h3>What if the report gets something wrong?</h3>
             <p>
               Report a bad report within 14 days and we will replace it or refund it. Email{" "}
-              <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a> with the report URL, the finding
-              you say is wrong, and why. See the refund section in the terms.
+              <a href="mailto:murugan@drvelu.com?subject=DealNote%20refund%20request">murugan@drvelu.com</a>{" "}
+              with the report URL, the finding you say is wrong, and why. See the refund section in the terms.
             </p>
             <h3>Does DealNote collect personal data about the prospect?</h3>
             <p>

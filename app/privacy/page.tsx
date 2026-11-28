@@ -8,7 +8,8 @@ export default function PrivacyPage() {
 
           <h2>Who operates DealNote</h2>
           <p>
-            DealNote is operated by Velu Murugan, trading as DrVelu. Contact:{" "}
+            DealNote is operated by Velu Murugan, trading as DrVelu, based in Santa Rosa City, Laguna,
+            Philippines. Contact:{" "}
             <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a>.
           </p>
 
@@ -85,8 +86,8 @@ export default function PrivacyPage() {
 
           <h2>Changes to this policy</h2>
           <p>
-            We will update this page and the date above when anything changes, including when the Ship or
-            Die tracker is installed or when any new third-party script is added.
+            We will update this page and the date above when anything changes, including when any new
+            third-party script is added. The Ship or Die tracker is now installed (27 Nov 2026).
           </p>
         </div>
       </div>
