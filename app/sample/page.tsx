@@ -1,16 +1,48 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
 import { SAMPLE_BUSINESS, sampleAudit } from "@/lib/audit";
 import { IssueList, ScoreSummary } from "@/components/audit-ui";
 import PrintButton from "@/components/print-button";
 import BrandPreview from "@/components/brand-preview";
 import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NON_BINDING_TEXT, NOT_INCLUDED_DEFAULT } from "@/lib/templates";
+import { SakugaRating, SakugaScripts, showToast } from "@/components/sakuga";
+
+const RATING_KEY = "dealnote-rating-v1";
 
 export default function SamplePage() {
   const sample = sampleAudit();
   const topIssues = sample.issues.slice(0, 3);
+  const [rating, setRating] = useState(0);
+
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem(RATING_KEY) ?? "0");
+      if (saved >= 1 && saved <= 5) setRating(saved);
+    } catch {
+      // No saved rating.
+    }
+  }, []);
+
+  const saveRating = (next: number) => {
+    setRating(next);
+    try {
+      if (next > 0) localStorage.setItem(RATING_KEY, String(next));
+      else localStorage.removeItem(RATING_KEY);
+    } catch {
+      // Rating is a convenience; a failed save is not fatal.
+    }
+    if (next > 0) showToast("Thanks for rating this teardown.");
+  };
 
   return (
     <section style={{ paddingTop: 48 }}>
+      {/* Sakuga controls used on this page, lazy-loaded after the first
+          paint. Toggle is loaded by BrandPreview's own SakugaToggle
+          usage through the same lazy scripts on the audit page; here
+          rating is the page's own control. */}
+      <SakugaScripts names={["rating", "toggle"]} />
       <div className="container">
         <p className="print-stamp">SAMPLE: fictional business, fictional data</p>
         <p className="no-print"><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
@@ -155,6 +187,16 @@ export default function SamplePage() {
             SAMPLE footer: this sample report is produced by DealNote for demonstration only. Client reports
             carry the freelancer&apos;s brand only, never the DealNote name.
           </p>
+        </div>
+
+        <div className="card glass mt-32">
+          <h3>Rate this teardown</h3>
+          <p className="caption">
+            Your rating is stored only in this browser. It is not a testimonial and is never shown to
+            anyone else; it is here so you can mark how useful this sample was.
+          </p>
+          <SakugaRating label="Rate this teardown" value={rating} onChange={saveRating} />
+          {rating > 0 ? <p className="caption mt-8 mb-0">You rated this teardown {rating} out of 5.</p> : null}
         </div>
 
         <p className="caption mt-32">

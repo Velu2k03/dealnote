@@ -3,6 +3,7 @@ import { CheckCircle2, ChevronDown, FileText, Globe, Send } from "lucide-react";
 import { sampleAudit } from "@/lib/audit";
 import { BuyButton, IssueList, ScoreSummary } from "@/components/audit-ui";
 import { Reveal, SpotlightCard } from "@/components/motion-ui";
+import { SakugaButton, SakugaTooltip } from "@/components/sakuga";
 
 export default function Home() {
   const sample = sampleAudit();
@@ -31,9 +32,9 @@ export default function Home() {
                   placeholder="https://www.example-plumbing.com"
                   style={{ flex: "1 1 280px" }}
                 />
-                <button className="btn btn-primary" type="submit">
+                <SakugaButton type="submit">
                   Run a free audit
-                </button>
+                </SakugaButton>
               </form>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 12 }}>
                 <Link href="/sample" className="btn btn-secondary">
@@ -41,7 +42,11 @@ export default function Home() {
                 </Link>
               </div>
               <p className="caption mt-24">
-                $49 one-time, with no subscription and no per-report fee.
+                $49 one-time, with no subscription and no per-report fee.{" "}
+                <SakugaTooltip
+                  label="What fair-use means"
+                  text="30 audits a month per license key, on a rolling monthly basis. The free audit shows the score, grade, and top 2 findings; the full report unlocks with a license key."
+                />
               </p>
               <p className="mt-16 mb-0">
                 <a href="#how-it-works" className="caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
@@ -65,7 +70,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
+      <section id="how-it-works" style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE", borderBottom: "1px solid #DDD6FE" }}>
         <div className="container">
           <h2>How it works</h2>
           <div className="steps-flow mt-24">
@@ -125,7 +130,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0", borderBottom: "1px solid #E2E8F0" }}>
+      <section style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE", borderBottom: "1px solid #DDD6FE" }}>
         <div className="container">
           <h2>Pricing</h2>
           <SpotlightCard className="card glass mt-24" >
@@ -133,19 +138,19 @@ export default function Home() {
             <p className="mb-16">Everything below is included in the one payment.</p>
             <ul style={{ listStyle: "none", paddingLeft: 0 }}>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
                 <span>30 audits a month fair-use limit, about $1.63 per audit</span>
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
                 <span>White-label reports under your brand</span>
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
                 <span>Teardown PDF and proposal PDF included with your license</span>
               </li>
               <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
-                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#be185d" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
                 <span>Proposal templates included</span>
               </li>
             </ul>
@@ -207,7 +212,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ background: "#F8FAFC", borderTop: "1px solid #E2E8F0" }}>
+      <section style={{ background: "#F4F3FC", borderTop: "1px solid #DDD6FE" }}>
         <div className="container">
           <h2>Frequently asked questions</h2>
           <div className="reading mt-24">

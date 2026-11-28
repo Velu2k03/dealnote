@@ -15,7 +15,7 @@
 //   Only the buyer-selected findings appear in the proposal.
 // - Returns application/pdf rendered from the shared template in
 //   lib/pdf-html.ts (buyer logo and brand color in the PDF, white/slate,
-//   deep teal #0F766E default, no gradients).
+//   pink #BE185D default, no gradients).
 // - If Chromium cannot render at runtime, returns a clear 501. A PDF is
 //   never faked.
 

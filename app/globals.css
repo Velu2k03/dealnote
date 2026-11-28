@@ -1,28 +1,56 @@
 :root {
   /* Tokens in OKLCH (Loop 5, oklch-skill + tailwind-design-system token
-     discipline). Same colours as the hex originals, converted 1:1:
-     bg #ffffff, surface #f8fafc, border #e2e8f0, text #0f172a,
-     muted #475569, faint #64748b, accent #0f766e, accent-soft #f0fdfa,
-     accent-border #99f6e4, green #15803d, amber #b45309, red #b91c1c.
-     Contrast on white, WCAG: accent 5.47, muted 7.58, faint 4.76,
-     text 17.85, red 6.47, amber 5.02, green 5.02 — all AA. */
+     discipline). Pinkish Sakuga palette (Velu, 28 Nov 2026, supersedes
+     the deep-teal-only rule): white paper, lavender surfaces, violet
+     line, pink accent — the Sakuga VFX look (white, lavender, violet
+     line, pink accents, #ff5fa8). Hex originals:
+     bg #ffffff, surface #f4f3fc, border #ddd6fe, text #1d1a4a,
+     muted #55507a, faint #6e6890, accent #be185d, accent-soft #fdf2f8,
+     accent-border #f9a8d4, green #15803d, amber #b45309, red #b91c1c.
+     Contrast on white, WCAG: accent 6.04, muted 7.46, faint 5.19,
+     text 16.17, red 6.47, amber 5.02, green 5.02 — all AA.
+     White on accent is 6.04, AA. Grade colors stay green/amber/red
+     with the A-F letter, never pink-washed. */
   --bg: oklch(1 0 0);
-  --surface: oklch(0.984 0.003 247.9);
-  --border: oklch(0.929 0.013 255.5);
-  --text: oklch(0.208 0.04 265.8);
-  --muted: oklch(0.446 0.037 257.3);
-  --faint: oklch(0.554 0.041 257.4);
-  --accent: oklch(0.511 0.086 186.4);
-  --accent-soft: oklch(0.984 0.014 180.7);
-  --accent-border: oklch(0.91 0.093 180.4);
+  --surface: oklch(0.967 0.012 291.3);
+  --border: oklch(0.894 0.055 293.3);
+  --text: oklch(0.253 0.086 281.1);
+  --muted: oklch(0.454 0.068 288.8);
+  --faint: oklch(0.538 0.062 291);
+  --accent: oklch(0.525 0.199 4);
+  --accent-soft: oklch(0.971 0.014 343.2);
+  --accent-border: oklch(0.823 0.11 346);
   --green: oklch(0.527 0.137 150.1);
   --amber: oklch(0.555 0.146 49);
   --red: oklch(0.505 0.19 27.5);
+  /* Sakuga VFX --sk-* variables (28 Nov 2026, pinkish direction).
+     These are the Sakuga defaults, set here so the page wins over the
+     core's :where() defaults: pink accent #ff5fa8 (decorative effects
+     only, never body text — the site accent #be185d is the readable
+     pink for text and buttons), violet primary #8f8df7, lavender
+     soft #b8b3ff, violet line #5a4fd8, dark violet ink #1d1a4a. */
+  --sk-card: #ffffff;
+  --sk-ink: #1d1a4a;
+  --sk-dim: #8580b0;
+  --sk-soft: #b8b3ff;
+  --sk-pri: #8f8df7;
+  --sk-pri-ink: #1d1a4a;
+  --sk-acc: #ff5fa8;
+  --sk-track: #c9cbe0;
+  --sk-line: #5a4fd8;
+  --sk-fill: #ff5fa8;
+  --sk-on-pri: #ffffff;
 }
 
 * { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* overflow-x: clip on html: every Sakuga control carries a back canvas
+   160px wider than itself on each side (canvas.back), which otherwise
+   inflates documentElement.scrollWidth by up to 160px and gives the
+   page a horizontal scrollbar. clip (not hidden) keeps sticky
+   positioning working and only trims what is outside the viewport;
+   the visible burst behind a control still shows. 28 Nov 2026. */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 
 body {
   margin: 0;
@@ -74,7 +102,7 @@ section { padding: 64px 0; }
 }
 .btn:active { transform: translateY(0) scale(0.98); }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: oklch(0.439 0.073 185.8); }
+.btn-primary:hover { background: oklch(0.459 0.17 3.8); }
 .btn-secondary { background: #fff; border-color: var(--border); color: var(--text); }
 .btn-secondary:hover { border-color: var(--faint); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -86,18 +114,19 @@ section { padding: 64px 0; }
   background: #fff; border: 1px solid var(--border); border-radius: 8px;
   box-shadow: 0 1px 2px oklch(0.208 0.04 265.8 / 0.06); padding: 24px;
 }
-/* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule): frosted
+/* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule), now
+   in pink/lavender tints (28 Nov 2026 Sakuga direction): frosted
    translucent panels for the hero score card, finding cards, step rows
    and the pricing card. Dark slate text on light frosted panels only,
    never over images or busy backgrounds, so contrast stays AA. Glass is
    screen-only: print forces plain white (see @media print below), and
    the PDF templates in lib/pdf-html.ts never use it. */
 .glass {
-  background: oklch(1 0 0 / 0.72);
+  background: oklch(0.99 0.01 340 / 0.72);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid oklch(1 0 0 / 0.65);
-  box-shadow: 0 8px 32px oklch(0.208 0.04 265.8 / 0.08), 0 1px 2px oklch(0.208 0.04 265.8 / 0.06);
+  border: 1px solid oklch(0.894 0.055 293.3 / 0.65);
+  box-shadow: 0 8px 32px oklch(0.253 0.086 281.1 / 0.08), 0 1px 2px oklch(0.253 0.086 281.1 / 0.06);
 }
 .callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 6px; padding: 16px 20px; }
 .evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; font-size: 14px; overflow-wrap: anywhere; }
@@ -281,6 +310,17 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
   .spotlight-overlay { display: none !important; }
 }
 .print-stamp { display: none; }
+
+/* Sakuga VFX sizing (28 Nov 2026). The controls are fixed-size by
+   default (input 230px, slider 230px, progress 280px); let them fill
+   their card on small screens instead of overflowing it. The toggle
+   keeps its own painted margin (89px above for the splash), so it is
+   never squeezed into a tight row. */
+sakuga-input { display: block; width: 100%; --sk-input-width: 100%; }
+sakuga-slider { --sk-slider-width: min(100%, 320px); }
+sakuga-progress { --sk-progress-width: min(100%, 420px); }
+sakuga-button { vertical-align: middle; }
+sakuga-tooltip { vertical-align: middle; }
 
 /* CSS-only fade for /terms and /privacy: opacity only, 300ms, no JS
    cost on those pages. Reduced-motion users get no animation at all. */
