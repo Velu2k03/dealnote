@@ -107,10 +107,16 @@ export function StaggerItem({ children }: { children: ReactNode }) {
   );
 }
 
-/** Animated number counter (React Bits CountUp pattern, see header). */
-export function CountUp({ to }: { to: number }) {
+/** Animated number counter (React Bits CountUp pattern, see header).
+ * `immediate` animates on mount instead of waiting for the element to
+ * scroll into view. Use it for headline numbers (the audit score):
+ * with the inView gate the score read "0" on load whenever the card
+ * sat just below the fold (Neon recheck, 28 Nov 2026: score card top
+ * 820px in an 800px viewport, counter stuck at 0 until scrolled to). */
+export function CountUp({ to, immediate = false }: { to: number; immediate?: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const seen = useInView(ref, { once: true, margin: "-40px" });
+  const inView = immediate || seen;
   const reduce = useReducedMotion();
   const value = useMotionValue(reduce ? to : 0);
   // Ceiling, not rounding: the counter must land cleanly on the final

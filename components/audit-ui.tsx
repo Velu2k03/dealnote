@@ -19,7 +19,7 @@ import { CountUp, Stagger, StaggerItem } from "./motion-ui";
 import { SakugaButton, SakugaTooltip } from "./sakuga";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
-  "Checkout is not connected yet — payment opens once the Lemon Squeezy account is set up.";
+  "Checkout is not connected yet. Payment opens once the Lemon Squeezy account is set up.";
 
 /** Buy button. POSTs to /api/checkout (owned by the checkout agent) and
  *  follows the checkout URL it returns. Shows a plain message when the
@@ -161,7 +161,7 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
           <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
-            <CountUp to={result.overallScore} />
+            <CountUp to={result.overallScore} immediate />
             <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
