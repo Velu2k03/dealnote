@@ -32,7 +32,7 @@ export default function Home() {
                   placeholder="https://www.example-plumbing.com"
                   style={{ flex: "1 1 auto", border: "none", minWidth: 0 }}
                 />
-                <SakugaButton type="submit">
+                <SakugaButton type="submit" className="hero-submit">
                   Run a free audit
                 </SakugaButton>
               </form>

@@ -252,6 +252,9 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 @media (max-width: 640px) { .pricing-grid { grid-template-columns: 1fr !important; } }
+/* Hero audit pill: the Sakuga submit button must not shrink and wrap to
+   three lines inside the flex-nowrap pill. */
+.hero-submit { flex-shrink: 0; white-space: nowrap; }
 /* Audit page on mobile (Neon P2-3): when a result exists, the score card
    moves above the URL form so 45/100 is readable above the fold. The
    DOM order is unchanged; only the visual order moves on small screens. */
