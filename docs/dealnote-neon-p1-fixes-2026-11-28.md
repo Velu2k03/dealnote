@@ -120,7 +120,10 @@ Harbor & Pine Digital · Maya Lin · maya@harborandpine-digital.example
 Zero `[YOUR STUDIO]` placeholders (8 "Harbor" mentions). Note:
 93,337 B locally vs the 84.2 KB in the task brief — same 3-page
 document, size differs by renderer/font embedding; content verified
-identical in shape. Live size re-checked after deploy (below).
+identical in shape. Live re-check after deploy: **200, 86,254 B, 3 pages,
+0 `[YOUR STUDIO]`** — the 84.2 KB in the brief was the live size all
+along (86,254 B = 84.2 KiB); the local 93,337 B is the local Chromium
+build's font embedding, not a content difference.
 
 ## Verification (after fixes, local production build)
 
@@ -150,10 +153,20 @@ identical in shape. Live size re-checked after deploy (below).
 
 ## Ship
 
-- Merge: dealnote-neon-p1-fixes → main (HEAD below), pushed.
-- Live verification after Vercel auto-deploy: all 6 pages 200 +
-  tracker, live sample PDF 200, live audit POST 200 45/F, live
-  checkout POST 200 (recorded below by the parent after deploy).
+- Merge: dealnote-neon-p1-fixes → main, **f3ea0aa**, pushed
+  (22af386..f3ea0aa).
+- Live verification after Vercel auto-deploy (new build confirmed
+  by `/logo.svg` fill flipping `#0F766E` → `#DB2777`):
+  - All 6 pages + robots.txt + sitemap.xml: 200.
+  - Tracker `verify.js` on all 6 pages (templates 2x: script + prose
+    disclosure, as before).
+  - Live sample PDF: 200, 86,254 B, 3 pages, 0 `[YOUR STUDIO]`.
+  - Live audit POST `{"url":"https://example.com"}`: 200, 2.2s,
+    teaser 45/F, exactly 2 findings (Meta description is missing;
+    No phone number visible on the homepage).
+  - Live checkout POST `{}`: 200, real Lemon Squeezy checkout URL
+    `pay.resonantatlas.com/checkout/custom/3d3bf505-…` (new checkout
+    session only, no payment entered, no order).
 
 ## Open / notes
 
