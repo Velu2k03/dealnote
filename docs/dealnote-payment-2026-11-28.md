@@ -168,3 +168,31 @@ Run by subagent, live against https://dealnote-blue.vercel.app, deployment CCHZ8
 6. Live site re-check, same run: all 6 pages + /robots.txt + /sitemap.xml return 200. Ship or Die tracker snippet (ship-or-die.com/hackathon/verify.js, data-site d40c7a78322ccb335a973aa331f31294d5cbddcb) present on all 6 pages (templates shows 2 occurrences: script + prose disclosure). Neon fixes confirmed live: header split into site-menu-desktop + site-menu-mobile popover, /terms has "Governing law" ("These terms are governed by the laws of the Philippines..."), /sample has "Download sample report as PDF" and the sample is 83/B Harbor and Pine, GET /api/pdf/sample returns 200, 71,772 B, 3 pages. /terms still says the 30/month count "may reset when the hosting restarts" (accurate, Upstash not provisioned).
 
 Verdict: checkout is LIVE. Free audit teaser, checkout creation, PDF paywall (402), webhook auth, tracker, and Neon fixes all verified live. Remaining before a paid launch is proven end to end: the $49 test purchase + refund (issues a real licence key, proves PDF 200 on Vercel serverless), and the Upstash decision.
+
+## Test mode first, like Sortes (28 Nov 2026, Velu's order)
+
+Velu cancelled the live $49 test purchase ("Dont pay"), then ordered:
+"Make an test store in the lemonsqueezy then test it first like sortes
+then once the pdfs outputs all are good then go with the live payments".
+NO live purchase, NO live card, NO Wallet, no live charge.
+
+Full plan + local PDF pre-test: docs/dealnote-test-mode-2026-11-28.md.
+
+Local PDF pre-test, done 28 Nov 2026 on main 949aea0 (production build,
+LS unset, dev key local only): sample PDF 200, 76,635 B, 3 pp; teardown
+PDF with dev key + real brand 200, 82,536 B, 4 pp, 45/F; proposal PDF
+200, 99,139 B, 5 pp, 45/F. Teardown/proposal PASS. DEFECT FOUND, P1:
+the sample PDF still renders "[Your studio]" / "[Your name] · [your
+email]" as its brand; the live /sample page was fixed to Harbor and
+Pine, the sample PDF was not. Fix the sample PDF brand before live
+and re-test it.
+
+Browser steps still to do (parent agent): test product + test variant
+in test mode, test API key "DealNote Test", test webhook for the
+Preview URL, test env vars in Vercel Preview only, test purchase once
+with test card 4242 4242 4242 4242, test refund, key + PDF verification
+on Preview, then switch back to Live Mode and verify live product
+1536795 / variant 2390379 / webhook 153059 untouched. Do NOT do a
+live purchase. Code has no test-mode separation: one set of
+LEMONSQUEEZY_* env vars, Preview points at test values, Production
+at live values.
