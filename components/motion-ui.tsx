@@ -4,10 +4,12 @@
 // `motion` 14.14.0, MIT, formerly Framer Motion), imported from
 // `motion/react`. One file, three effects, nothing else:
 //
-// - Reveal: fade + 12px rise, 350ms, once, when scrolled into view.
+// - Reveal: fade + 12px rise, 250ms, once, when scrolled into view
+//   (Loop 5: review-animations sub-300ms rule + userinterface-wiki
+//   timing-under-300ms; was 350ms in Loop 4).
 //   /terms and /privacy use a CSS-only opacity fade instead (`.fade-in`
 //   in globals.css) so those pages carry no Motion JS at all.
-// - CountUp: number counter, adapted from the React Bits CountUp pattern
+// - CountUp: number counter, 250ms, adapted from the React Bits CountUp pattern
 //   (reactbits.dev/text-animations/count-up): a MotionValue animated on
 //   first view, rounded through useTransform. React Bits ships no package;
 //   the pattern is re-implemented here against Motion, not copied verbatim
@@ -37,17 +39,21 @@ import {
   useTransform,
 } from "motion/react";
 
-const DURATION = 0.35;
+// Strong ease-out per review-animations STANDARDS (cubic-bezier 0.23, 1,
+// 0.32, 1); the built-in "easeOut" is too weak. Duration 250ms per the
+// sub-300ms UI rule (Loop 5, was 350ms in Loop 4).
+const DURATION = 0.25;
+const EASE: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 export function MotionProvider({ children }: { children: ReactNode }) {
   return (
-    <MotionConfig reducedMotion="user" transition={{ duration: DURATION, ease: "easeOut" }}>
+    <MotionConfig reducedMotion="user" transition={{ duration: DURATION, ease: EASE }}>
       {children}
     </MotionConfig>
   );
 }
 
-/** Fade + small rise when scrolled into view. One shot, 350ms max. */
+/** Fade + small rise when scrolled into view. One shot, 250ms max. */
 export function Reveal({
   children,
   delay = 0,
@@ -70,7 +76,9 @@ export function Reveal({
   );
 }
 
-/** Stagger container: children wrapped in <StaggerItem> enter 70ms apart. */
+/** Stagger container: children wrapped in <StaggerItem> enter 40ms apart
+    (Loop 5: userinterface-wiki physics-no-excessive-stagger wants under
+    50ms; review-animations allows 30-80ms; was 70ms in Loop 4). */
 export function Stagger({ children }: { children: ReactNode }) {
   return (
     <motion.div
@@ -78,7 +86,7 @@ export function Stagger({ children }: { children: ReactNode }) {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-40px" }}
-      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
+      variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04 } } }}
     >
       {children}
     </motion.div>
@@ -112,7 +120,7 @@ export function CountUp({ to }: { to: number }) {
       value.set(to);
       return;
     }
-    const controls = animate(value, to, { duration: DURATION, ease: "easeOut" });
+    const controls = animate(value, to, { duration: DURATION, ease: EASE });
     return () => controls.stop();
   }, [inView, reduce, to, value]);
   return (

@@ -16,7 +16,7 @@ export default function Home() {
             <Reveal>
             <div>
               <p className="eyebrow">For web design freelancers and small agencies</p>
-              <h1>Paste any business website URL.</h1>
+              <h1>Show the prospect what is wrong with their site, then sell the fix.</h1>
               <p style={{ color: "#475569" }}>
                 Get a teardown report plus a ready-to-send proposal in about a minute. Show the prospect what is
                 wrong with their site, then sell the fix. The report carries your brand, your logo, and your
@@ -51,8 +51,10 @@ export default function Home() {
             </div>
             </Reveal>
             <Reveal delay={0.08}>
-            <div>
-              <ScoreSummary result={sample} sampleLabel />
+            <div className="hero-score">
+              <ScoreSummary result={sample}>
+                <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p>
+              </ScoreSummary>
               <p className="caption mt-16">
                 This is the real audit layout, filled with fictional data for a fictional business. The
                 sample report page shows the full version.
@@ -67,7 +69,7 @@ export default function Home() {
         <div className="container">
           <h2>How it works</h2>
           <div className="steps-flow mt-24">
-            <div className="step-row">
+            <div className="step-row glass">
               <span className="step-num" aria-hidden>1</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -79,7 +81,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="step-row">
+            <div className="step-row glass">
               <span className="step-num" aria-hidden>2</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -91,7 +93,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="step-row">
+            <div className="step-row glass">
               <span className="step-num" aria-hidden>3</span>
               <div>
                 <h3 className="mt-0" style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -109,7 +111,6 @@ export default function Home() {
 
       <section>
         <div className="container">
-          <Reveal>
           <h2>What a teardown finds</h2>
           <p className="reading">
             Three findings from the sample report for Harbor and Pine Plumbing, a fictional business. Each
@@ -121,7 +122,6 @@ export default function Home() {
           <Link href="/sample" className="btn btn-secondary">
             Read the full sample report
           </Link>
-          </Reveal>
         </div>
       </section>
 
@@ -130,46 +130,36 @@ export default function Home() {
           <h2>Pricing</h2>
           <SpotlightCard className="card glass mt-24" >
             <div style={{ maxWidth: 560 }}>
-            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "0 0 8px" }} className="tabular">
+            <p className="mb-16">Everything below is included in the one payment.</p>
+            <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>30 audits a month fair-use limit, about $1.63 per audit</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>White-label reports under your brand</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>Teardown PDF and proposal PDF (coming with payment)</span>
+              </li>
+              <li style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 12 }}>
+                <CheckCircle2 size={18} strokeWidth={1.5} color="#0f766e" aria-hidden style={{ flexShrink: 0, marginTop: 3 }} />
+                <span>Proposal templates included</span>
+              </li>
+            </ul>
+            <p style={{ fontSize: 48, fontWeight: 600, lineHeight: 1, margin: "24px 0 8px" }} className="tabular">
               $49
             </p>
             <p>One payment of $49, with no subscription and no per-report fee.</p>
-            <ul style={{ paddingLeft: 20 }}>
-              <li>30 audits a month fair-use limit, about $1.63 per audit</li>
-              <li>White-label reports under your brand</li>
-              <li>Teardown PDF and proposal PDF (coming with payment)</li>
-              <li>Proposal templates included</li>
-            </ul>
-            <p className="caption">
-              $49 once is less than two months of a $39-per-month subscription. SEOptimer White Label,
-              $39/mo on its public pricing page, checked 28 Nov 2026. Example only. Compare current prices before you buy. No guarantee of client wins.
-            </p>
-            <div className="stack-table mt-16">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Option</th>
-                    <th>Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td data-label="Option">DealNote, one-time</td>
-                    <td data-label="Cost">$49 once, no subscription</td>
-                  </tr>
-                  <tr>
-                    <td data-label="Option">SEOptimer White Label, $39/mo</td>
-                    <td data-label="Cost">$468 over 12 monthly payments ($39 x 12); $351 billed annually on its public pricing page</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="caption">
-              Example only, using the SEOptimer prices checked 28 Nov 2026. Compare current prices before
-              you buy. DealNote is a one-time purchase, not a subscription, so there is no second year to pay.
-            </p>
             <p className="mb-16">
               <BuyButton />
+            </p>
+            <p className="caption">
+              $49 once is less than two months of a $39-per-month subscription (SEOptimer White Label,
+              $39/mo, $468 over 12 monthly payments, checked 28 Nov 2026). Example only. Compare current
+              prices before you buy. No guarantee of client wins.
             </p>
             <p className="caption">
               Bad report? Report it within 14 days for a replacement or refund. Email{" "}
@@ -186,7 +176,6 @@ export default function Home() {
 
       <section>
         <div className="container">
-          <Reveal>
           <h2>What DealNote checks, and what it does not</h2>
           <div className="two-col mt-24">
             <div className="card glass">
@@ -215,7 +204,6 @@ export default function Home() {
           <p className="caption mt-24">
             Scores are lab measurements on the run date under stated conditions. Scores can vary between runs.
           </p>
-          </Reveal>
         </div>
       </section>
 

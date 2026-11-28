@@ -438,7 +438,7 @@ export default function AuditPage() {
               />
               <button className="btn btn-primary" onClick={runAudit} disabled={running} style={{ flex: "0 0 auto" }}>
                 {running ? <Loader2 size={18} strokeWidth={1.5} aria-hidden /> : <Play size={18} strokeWidth={1.5} aria-hidden />}
-                {running ? "Running audit" : "Run audit"}
+                {running ? "Running audit…" : "Run audit"}
               </button>
             </div>
             {error ? <p id="audit-url-error" className="field-error">{error}</p> : null}
@@ -503,7 +503,9 @@ export default function AuditPage() {
           {displayed ? (
             <>
               <div className="mt-32">
-                <ScoreSummary result={displayed} sampleLabel={displayed.isSample} />
+                <ScoreSummary result={displayed}>
+                  {displayed.isSample ? <p className="mt-16 mb-0"><span className="sample-stamp">SAMPLE: fictional business</span></p> : null}
+                </ScoreSummary>
               </div>
 
               {locked ? (
