@@ -140,7 +140,7 @@ export default function TemplatesPage() {
         {lastAudit ? (
           <div className="card mt-24" style={{ background: "#F0FDF9", borderColor: "#99F6E4" }}>
             <p className="mb-0">
-              <strong>Latest audit filled in:</strong> {lastAudit.url} — score {lastAudit.score}/{lastAudit.grade}.
+              <strong>Latest audit filled in:</strong> {lastAudit.url}, score {lastAudit.score}/{lastAudit.grade}.
               The {findings.length} finding{findings.length === 1 ? "" : "s"} below come from that audit, so the
               templates show real text instead of [finding] placeholders.{" "}
               <Link href="/audit">Run a new audit</Link> to replace them.
