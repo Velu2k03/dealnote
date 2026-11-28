@@ -344,8 +344,73 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 sakuga-input { display: block; width: 100%; --sk-input-width: 100%; }
 sakuga-slider { --sk-slider-width: min(100%, 320px); }
 sakuga-progress { --sk-progress-width: min(100%, 420px); }
-sakuga-button { vertical-align: middle; }
-sakuga-tooltip { vertical-align: middle; }
+
+/* Neon P1-1 (28 Nov 2026): primary Sakuga CTAs must match the site's
+   solid pink .btn-primary (bg #DB2777, hover #9D174D, white semibold
+   non-italic text, no thick dark border, no offset shadow), so "Run a
+   free audit" stays on one line and the buy/run/unlock buttons stop
+   clashing with the pink buttons elsewhere. The Sakuga button paints
+   its face from CSS variables inside its shadow DOM
+   (background var(--sk-card), color var(--sk-ink), border
+   var(--sk-bw) solid var(--sk-btn-line), shadow var(--sk-btn-sh)),
+   and its :where(:root) defaults lose to a page's own values, so the
+   host-level variables below restyle the face without touching the
+   vendor file. The font (italic 800, 19px) is hardcoded in the shadow
+   CSS, so it is restyled through the exposed ::part(button), which the
+   component declares. Secondary buttons keep their white face: the
+   selector excludes [variant="secondary"], and --sk-card is only set
+   on primary hosts (the .alt face also reads --sk-card). */
+sakuga-button { vertical-align: middle; flex-shrink: 0; }
+sakuga-button:not([variant="secondary"]) {
+  --sk-card: #DB2777;
+  --sk-ink: #ffffff;
+  --sk-btn-line: #DB2777;
+  --sk-btn-sh: none;
+}
+sakuga-button:not([variant="secondary"])::part(button) {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 12px 20px;
+  min-height: 48px;
+  white-space: nowrap;
+  background: #DB2777;
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+sakuga-button:not([variant="secondary"])::part(button):hover { background: #9D174D; }
+
+/* Neon P1-3 (28 Nov 2026): the inline "?" tooltip broke footnote
+   line-height. The vendor file sets :host { margin-top: 60px } and a
+   42x42 help button, which split "Grades: A 90-100..." across lines
+   and left the /templates "?" alone below the subtitle. The host
+   margin is a shadow :host rule, so the document override needs
+   !important; the 16px face is restyled through ::part(button), which
+   the component declares. The bubble itself is absolutely positioned
+   above the host and is unaffected. */
+sakuga-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 0 !important;
+  margin-left: 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+sakuga-tooltip::part(button) {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  border-width: 1.5px;
+  box-shadow: none;
+}
 
 /* CSS-only fade for /terms and /privacy: opacity only, 300ms, no JS
    cost on those pages. Reduced-motion users get no animation at all. */

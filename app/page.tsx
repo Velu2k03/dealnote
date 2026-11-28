@@ -216,8 +216,12 @@ export default function Home() {
 
       <section style={{ background: "#FAF5FF", borderTop: "1px solid #E9D5FF" }}>
         <div className="container">
+          {/* Neon P2-1 (28 Nov 2026): the heading lives in the same
+              centered 760px column as the FAQ items, not left-aligned
+              at the container edge while the items sit centered. */}
+          <div className="reading" style={{ marginLeft: "auto", marginRight: "auto" }}>
           <h2>Frequently asked questions</h2>
-          <div className="reading mt-24" style={{ marginLeft: "auto", marginRight: "auto" }}>
+          <div className="mt-24">
             <h3>Is the $49 really one-time?</h3>
             <p>
               Yes. You pay $49 once, with no subscription and no per-report fee. The fair-use limit is
@@ -259,6 +263,7 @@ export default function Home() {
               <a href="mailto:murugan@drvelu.com?subject=DealNote%20license%20key%20recovery">murugan@drvelu.com</a>{" "}
               from the email you bought with and we will resend it.
             </p>
+          </div>
           </div>
           <p className="mt-32 mb-0">
             <Link href="/audit" className="btn btn-primary">

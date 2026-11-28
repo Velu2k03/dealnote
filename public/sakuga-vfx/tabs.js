@@ -48,8 +48,14 @@ class SakugaTabs extends fx.Base {
     this.ind.style.transform = `translate(${x - (sx.v < 0 ? 0 : w - this.sw.x)}px, ${u}px)`; this.ind.style.width = w + 'px';
     if (this.pending && Math.abs(x - sx.to) < 3) {   // it has landed
       this.pending = false; this.up.x = -7; const c = at(this.tabs[this.selected]), dir = this.dir;
-      ticks(c.x, c.y - c.h / 2 - 12, { dir: -Math.PI / 2, n: 3, r: 4, len: 15, fan: 0.5, life: 0.5 }); puff(c.x - dir * (c.w / 2 + 12), c.y - 6, { size: 9, n: 4, vx: -dir * 20, vy: -12, life: 0.7 });
-      later(90, () => puff(c.x - dir * (c.w / 2 + 20), c.y + 14, { size: 6, n: 3, vx: -dir * 14, life: 0.55 })); lines(c.x - dir * c.w / 2, c.y, { n: 4, dir: dir > 0 ? Math.PI : 0, len: 34, spread: 10 });
+      // Neon P1-3 (28 Nov 2026, DealNote edit 28 Nov 2026): the landing
+      // burst used to draw through the tab's own label — the puff sat
+      // on the first letter and the speed lines crossed the text, so a
+      // pink sparkle briefly overlapped the active "Emails" text. The
+      // effects now land in the band above the tab (y - c.h/2 - 20),
+      // clear of the label; the celebration is kept, the overlap is gone.
+      ticks(c.x, c.y - c.h / 2 - 24, { dir: -Math.PI / 2, n: 3, r: 4, len: 15, fan: 0.5, life: 0.5 }); puff(c.x - dir * (c.w / 2 + 26), c.y - c.h / 2 - 10, { size: 9, n: 4, vx: -dir * 20, vy: -12, life: 0.7 });
+      later(90, () => puff(c.x - dir * (c.w / 2 + 34), c.y - c.h / 2 - 10, { size: 6, n: 3, vx: -dir * 14, life: 0.55 })); lines(c.x - dir * c.w / 2, c.y - c.h / 2 - 20, { n: 4, dir: dir > 0 ? Math.PI : 0, len: 34, spread: 10 });
     }
   }
 }

@@ -101,7 +101,7 @@ export default function BrandPreview() {
         <div>
           <span className="btn btn-secondary" style={{ height: 48, padding: "0 20px", display: "inline-flex", alignItems: "center" }}>
             <label htmlFor="preview-logo" style={{ margin: 0, cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
-              Upload logo (PNG/SVG)
+              Upload logo (PNG/JPG)
             </label>
           </span>
           <input id="preview-logo" type="file" accept="image/png,image/jpeg" onChange={(e) => onLogoFile(e.target.files?.[0])} style={{ position: "absolute", width: 1, height: 1, opacity: 0, overflow: "hidden" }} />

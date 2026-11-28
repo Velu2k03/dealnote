@@ -2,7 +2,7 @@ export default function TermsPage() {
   return (
     <section style={{ paddingTop: 48 }}>
       <div className="container">
-        <div className="reading fade-in">
+        <div className="reading fade-in" style={{ marginLeft: "auto", marginRight: "auto" }}>
           <h1>Terms, Acceptable Use, and Refund policy</h1>
           <p className="caption">Last updated: 28 Nov 2026. This text is general information, not legal advice.</p>
 
