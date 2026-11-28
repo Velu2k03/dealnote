@@ -337,10 +337,23 @@ gradients, which remain at zero.
   IP limit with HTTP 429 after repeated test runs; the local server was
   restarted to reset the in-memory counter and the full suite passed;
   license-key requests are exempt from that limit by design).
-  Merged to `main` as (merge commit below), pushed; Vercel auto-deploy.
-- Live verification after deploy: (filled in at merge time — all 6
-  pages 200, tracker snippet present, effects fire live on home +
-  audit + templates).
+  Merged to `main` as `6cd422e` ("Merge dealnote-sakuga: Sakuga VFX
+  all 11 controls + pinkish redesign, 28 Nov 2026"), pushed; Vercel
+  auto-deploy.
+- Live verification after deploy (28 Nov 2026, about 13:59 Manila,
+  GET checks): all 6 pages 200 (/ 63,985 B; /audit 21,965 B; /sample
+  41,980 B; /templates 32,138 B; /terms 32,028 B; /privacy 27,205 B),
+  /robots.txt 200, /sitemap.xml 200; tracker snippet present on all 6
+  pages (2x on /templates in the RSC payload, same as Loop 5);
+  sakuga-vfx/button.js 200 (46,435 B), toggle.js 200 (505,888 B),
+  tooltip.js 200 (44,691 B); pink accent #BE185D present in live home
+  HTML; sakuga-rating present on /sample, sakuga-tabs on /templates;
+  live sample PDF 200, 71,780 B, 3 pages. Effects firing live is
+  confirmed by script + element presence; a real-Chrome live
+  click-through was not possible from this VM (egress proxy blocks
+  headless Chrome to the live site, same caveat as Loop 5) and remains
+  recommended. The live build is the same commit that passed 52/52
+  locally including real mouse clicks.
 - Payment/env vars untouched by this work (separate Vercel browser
   task; env vars were set and checkout went live 28 Nov 21:21 via that
   task). The dev license key used for local verification is
