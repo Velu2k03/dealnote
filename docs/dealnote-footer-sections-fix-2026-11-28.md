@@ -118,8 +118,13 @@ professional and only what is needed, research first and let Neon decide the
   Only em dash is the frozen BuyButton label "Buy DealNote — $49 one-time",
   rendered twice per page where the button appears twice. Briskly ~5/100,
   Jev ~1 partial tell, unchanged.
-- Live check after deploy: all 6 pages + robots.txt + sitemap.xml 200,
-  tracker present on all 6, live footer clean, live /audit POST 200 45/F.
+- Live check after deploy (main c510be9, 28 Nov 2026, about 23:20 Manila):
+  all 6 pages + robots.txt + sitemap.xml 200, tracker present on all 6 pages,
+  live home HTML contains 0 occurrences of Velu/Murugan/DrVelu/Santa Rosa
+  City/Laguna/"Last updated", new build confirmed by the footer text
+  "Refund and license-key help" appearing live. Live audit POST 200, 45/F,
+  exactly 2 findings. Live sample PDF 200, 86,254 B. Live checkout POST 200,
+  real Lemon Squeezy URL (new checkout session only, no payment, no order).
   (Live headless screenshot is not possible from this VM: the egress proxy
   fails for the live site, same caveat as Loops 4-5.)
 
