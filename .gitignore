@@ -5,3 +5,4 @@ out
 .DS_Store
 
 rust/analyze-page-rs/target/
+tsconfig.tsbuildinfo
