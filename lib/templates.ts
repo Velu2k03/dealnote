@@ -426,6 +426,25 @@ const FIX_INTRO: Record<ProposalKind, string> = {
   ecommerce: "What the store would include",
 };
 
+/**
+ * The report intro line for THIS audit. The brand profile stores one
+ * intro line, and a full audit rewrites it to "found N quick wins"
+ * (audit page), so a later proposal can claim a stale count: Neon P2-3
+ * (28 Nov 2026) saw "found 10 quick wins" above 2 free-tier findings.
+ * A counted intro line is rewritten to the finding count actually in
+ * this proposal/preview ("found 2 quick wins", "found 1 quick win");
+ * any other wording is the buyer's own text and is left alone. A
+ * 0-finding audit gets the good-shape line instead of a count.
+ */
+export function introLineForAudit(introLine: string, issueCount: number): string {
+  if (!/found (\d+|several) quick wins/i.test(introLine)) return introLine;
+  if (issueCount === 0) return "I reviewed your website and found it in good shape.";
+  return introLine.replace(
+    /found (\d+|several) quick wins/i,
+    `found ${issueCount} quick win${issueCount === 1 ? "" : "s"}`,
+  );
+}
+
 export function buildProposalText(o: ProposalBuildOpts): string {
   const def = PROPOSAL_TEMPLATES.find((t) => t.kind === o.kind) ?? PROPOSAL_TEMPLATES[1];
   const on = (s: SectionKey) => o.sections[s] === true && def.sections.includes(s);
@@ -435,13 +454,11 @@ export function buildProposalText(o: ProposalBuildOpts): string {
     lines.push(`${def.name} - Website redesign proposal for ${o.business}`);
     lines.push(`Prepared by ${o.brand.brandName}, ${o.brand.contactName}, ${o.brand.contactEmail}`);
     lines.push(`Date: ${o.runDate}`);
-    // A 0-findings audit must never claim "found N quick wins" in the
-    // proposal text: the cover line is replaced with the good-shape wording.
-    lines.push(
-      o.issues.length === 0 && /found (\d+|several) quick wins/i.test(o.brand.introLine)
-        ? "I reviewed your website and found it in good shape."
-        : o.brand.introLine,
-    );
+    // The cover line states the finding count actually in this
+    // proposal, never a stale count saved in the brand profile
+    // (introLineForAudit above: "found 10 quick wins" above 2 teaser
+    // findings, Neon P2-3, 28 Nov 2026).
+    lines.push(introLineForAudit(o.brand.introLine, o.issues.length));
     lines.push("");
   }
 

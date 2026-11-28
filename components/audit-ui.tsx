@@ -15,7 +15,7 @@ import {
 import { motion } from "motion/react";
 import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
 import { CATEGORIES, gradeColor } from "@/lib/audit";
-import { CountUp, Stagger, StaggerItem } from "./motion-ui";
+import { Stagger, StaggerItem } from "./motion-ui";
 import { SakugaButton, SakugaTooltip } from "./sakuga";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
@@ -161,7 +161,13 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
           <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
-            <CountUp to={result.overallScore} immediate />
+            {/* Neon P2-2 (28 Nov 2026): the headline score renders
+                immediately, no count-up. The counter flashed 68/100 B
+                mid-animation on /sample (and read 0 until scrolled to
+                in the earlier Neon recheck), while the grade badge
+                already showed the final B. CountUp stays in motion-ui
+                for other uses; the score itself is now static text. */}
+            {result.overallScore}
             <span style={{ fontSize: 20, color: "#4A3B5C" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>

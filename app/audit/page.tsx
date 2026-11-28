@@ -37,6 +37,7 @@ import {
   SECTION_LABELS,
   buildProposalText,
   defaultSections,
+  introLineForAudit,
   type ProposalKind,
   type SectionKey,
 } from "@/lib/templates";
@@ -545,7 +546,7 @@ export default function AuditPage() {
                 onChange={(e) => saveLicenseKey(e.target.value.trim())}
                 style={{ flex: "1 1 280px" }}
               />
-              <BuyButton className="btn btn-secondary" />
+              <BuyButton />
             </div>
             <p className="caption mt-8 mb-0">
               Your license key is stored only in this browser. Full reports and PDF downloads unlock with a license key.
@@ -795,7 +796,7 @@ export default function AuditPage() {
                         <div>
                           <span className="btn btn-secondary" style={{ height: 48, padding: "0 20px", display: "inline-flex", alignItems: "center" }}>
                             <label htmlFor="logo-file" style={{ margin: 0, cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
-                              Upload logo (PNG/SVG)
+                              Upload logo (PNG/JPG)
                             </label>
                           </span>
                           <input
@@ -832,7 +833,11 @@ export default function AuditPage() {
                       <p style={{ fontSize: 13, fontWeight: 600, color: brand.primaryColor, margin: "0 0 12px" }}>Report preview</p>
                       <h3 style={{ color: brand.primaryColor }}>Website Teardown and Proposal</h3>
                       <p><strong>{displayed.url}</strong></p>
-                      <p>{brand.introLine}</p>
+                      {/* Same stale-count fix as the proposal text
+                          (Neon P2-3): the preview shows this audit's
+                          finding count, not a count saved from an
+                          earlier audit. */}
+                      <p>{introLineForAudit(brand.introLine, displayed.issues.length)}</p>
                       <p className="mb-8">Prepared by {brand.contactName}, {brand.brandName}</p>
                       <p className="caption mb-16">
                         {brand.contactEmail}

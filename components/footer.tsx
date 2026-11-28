@@ -27,7 +27,7 @@ export default function Footer() {
           28 Nov 2026.
         </p>
         <p className="mb-0">
-          <BuyButton className="btn btn-secondary" />
+          <BuyButton />
         </p>
       </div>
     </footer>
