@@ -45,9 +45,19 @@ Stripe account or product created, no test purchase.
 - PDF default brand → 400 (both routes, clear message). PDF real brand → 200: teardown 82,622 B, 4 pages A4; proposal 99,324 B, 5 pages A4. Footer exactly 1× per page on both. 0 placeholder hits.
 - Screenshots: all 6 pages retaken after the fixes (`docs/screenshots/loop3fix-*.png`, script `scripts/shot-loop3fix.mjs`), desktop 1280 + mobile 390, **0 px horizontal overflow on all 12**. Visually checked: home desktop (hero form, 4-link header, "Last updated 28 Nov 2026" footer) and /audit mobile (autofocused URL field, L8 notice on fresh visit).
 
-## Live verification (after merge/deploy)
+## Live verification (after merge/deploy, 28 Nov 2026 ~10:20 Manila)
 
-- All 6 pages 200 on https://dealnote-blue.vercel.app, tracker snippet byte-present on every page, $49 one-time, no future dates, no "verified" claims. (Filled in at deploy time.)
+- Merge `1ce3e47` pushed to GitHub main; Vercel auto-deployed. All 6 pages +
+  `/robots.txt` + `/sitemap.xml` return 200 live (home 49,769 B; /audit 17,788 B;
+  /sample 52,096 B; /templates 38,747 B; /terms 26,419 B; /privacy 22,494 B —
+  sizes changed vs Loop 2, confirming the new build is live).
+- Tracker snippet byte-present on all 6 pages. 0 occurrences of "verified",
+  no 2027 dates, on every page. Hero form input `name="url"` present in live
+  home HTML; /privacy live shows "coming soon and will be handled by Polar".
+  The "Eight structurally different" card text is client-rendered after an
+  audit result, so it is not in static HTML; it is verified in source and
+  renders post-audit (Loop 3 audit confirmed the card in a real browser).
+- Live POST verification NOT done (needs Velu's approval; see Still open #1).
 
 ## Still open (not fixed in Loop 3)
 
