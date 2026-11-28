@@ -8,14 +8,14 @@
 //   already has a cached paid audit for this URL (within 24 h): the
 //   cached result is reused and no quota is consumed.
 // - Returns application/pdf rendered from the shared template in
-//   lib/pdf-html.ts (white/slate, deep teal #0F766E, no gradients).
+//   lib/pdf-html.ts (white/slate, pink #BE185D, no gradients).
 // - If Chromium cannot render at runtime, returns a clear 501. A PDF is
 //   never faked.
 
 import { NextResponse } from "next/server";
 import { DEFAULT_BRAND, brandValidationError, isValidAuditUrl, type BrandProfile } from "@/lib/audit";
 import { runPaidAuditCached } from "@/app/api/audit/route";
-import { footerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
+import { footerLine, headerLine, htmlToPdfBuffer, teardownReportHtml } from "@/lib/pdf-html";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -73,7 +73,11 @@ export async function POST(request: Request) {
 
   let pdf: Buffer;
   try {
-    pdf = await htmlToPdfBuffer(html, footerLine(brand, paid.result.fetchedAt, paid.result.url));
+    pdf = await htmlToPdfBuffer(
+      html,
+      headerLine({ brand, docType: "Teardown report", prospectUrl: paid.result.url, runDate: paid.result.fetchedAt, isSample: false }),
+      footerLine(brand, paid.result.fetchedAt, paid.result.url),
+    );
   } catch {
     return NextResponse.json(
       { error: "PDF export is not available in this build." },

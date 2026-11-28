@@ -1,14 +1,14 @@
 export default function TermsPage() {
   return (
-    <section style={{ paddingTop: 48 }}>
+    <section style={{ paddingTop: "3rem" }}>
       <div className="container">
-        <div className="reading fade-in">
+        <div className="reading fade-in" style={{ marginLeft: "auto", marginRight: "auto" }}>
           <h1>Terms, Acceptable Use, and Refund policy</h1>
-          <p className="caption">Last updated: 28 Nov 2026. This text is general information, not legal advice.</p>
+          <p className="caption">This text is general information, not legal advice.</p>
 
-          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+          <div className="card mt-32" style={{ background: "#FAF5FF", marginBottom: "2.5rem" }}>
             <p className="mb-0"><strong>Summary:</strong></p>
-            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+            <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
               <li>$49 one-time. No subscription, no per-report fee. Fair-use limit: 30 audits a month.</li>
               <li>Bad report? Report it within 14 days for a replacement or refund, our choice.</li>
               <li>Audit public websites only, respect robots.txt, and you are responsible for your own outreach law.</li>
@@ -82,7 +82,7 @@ export default function TermsPage() {
           </p>
 
           <h2>Acceptable use</h2>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Audit public websites only. Do not use the tool on pages behind a login, a paywall, or a captcha, and do not try to bypass one.</li>
             <li>Respect robots.txt. Do not use the tool on a page the site&apos;s robots.txt asks automated tools not to fetch, and do not try to work around that.</li>
             <li>Do not use the tool to collect personal data. Contact details in a report come only from what is visibly published on the fetched page.</li>
@@ -101,7 +101,7 @@ export default function TermsPage() {
           <p>
             In the United States, commercial email must follow the CAN-SPAM Act (honest
             headers and subject line, identification as an advertisement, your postal address, and an opt-out
-            honoured within 10 business days). Canada, the UK/EU, and Australia require consent before most
+            honored within 10 business days). Canada, the UK/EU, and Australia require consent before most
             cold commercial email. Do not rely on the US rule when emailing outside the US. Do not send
             marketing texts unless you already have the recipient&apos;s prior express written consent.
           </p>
@@ -125,7 +125,7 @@ export default function TermsPage() {
 
           <h2>Governing law</h2>
           <p>
-            These terms are governed by the laws of the Philippines, where DealNote is operated from.
+            These terms are governed by the laws of the Philippines.
             Any dispute about these terms or the product will be handled under those laws.
           </p>
 

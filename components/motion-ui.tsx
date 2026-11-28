@@ -4,7 +4,7 @@
 // `motion` 14.14.0, MIT, formerly Framer Motion), imported from
 // `motion/react`. One file, three effects, nothing else:
 //
-// - Reveal: fade + 12px rise, 250ms, once, when scrolled into view
+// - Reveal: fade + 0.75rem rise, 250ms, once, when scrolled into view
 //   (Loop 5: review-animations sub-300ms rule + userinterface-wiki
 //   timing-under-300ms; was 350ms in Loop 4).
 //   /terms and /privacy use a CSS-only opacity fade instead (`.fade-in`
@@ -16,7 +16,7 @@
 //   (the component source tab on reactbits.dev is JS-rendered and could
 //   not be fetched from this sandbox).
 // - SpotlightCard: React Bits SpotlightCard pattern, restrained to one
-//   faint teal wash that follows the pointer on the pricing card only.
+//   faint pink wash that follows the pointer on the pricing card only.
 //   No glow, no color gradient as decoration.
 //
 // Reduced motion: <MotionConfig reducedMotion="user"> in the layout
@@ -107,10 +107,16 @@ export function StaggerItem({ children }: { children: ReactNode }) {
   );
 }
 
-/** Animated number counter (React Bits CountUp pattern, see header). */
-export function CountUp({ to }: { to: number }) {
+/** Animated number counter (React Bits CountUp pattern, see header).
+ * `immediate` animates on mount instead of waiting for the element to
+ * scroll into view. Use it for headline numbers (the audit score):
+ * with the inView gate the score read "0" on load whenever the card
+ * sat just below the fold (Neon recheck, 28 Nov 2026: score card top
+ * 51.25rem in an 50rem viewport, counter stuck at 0 until scrolled to). */
+export function CountUp({ to, immediate = false }: { to: number; immediate?: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const seen = useInView(ref, { once: true, margin: "-40px" });
+  const inView = immediate || seen;
   const reduce = useReducedMotion();
   const value = useMotionValue(reduce ? to : 0);
   // Ceiling, not rounding: the counter must land cleanly on the final
@@ -134,11 +140,11 @@ export function CountUp({ to }: { to: number }) {
   );
 }
 
-/** One faint teal wash following the pointer. Pricing card only. */
+/** One faint pink wash following the pointer. Pricing card only. */
 export function SpotlightCard({ children, className }: { children: ReactNode; className?: string }) {
   const x = useMotionValue(-400);
   const y = useMotionValue(-400);
-  const background = useMotionTemplate`radial-gradient(240px circle at ${x}px ${y}px, rgb(15 118 110 / 0.07), transparent 70%)`;
+  const background = useMotionTemplate`radial-gradient(15rem circle at ${x}px ${y}px, rgb(190 24 93 / 0.07), transparent 70%)`;
   return (
     <motion.div
       className={className}

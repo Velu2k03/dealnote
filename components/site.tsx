@@ -9,7 +9,7 @@ const LINKS = [
 ];
 
 // One <nav> landmark at every size (modern-web-guidance `navbar`): under
-// 640px the links live in a native popover opened by a Menu button, so the
+// 40rem the links live in a native popover opened by a Menu button, so the
 // header is one row on a phone instead of three; at wider sizes a separate
 // plain list is inline. The two lists must NOT be the same element: a
 // closed popover's UA `display: none` is overridden by the author

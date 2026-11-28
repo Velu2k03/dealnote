@@ -1,14 +1,14 @@
 export default function PrivacyPage() {
   return (
-    <section style={{ paddingTop: 48 }}>
+    <section style={{ paddingTop: "3rem" }}>
       <div className="container">
-        <div className="reading fade-in">
+        <div className="reading fade-in" style={{ marginLeft: "auto", marginRight: "auto" }}>
           <h1>Privacy Policy</h1>
-          <p className="caption">Last updated: 28 Nov 2026. This page is general information, not legal advice.</p>
+          <p className="caption">This page is general information, not legal advice.</p>
 
-          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+          <div className="card mt-32" style={{ background: "#FAF5FF", marginBottom: "2.5rem" }}>
             <p className="mb-0"><strong>Summary:</strong></p>
-            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+            <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
               <li>No accounts in v1, so no account information is collected.</li>
               <li>Your brand profile, tracker, and license key stay only in your own browser.</li>
               <li>Vercel logs requests to run the service. One third-party script, the Ship or Die hackathon tracker, counts visits.</li>
@@ -18,8 +18,7 @@ export default function PrivacyPage() {
 
           <h2>Who operates DealNote</h2>
           <p>
-            DealNote is operated by Velu Murugan, trading as DrVelu, based in Santa Rosa City, Laguna,
-            Philippines. Contact:{" "}
+            DealNote is operated by the owner of this website. For privacy questions, contact:{" "}
             <a href="mailto:murugan@drvelu.com">murugan@drvelu.com</a>.
           </p>
 
@@ -96,7 +95,7 @@ export default function PrivacyPage() {
 
           <h2>Changes to this policy</h2>
           <p>
-            We will update this page and the date above when anything changes, including when any new
+            We will update this page when anything changes, including when any new
             third-party script is added. The Ship or Die tracker is now installed (27 Nov 2026).
           </p>
         </div>

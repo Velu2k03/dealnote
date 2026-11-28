@@ -10,6 +10,7 @@
 
 import { useEffect, useState } from "react";
 import { DEFAULT_BRAND, type BrandProfile } from "@/lib/audit";
+import { SakugaToggle } from "@/components/sakuga";
 
 const BRAND_KEY = "dealnote-brand-v1";
 
@@ -26,6 +27,7 @@ function loadBrand(): BrandProfile {
 export default function BrandPreview() {
   const [brand, setBrand] = useState<BrandProfile>(DEFAULT_BRAND);
   const [logoError, setLogoError] = useState("");
+  const [showPreview, setShowPreview] = useState(true);
 
   useEffect(() => {
     setBrand(loadBrand());
@@ -60,7 +62,7 @@ export default function BrandPreview() {
 
   const logoSrc = brand.logoDataUrl || brand.logoUrl || "";
   const name = brand.brandName === DEFAULT_BRAND.brandName ? "Your Studio" : brand.brandName;
-  const color = brand.primaryColor || "#0F766E";
+  const color = brand.primaryColor || "#BE185D";
 
   return (
     <div className="card glass mt-24 no-print">
@@ -70,7 +72,11 @@ export default function BrandPreview() {
         below. This is the same brand profile the audit page uses, stored only in this browser, so it
         carries straight into your real reports and proposal PDFs.
       </p>
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "flex-end" }}>
+      <div style={{ marginBottom: "1rem" }}>
+        <SakugaToggle label="Show brand preview" checked={showPreview} onChange={setShowPreview} />
+      </div>
+      {showPreview ? (
+      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div>
           <label htmlFor="preview-brand-name">Brand / business name</label>
           <input
@@ -87,34 +93,42 @@ export default function BrandPreview() {
           <input
             id="preview-brand-color"
             type="color"
-            value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#0F766E"}
+            value={/^#[0-9a-fA-F]{6}$/.test(color) ? color : "#BE185D"}
             onChange={(e) => saveBrand({ ...brand, primaryColor: e.target.value })}
-            style={{ width: 56, height: 40, padding: 4 }}
+            style={{ width: "3.5rem", height: "2.5rem", padding: 4 }}
           />
         </div>
         <div>
-          <label htmlFor="preview-logo">Logo (PNG or JPG, under 512 KB)</label>
-          <input id="preview-logo" type="file" accept="image/png,image/jpeg" onChange={(e) => onLogoFile(e.target.files?.[0])} />
+          <span className="btn btn-secondary" style={{ height: "3rem", padding: "0 1.25rem", display: "inline-flex", alignItems: "center" }}>
+            <label htmlFor="preview-logo" style={{ margin: 0, cursor: "pointer", fontSize: "0.9375rem", fontWeight: 600 }}>
+              Upload logo (PNG/JPG)
+            </label>
+          </span>
+          <input id="preview-logo" type="file" accept="image/png,image/jpeg" onChange={(e) => onLogoFile(e.target.files?.[0])} style={{ position: "absolute", width: 1, height: 1, opacity: 0, overflow: "hidden" }} />
+          <p className="caption mt-8 mb-0">PNG or JPG, under 512 KB</p>
           {logoError ? <p className="field-error mt-8" role="alert">{logoError}</p> : null}
         </div>
       </div>
+      ) : null}
+      {showPreview ? (
       <div
         className="mt-24"
-        style={{ borderTop: `3px solid ${color}`, paddingTop: 16, background: "#fff" }}
+        style={{ borderTop: `0.1875rem solid ${color}`, paddingTop: "1rem", background: "#fff" }}
         aria-label="Brand preview"
       >
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
           {logoSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logoSrc} alt="" style={{ maxHeight: 40, maxWidth: 120 }} />
+            <img src={logoSrc} alt="" style={{ maxHeight: 40, maxWidth: "7.5rem" }} />
           ) : null}
-          <p style={{ fontSize: 20, fontWeight: 700, color, margin: 0 }}>{name}</p>
+          <p style={{ fontSize: "1.25rem", fontWeight: 700, color, margin: 0 }}>{name}</p>
         </div>
-        <p className="mt-8 mb-0" style={{ color: "#475569" }}>
+        <p className="mt-8 mb-0" style={{ color: "#4A3B5C" }}>
           Website Teardown and Proposal — prepared by {name}. This is how your brand looks on a client
           report. The DealNote name never appears on client reports.
         </p>
       </div>
+      ) : null}
     </div>
   );
 }

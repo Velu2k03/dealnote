@@ -1,16 +1,48 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Printer } from "lucide-react";
 import { SAMPLE_BUSINESS, sampleAudit } from "@/lib/audit";
 import { IssueList, ScoreSummary } from "@/components/audit-ui";
 import PrintButton from "@/components/print-button";
 import BrandPreview from "@/components/brand-preview";
 import { DEFAULT_SCOPE, DEFAULT_TIMELINE, NON_BINDING_TEXT, NOT_INCLUDED_DEFAULT } from "@/lib/templates";
+import { SakugaRating, SakugaScripts, showToast } from "@/components/sakuga";
+
+const RATING_KEY = "dealnote-rating-v1";
 
 export default function SamplePage() {
   const sample = sampleAudit();
   const topIssues = sample.issues.slice(0, 3);
+  const [rating, setRating] = useState(0);
+
+  useEffect(() => {
+    try {
+      const saved = Number(localStorage.getItem(RATING_KEY) ?? "0");
+      if (saved >= 1 && saved <= 5) setRating(saved);
+    } catch {
+      // No saved rating.
+    }
+  }, []);
+
+  const saveRating = (next: number) => {
+    setRating(next);
+    try {
+      if (next > 0) localStorage.setItem(RATING_KEY, String(next));
+      else localStorage.removeItem(RATING_KEY);
+    } catch {
+      // Rating is a convenience; a failed save is not fatal.
+    }
+    if (next > 0) showToast("Thanks for rating this teardown.");
+  };
 
   return (
-    <section style={{ paddingTop: 48 }}>
+    <section style={{ paddingTop: "3rem" }}>
+      {/* Sakuga controls used on this page, lazy-loaded after the first
+          paint. Toggle is loaded by BrandPreview's own SakugaToggle
+          usage through the same lazy scripts on the audit page; here
+          rating is the page's own control. */}
+      <SakugaScripts names={["rating", "toggle"]} />
       <div className="container">
         <p className="print-stamp">SAMPLE: fictional business, fictional data</p>
         <p className="no-print"><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
@@ -23,10 +55,11 @@ export default function SamplePage() {
           page describes a real business.
         </p>
         <p className="reading">
-          Prepared by [Your studio], [Your name], [your email]. Run date: 28 Nov 2026. The bracketed
-          names are placeholders on purpose: your brand goes here on a real report.
+          Prepared by Harbor &amp; Pine Digital, Maya Lin, maya@harborandpine-digital.example,
+          (555) 019-4410, Santa Rosa, CA. Run date: 28 Nov 2026. Harbor &amp; Pine Digital is a
+          fictional studio: on a real report your own brand goes here.
         </p>
-        <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="no-print" style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <a href="/api/pdf/sample" className="btn btn-primary" download>
             Download sample report as PDF
           </a>
@@ -60,19 +93,19 @@ export default function SamplePage() {
         <h2 className="mt-32">What we would fix</h2>
         <div className="card glass">
           <h3>Quick wins</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Compress the hero image below 200 KB and serve it in a modern format.</li>
             <li>Point the broken drain-cleaning link at the correct service page or remove it from the menu.</li>
             <li>Write one short alt description per image, naming the service shown.</li>
             <li>Add a sitemap.xml and list it in robots.txt.</li>
           </ul>
           <h3>Redesign</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Cut the contact form to name, phone, and message, and ask for the address later.</li>
             <li>Make the phone number a clear call button in the mobile header.</li>
           </ul>
           <h3>Ongoing</h3>
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             <li>Add LocalBusiness schema with name, address, phone, and opening hours.</li>
           </ul>
         </div>
@@ -97,13 +130,13 @@ export default function SamplePage() {
 
         <h2 className="mt-32">Scope and deliverables</h2>
         <div className="card glass">
-          <ul style={{ paddingLeft: 20 }}>
+          <ul style={{ paddingLeft: "1.25rem" }}>
             {DEFAULT_SCOPE.map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ul>
           <h3>Not included</h3>
-          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+          <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
             {NOT_INCLUDED_DEFAULT.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -112,7 +145,7 @@ export default function SamplePage() {
 
         <h2 className="mt-32">Timeline and milestones</h2>
         <div className="card glass">
-          <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+          <ul style={{ paddingLeft: "1.25rem", marginBottom: 0 }}>
             {DEFAULT_TIMELINE.map((line) => (
               <li key={line}>{line}</li>
             ))}
@@ -122,15 +155,16 @@ export default function SamplePage() {
           </p>
         </div>
 
-        <h2 className="mt-32">About [Your Studio Name]</h2>
+        <h2 className="mt-32">About Harbor &amp; Pine Digital</h2>
         <div className="card glass">
           <p>
-            [Your Studio Name] is a web design studio run by [Your Name], based in [Your City]. We build
-            and fix websites for local businesses, and this sample shows the format every proposal uses.
+            Harbor &amp; Pine Digital is a fictional web design studio run by Maya Lin, based in
+            Santa Rosa, CA. It builds and fixes websites for local businesses, and this sample shows
+            the format every proposal uses. Nothing here describes a real studio or a real client.
           </p>
           <p className="mb-0">
-            [PAST PROJECT - Replace with a real project or delete this section. Never invent a client, a
-            quote, or a result.]
+            A real proposal carries the freelancer&apos;s own studio, past work, and contact details
+            here. Never invent a client, a quote, or a result.
           </p>
         </div>
 
@@ -148,13 +182,23 @@ export default function SamplePage() {
           <h3>Next step</h3>
           <p>
             Reply to this email, or book a free 15-minute call at the link in the covering email. Prepared by
-            Your Studio. Lab measurement on 28 Nov 2026. Scores can vary between runs. This report audits the
+            Harbor &amp; Pine Digital. Lab measurement on 28 Nov 2026. Scores can vary between runs. This report audits the
             public homepage only.
           </p>
           <p className="caption mb-0">
             SAMPLE footer: this sample report is produced by DealNote for demonstration only. Client reports
             carry the freelancer&apos;s brand only, never the DealNote name.
           </p>
+        </div>
+
+        <div className="card glass mt-32">
+          <h3>Rate this teardown</h3>
+          <p className="caption">
+            Your rating is stored only in this browser. It is not a testimonial and is never shown to
+            anyone else; it is here so you can mark how useful this sample was.
+          </p>
+          <SakugaRating label="Rate this teardown" value={rating} onChange={saveRating} />
+          {rating > 0 ? <p className="caption mt-8 mb-0">You rated this teardown {rating} out of 5.</p> : null}
         </div>
 
         <p className="caption mt-32">

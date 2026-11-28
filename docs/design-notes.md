@@ -10,38 +10,42 @@ Clean, plain, businesslike, now with Apple-style glass and motion (Velu, 28 Nov 
 
 ## 2. Colour
 
-### Accent: deep teal `#0F766E` (Tailwind teal-700)
+### Accent: pink `#BE185D` (pink-700) — Sakuga direction, 28 Nov 2026
 
-**Why this colour, deliberately chosen (not a default):**
-- The default for this kind of tool is indigo/blue. Indigo says "another SaaS dashboard" and is what every competitor in RESEARCH.md looks like. Teal is distinct in this market without being loud.
-- It reads as "go / money / growth" to a sales tool's buyer, which fits a product whose job is winning clients — without using gold (money cliché) or red (alarm, and red already means "fail" in the report grades).
-- It prints well. A teardown is a PDF a business owner prints or reads on a phone; teal-700 stays legible on white paper and on screen, where a lighter teal would wash out.
-- Contrast: `#0F766E` on white is about 5.0:1, which passes WCAG AA for normal text. That matters because the accent is used for headings, links, and buttons, not just decoration.
-- It is not a Sortes token. No navy `#141b2e`, no gold `#d4af37`, no cream `#ede6d6`, no Cinzel, no Jost anywhere in this product.
+Velu ordered the site redesigned like the Sakuga VFX look: white paper, lavender surfaces, violet line, pink accents. This **supersedes** the deep-teal-only rule below (kept in the history of this file). The pink is deliberately chosen, not a default:
+
+- The Sakuga palette is white paper, two-tone effects (white, lavender, violet line), pink accents (`#ff5fa8`), impact burst on every confirm. DealNote now uses that palette as its site palette: pink accent, lavender surfaces, violet borders.
+- Readable pink, not decorative pink: the Sakuga accent `#ff5fa8` is ~2.9:1 on white, so it is decorative only (wedges, checks, bursts). The site accent `#BE185D` is 6.04:1 on white and white on it is 6.04:1, so it passes WCAG AA for normal text, links, and buttons.
+- Ink is the Sakuga ink `#1D1A4A` (dark violet-slate, 16.17:1 on white), muted `#55507A` (7.46:1), faint `#6E6890` (5.19:1) — all AA.
+- It prints well. A teardown is a PDF a business owner prints or reads on a phone; pink-700 stays legible on white paper, where the lighter Sakuga pink would wash out.
+- It is not a Sortes token. No navy `#141b2e`, no gold `#d4af37`, no cream `#ede6d6`, no Cinzel, no Jost anywhere in this product. The old teal `#0F766E` is retired as the site accent (buyer brand colours in white-label reports are the buyer's own, not DealNote's).
 
 ### Palette (the whole product: app UI, report HTML, PDF)
 
 | Token | Value | Use |
 |---|---|---|
 | Background | `#FFFFFF` white | Page background everywhere |
-| Surface muted | `#F8FAFC` slate-50 | Panels, table header rows, code/evidence blocks |
-| Border | `#E2E8F0` slate-200 | Cards, tables, dividers, inputs |
-| Text primary | `#0F172A` slate-900 | Headings, body text, scores |
-| Text secondary | `#475569` slate-600 | Supporting copy, captions, metadata |
-| Text faint | `#64748B` slate-500 | Timestamps, "could not check" labels only — never body copy. Darkened from `#94A3B8` (slate-400, 2.56:1 on white, failed WCAG AA) in the 27 Nov 2026 fixes round; the old `--faint` value must not be used for text. |
-| Accent | `#0F766E` teal-700 | Primary buttons, links, active states, score bars, section headings in reports |
-| Accent soft | `#F0FDFA` teal-50 | Accent backgrounds (callouts, highlighted rows) |
-| Accent border | `#99F6E4` teal-200 | Borders on accent callouts only |
+| Surface muted | `#F4F3FC` lavender tint | Panels, table header rows, code/evidence blocks |
+| Border | `#DDD6FE` violet-200 | Cards, tables, dividers, inputs |
+| Text primary | `#1D1A4A` Sakuga ink | Headings, body text, scores |
+| Text secondary | `#55507A` | Supporting copy, captions, metadata |
+| Text faint | `#6E6890` | Timestamps, "could not check" labels only — never body copy |
+| Accent | `#BE185D` pink-700 | Primary buttons, links, active states, score bars, section headings in reports |
+| Accent soft | `#FDF2F8` pink-50 | Accent backgrounds (callouts, highlighted rows) |
+| Accent border | `#F9A8D4` pink-300 | Borders on accent callouts only |
+| Sakuga accent (decorative) | `#FF5FA8` | Sakuga effect wedges, checks, bursts; never body text |
+| Sakuga primary | `#8F8DF7` violet | Sakuga effect primary fills |
+| Sakuga soft / line | `#B8B3FF` / `#5A4FD8` | Sakuga effect shadow tone / violet outline |
 | Grade A/B | `#15803D` green-700 | Good grades and passes |
 | Grade C | `#B45309` amber-700 | Needs improvement |
 | Grade D/F | `#B91C1C` red-700 | Poor / fail |
-| Focus ring | `#0F766E` teal-700, 2 px offset | Keyboard focus on every interactive element |
+| Focus ring | `#BE185D` pink-700, 2 px offset | Keyboard focus on every interactive element |
 
 **Rules:**
 - One accent only. No second brand colour in the product chrome. (The *buyer's* brand colours appear inside their white-labelled reports — that is their brand, not DealNote's. DealNote's own chrome never takes on the buyer's colours.)
-- Grade colours are semantic, muted, and text-safe. Never use bright green/amber/red fills; use coloured text or a thin left border on a white card.
-- No colour gradients as decoration anywhere, including buttons, headers, and the PDF cover. Solid colours only. One narrow exception: the pricing-card spotlight (see §12) is a faint teal radial wash that follows the pointer, 7% opacity, hover only — a highlight, not a coloured gradient.
-- Shadows: one restrained card shadow (`0 1px 2px rgb(15 23 42 / 0.06)`) on plain cards; glass panels use the softer Apple shadow (`0 8px 32px rgb(15 23 42 / 0.08), 0 1px 2px rgb(15 23 42 / 0.06)`). No glow, no drop-shadow text.
+- Grade colours are semantic, muted, and text-safe. Never use bright green/amber/red fills; use coloured text or a thin left border on a white card. Grades are never pink-washed: the A–F letter is always shown next to the number.
+- No colour gradients as decoration anywhere, including buttons, headers, and the PDF cover. Solid colours only. One narrow exception: the pricing-card spotlight (see §12) is a faint pink radial wash that follows the pointer, 7% opacity, hover only — a highlight, not a coloured gradient.
+- Shadows: one restrained card shadow (`0 1px 2px rgb(29 26 74 / 0.06)`) on plain cards; glass panels use the softer Apple shadow (`0 8px 32px rgb(29 26 74 / 0.08), 0 1px 2px rgb(29 26 74 / 0.06)`). No glow, no drop-shadow text.
 - Print: `print-color-adjust: exact` on report templates so the accent and grade colours print as shown. Test the PDF in black-and-white too — grades must still read from their letters (A–F), not from colour alone.
 
 ## 3. Type
@@ -77,7 +81,7 @@ The 27 Nov 2026 audit found Inter was named in the font stack but never loaded, 
 
 ## 4. Icons
 
-**Lucide only. Size 18 px, stroke 1.5, slate-600 by default. Icons inherit text colour (slate-600); teal is used only for primary-action controls, never for decorative section icons.** The 27 Nov 2026 audit found teal step/tier icons (`color="#0F766E"`) on the landing page and templates page; those are removed in this round so icons inherit slate-600 like every other icon on the site.
+**Lucide only. Size 18 px, stroke 1.5, violet-slate by default. Icons inherit text colour; pink is used only for primary-action controls, never for decorative section icons.**
 
 **Rules:**
 - One icon per control, never icon + emoji, never emoji alone.
@@ -90,10 +94,10 @@ The 27 Nov 2026 audit found Inter was named in the font stack but never loaded, 
 - **Mobile-first.** Design at 390 px first, then widen. The buyer runs audits from a phone between client visits; the business owner reads the PDF on a phone.
 - **No horizontal overflow at 390 px.** No element may exceed the viewport width: tables become stacked definition rows under 640 px, score bars are full-width, the URL input and button stack vertically, and long URLs / broken-link URLs wrap with `overflow-wrap: anywhere`. Test at 390 px on every page before shipping; a horizontal scrollbar is a launch blocker.
 - **Container:** max-width 1120 px for the app, 720 px for reading copy (landing body, sample report text). Generous vertical spacing (64–96 px section gaps on desktop, 48 px on mobile).
-- **Cards:** white, 1 px slate-200 border, 8 px radius, restrained shadow only. No coloured card backgrounds except teal-50 callouts and slate-50 evidence blocks.
-- **Tables:** header row slate-50, 13 px uppercase label, row dividers slate-200, no zebra striping, no coloured fills. A finding row is: severity mark, finding, evidence, fix — in that order.
-- **Forms:** labels above inputs, 14 px/600, inputs 44 px tall minimum (touch target), 1 px slate-200 border, focus ring teal-700 2 px. Error text red-700, 13 px, with the field named ("Enter a full URL starting with https://").
-- **Buttons:** primary = solid teal-700, white text, 8 px radius, 44 px tall. Secondary = white, 1 px slate-200 border, slate-900 text. Destructive (delete brand profile) = white with red-700 text and border. No gradient buttons, no pill buttons (radius stays 8 px), no uppercase button text.
+- **Cards:** white, 1 px violet-200 border, 8 px radius, restrained shadow only. No coloured card backgrounds except pink-50 callouts and lavender evidence blocks.
+- **Tables:** header row lavender, 13 px uppercase label, row dividers violet-200, no zebra striping, no coloured fills. A finding row is: severity mark, finding, evidence, fix — in that order.
+- **Forms:** labels above inputs, 14 px/600, inputs 44 px tall minimum (touch target), 1 px violet-200 border, focus ring pink-700 2 px. Error text red-700, 13 px, with the field named ("Enter a full URL starting with https://").
+- **Buttons:** primary = solid pink-700, white text, 8 px radius, 44 px tall. Secondary = white, 1 px violet-200 border, violet-slate text. Destructive (delete brand profile) = white with red-700 text and border. No gradient buttons, no pill buttons (radius stays 8 px), no uppercase button text. Sakuga buttons (see §14) are the exception: white card, violet ink, pink wedges and check, same 44 px minimum height.
 - **Motion:** see §12. Buttons add a 120 ms lift on hover (`translateY(-1px)`) and a press scale (0.98); the shared colour transition stays 120 ms. No `transition-all`.
 - **Nav links:** 44 px minimum touch target (padding raised so links reach 44 px tall). The audit found nav links at about 37 px.
 - **Equal-card grids:** equal widths only where content is truly parallel (pricing tiers). "How it works" is now a numbered vertical flow, not three equal cards; the numbered steps earn their place in a real sequential flow. The two-column "checks / does not check" pair uses unequal widths.
@@ -117,7 +121,7 @@ Build a static, non-interactive rendering of an actual audit result using the re
 
 **Construction (for the builder):**
 - Canvas 32 × 32, flat, no gradients, no shadows, no strokes thinner than 2 px at that size.
-- Colour 1: teal-700 `#0F766E` — the page shape.
+- Colour 1: pink-700 `#BE185D` — the page shape.
 - Colour 2: white `#FFFFFF` — the check mark and the three text lines, cut out of the page shape (negative space, not a second fill).
 - Page: rounded rectangle, 6 × 4 to 26 × 28, 3 px corner radius, folded top-right corner (a small triangle in the background colour, i.e. the page colour cut away — no third colour).
 - Three horizontal lines on the page (white, 2 px tall, 10 px wide, spaced 4 px apart) standing in for the report text.
@@ -131,13 +135,13 @@ Build a static, non-interactive rendering of an actual audit result using the re
 
 The report is the product the buyer is judged on, so its design rules are stricter than the app's:
 
-- **Cover:** white, buyer's logo (or brand name in Inter 700 if no logo), business name being audited, "Website Teardown & Proposal" as the document title, "Prepared by [freelancer brand]" and the run date. One teal rule (2 px, full width) under the title. No cover photo, no gradient band.
+- **Cover:** white, buyer's logo (or brand name in Inter 700 if no logo), business name being audited, "Website Teardown & Proposal" as the document title, "Prepared by [freelancer brand]" and the run date. One pink rule (2 px, full width) under the title. No cover photo, no gradient band.
 - **Score page:** overall grade + number, six category bars with weights printed next to each category name, top 3 findings in plain language. One page, no scrolling past the point.
 - **Category sections:** one section per category, in the order Speed, Mobile, On-page SEO, Technical, Conversion, Trust/local/social. Each opens with the category name, weight, grade, and score, then findings in severity order (Critical first). Each finding: what was found (with evidence quoted), why it matters (one sentence, lost call/booking/visit), severity, fix (one line). No finding without evidence.
 - **Proposal section:** starts on a fresh page, same typography, same header/footer as the teardown. Problem before price. Prices are the freelancer's filled-in values or visible blank placeholders (`$____`) — never a number the tool invented.
 - **Header/footer (every page after the cover):** header = buyer's brand name (small, slate-600); footer = "Prepared by [brand] · [date] · Lab measurement on [date]. Scores can vary between runs. This report audits the public homepage only." + page number. No DealNote name anywhere.
 - **Page breaks:** never split a finding across pages; never leave a section heading alone at the bottom of a page; tables break only between rows. Test with a 6–10-page report end to end.
-- **Sample reports:** the word SAMPLE in teal-700, 13 px, 600 weight, at the top of every page, and fictional data only. On the /sample web page, the SAMPLE stamp appears at the top of the page and in the footer only — not once per section (the audit found 7 stamps on /sample).
+- **Sample reports:** the word SAMPLE in pink-700, 13 px, 600 weight, at the top of every page, and fictional data only. On the /sample web page, the SAMPLE stamp appears at the top of the page and in the footer only — not once per section (the audit found 7 stamps on /sample).
 
 ## 9. What this design system is NOT
 
@@ -191,7 +195,7 @@ Unchanged — the core system stays:
 - [ ] Hero is the real audit UI in code with fictional data, labelled SAMPLE.
 - [ ] Logo reads at 16 px (favicon) and 120 px (cover); only 2 colours; no gradients.
 - [ ] No emoji, no gradients, no glows, no stock photos anywhere in the app, reports, or landing page.
-- [ ] Contrast check: teal-700 on white, slate-600 on white, grade colours on white — all pass AA for their text sizes.
+- [ ] Contrast check: pink-700 on white (6.04:1), violet-slate on white, grade colours on white — all pass AA for their text sizes.
 - [ ] Buyer's brand colours render correctly in a test white-labelled PDF (logo, primary, accent) with no DealNote name in the content, footer, share link, or PDF metadata.
 
 ## 12. Apple glass + motion — 28 Nov 2026 (Velu's new direction, replaces the old "no glass" rule)
@@ -204,14 +208,14 @@ Velu ordered the plain look elevated after the Loop 4 reports: Apple glass style
 - **Where:** sticky header (translucent white, 80% + blur), hero score card, finding cards, How-it-works step rows, the two "checks / does not check" cards, the pricing card, all /sample content cards.
 - **Where NOT:** /terms and /privacy (plain white, opacity fade only), the PDF report templates in `lib/pdf-html.ts` (plain white, untouched), print (the print stylesheet forces plain white cards, no blur, no shadow).
 - **Readability guardrails:** dark slate text on light frosted panels only, never over images or busy backgrounds (there are no images behind any panel); contrast stays AA because the text colours did not change. No text over the glass header's blur — the header contains only the wordmark and nav links.
-- **Spotlight (React Bits SpotlightCard pattern, adapted):** pricing card only. A faint teal radial wash (`rgb(15 118 110 / 0.07)`, 240px circle) follows the pointer and fades to transparent; it is a hover highlight, not a decorative gradient, and it disappears on touch devices (no pointer) and in print.
+- **Spotlight (React Bits SpotlightCard pattern, adapted):** pricing card only. A faint pink radial wash (`rgb(190 24 93 / 0.07)`, 240px circle) follows the pointer and fades to transparent; it is a hover highlight, not a decorative gradient, and it disappears on touch devices (no pointer) and in print.
 
 ### Motion (Motion, npm `motion` 14.14.0, MIT, formerly Framer Motion)
 
 - **Library:** `npm install motion`, imported from `motion/react`. App Router: motion lives in client components only (`components/motion-ui.tsx`, `components/audit-ui.tsx` which is already `"use client"`); server pages import those client wrappers. No `framer-motion` package (deprecated alias).
 - **Vetting (28 Nov 2026):** SkillSpector scan of the published 14.14.0 tarball returned CAUTION, score 39, MEDIUM — its single MEDIUM finding is a README badge URL (`api.motion.dev` score badge image in README.md), a false positive: no code in the package transmits data, and the badge is not shipped. The scanner's supply-chain analyzer crashed with its known `InvalidURL` quirk (0% coverage, same failure mode as earlier scans), so the verdict rests on manual checks too: MIT licence, no install/postinstall scripts in the published package, dependencies only `tslib` + `framer-motion` 14.14.0, official motiondivision package from the npm registry. Proceeded on that basis; recorded here so a future loop can re-check.
 - **Primitives (`components/motion-ui.tsx`):** `MotionProvider` (`<MotionConfig reducedMotion="user">` in the layout), `Reveal` (fade + 12px rise, 350 ms, once, on scroll into view), `Stagger`/`StaggerItem` (finding cards enter 70 ms apart), `CountUp` (overall score counts 0 to the score in 350 ms), `SpotlightCard` (above).
-- **React Bits:** at most 3 components, copy/adapt, no heavy dependency for one effect. Used: CountUp pattern (re-implemented against Motion — the component source tab on reactbits.dev is JS-rendered and could not be fetched from this sandbox) and SpotlightCard pattern (adapted, teal, faint). No gradient text (readability), no other React Bits components. No `three`/`ogl`/`gsap` pulled in.
+- **React Bits:** at most 3 components, copy/adapt, no heavy dependency for one effect. Used: CountUp pattern (re-implemented against Motion — the component source tab on reactbits.dev is JS-rendered and could not be fetched from this sandbox) and SpotlightCard pattern (adapted, pink, faint). No gradient text (readability), no other React Bits components. No `three`/`ogl`/`gsap` pulled in.
 - **Budgets, all honoured:** every element animates in at most 350 ms; hero stagger is 0 ms / 80 ms delays; nothing autoplays; no looping video; nothing delays the audit form (the hero form is usable during its 350 ms entrance) or the buy path (BuyButton has no entrance animation, only the 120 ms hover/press).
 - **Reduced motion:** `<MotionConfig reducedMotion="user">` disables transform/layout animation site-wide for users who ask; CountUp jumps straight to the final value; the CSS fade on /terms and /privacy is disabled by `@media (prefers-reduced-motion: reduce)`; button lift/press is disabled there too.
 - **Print/PDF:** motion wrappers carry class `motion-fade`; the print stylesheet forces `opacity: 1, transform: none` on them and hides the spotlight overlay. PDF HTML never imports motion.
@@ -263,3 +267,64 @@ All 25 skills from https://recent.design/skills, applied or recorded with eviden
 ### Prototype discipline (prototype skill)
 
 - Divergent variants live on an isolated, unlinked route with the verbatim picker; the winner is picked against recorded criteria; **the prototype surface is deleted after promotion**. A prototype route must stay static (read `?v=` client-side inside Suspense) — a `searchParams` prop forces dynamic rendering, and on a dynamic route the CSS link only arrives via flight hints, which headless Chrome never inserted (variants rendered unstyled).
+
+## 14. Sakuga VFX controls + pinkish redesign — 28 Nov 2026 (Velu: "make our site design like that color pinkish")
+
+Velu ordered the site redesigned in the Sakuga VFX colours (white paper, lavender, violet line, pink accents) and all twelve Sakuga controls added to the site. This section supersedes the teal-only rule in §2 and the teal references in §§7–8; the old values stay in §11 as history.
+
+### Palette (exact values, OKLCH in `app/globals.css` `:root`, hex in the comment there)
+
+| Token | Hex | OKLCH | Contrast on white |
+|---|---|---|---|
+| Background | `#FFFFFF` | `oklch(1 0 0)` | — |
+| Surface | `#F4F3FC` | `oklch(0.967 0.012 291.3)` | text on it 14.68 |
+| Border | `#DDD6FE` | `oklch(0.894 0.055 293.3)` | — |
+| Text | `#1D1A4A` | `oklch(0.253 0.086 281.1)` | 16.17 |
+| Muted | `#55507A` | `oklch(0.454 0.068 288.8)` | 7.46 |
+| Faint | `#6E6890` | `oklch(0.538 0.062 291)` | 5.19 |
+| Accent (readable pink) | `#BE185D` | `oklch(0.525 0.199 4)` | 6.04; white on it 6.04 |
+| Accent hover | `#9D174D` | `oklch(0.459 0.17 3.8)` | 7.88 |
+| Accent soft | `#FDF2F8` | `oklch(0.971 0.014 343.2)` | accent on it 5.53 |
+| Accent border | `#F9A8D4` | `oklch(0.823 0.11 346)` | — |
+| Sakuga accent (decorative) | `#FF5FA8` | `oklch(0.713 0.205 355.3)` | ~2.9, decorative only |
+| Sakuga primary | `#8F8DF7` | `oklch(0.691 0.153 282.5)` | decorative only |
+| Sakuga soft / line | `#B8B3FF` / `#5A4FD8` | `oklch(0.799 0.107 286.7)` / `oklch(0.521 0.202 280.4)` | decorative only |
+
+All text colours pass WCAG AA. Grade colours stay green `#15803D` / amber `#B45309` / red `#B91C1C`, always with the A–F letter, never pink-washed. PDFs follow the brand colour: the default brand colour is now pink `#BE185D` (`lib/audit.ts` DEFAULT_BRAND, `lib/pdf-html.ts` fallback), with a pink header/footer rule; PDFs stay clean and printable, no effects in PDFs.
+
+### Sakuga controls (`components/sakuga.tsx`, scripts in `public/sakuga-vfx/`)
+
+- **Source:** https://github.com/finktheartist/sakuga-vfx, commit `c3dabb1`, MIT. SkillSpector scan 28 Nov 2026: score 50, MEDIUM, CAUTION — HIGH findings are AE1 parser-limit false positives on `look.mjs` references, plus one MEDIUM for no declared tool scope; no network/credential/exfiltration findings. Skill installed at `~/workspace/custom-skills/sakuga-vfx/`; the repo's own scripts (`tools/build.mjs`, `tools/test.mjs`, `look.mjs`) are never run. Component files are used exactly as shipped, plain script tags, never split or rewritten.
+- **The twelve:** the repo's README says twelve but ships eleven elements; the twelfth gallery card is the button's secondary variant. All eleven elements are wired into real flows (see `docs/dealnote-sakuga-2026-11-28.md` for the per-control table).
+- **Loading:** button/toast/tooltip load `afterInteractive` in the layout (every page uses them); the rest load `lazyOnload` per page. Toggle is ~506 KB (43 painted frames) and loads lazily only on /audit and /sample. Scripts are static assets, not webpack bundle: First Load JS grew only +4 kB home, +5 kB /audit, +12 kB /sample, +5 kB /templates (React wrapper code); /terms and /privacy unchanged at 87.5 kB.
+- **Recolor:** the page's `:root` `--sk-*` variables win over the core's `:where()` defaults. `--sk-acc` stays Sakuga pink `#ff5fa8` (decorative), `--sk-pri` `#8f8df7`, `--sk-soft` `#b8b3ff`, `--sk-line` `#5a4fd8`, `--sk-ink` `#1d1a4a`. The Sakuga button is a white card with violet ink and pink wedges/check — it does not take the site's solid pink button style, and that is deliberate: it is the Sakuga control, not a restyled native button.
+- **Rules:** one sound-effect word per reaction at most (the controls ship their own); effects never carry information the user needs to read; `done()` is called only when the action actually worked (audit run, never a failure); no Sakuga element on /terms or /privacy (simple fade only); no effects in PDFs or print; motion under 400 ms; `prefers-reduced-motion` turns every Sakuga effect off (core behaviour, verified) while state changes still happen.
+- **Glass, pink tint:** `.glass` is now `oklch(0.99 0.01 340 / 0.72)` with a lavender border, still dark text on light frosted panels only, never over images or busy backgrounds.
+
+## 14. Neon PDF + site redesign — 28 Nov 2026 (Gemini 4 Neon, SHIP 9.0/10)
+
+Neon re-check (28 Nov 2026, Task mode, chat "DealNote PDF and site redesign") gave SHIP, 9.0/10 on Design, Tap Flow, Trust, Legal, Copy/Slop, Mobile unverified, 10/11 matrix PASS. Velu ordered the redesign; Neon is the guide. Full report: `docs/dealnote-neon-redesign-2026-11-28.md`.
+
+### New palette (hex, exact Neon spec; replaces the OKLCH tokens)
+Paper #FFFFFF, lavender soft #FAF5FF, lavender surface #F5ECFF, blush tint #FDF2F8, border violet subtle #E9D5FF, border violet line #C4B5FD, border focus #7C3AED, accent pink primary #DB2777 (CTA fill, 4.60:1 white), accent pink text #BE185D (6.04:1), accent pink hover #9D174D, sakuga glow #EC4899 graphics only never text, ink primary #181024, ink secondary #4A3B5C, ink muted #6B5B7E. Grade colors unchanged: A/B #15803D / tint #F0FDF4, C #B45309 / text #92400E / tint #FFFBEB, D/F #B91C1C / tint #FEF2F2. All teal (#0F766E / #0D9488 / #14B8A6 / #F8FAFC) removed from code and rendered copy (verified 0 occurrences).
+
+### Typography and layout
+H1 44px Bold line-height 1.1 tracking -0.025em (mobile 32px), H2 28px, H3 18px SemiBold, body 15-16px line-height 1.6 max-width 65ch, eyebrows 12px SemiBold uppercase tracking 0.06em #BE185D. Pages max-w 1120px px-6 (px-4 mobile), legal/single-column max-w 760px centered, section py-16 desktop py-10 mobile, card gap-6. Cards bg-white border #E9D5FF rounded-2xl p-6, hover border #C4B5FD. Glass kept only for hero scorecard and sticky header (white/80, blur 12px, border #E9D5FF/80). Buttons 44-48px: primary h-12 px-5 rounded-xl bg #DB2777 hover #9D174D white 15px SemiBold, secondary white hover #FDF2F8 text #BE185D border, ghost text #BE185D hover #9D174D underline. Inputs h-12 px-4 rounded-xl border #C4B5FD, placeholder #6B5B7E, focus 2px #7C3AED ring. Logo upload is a styled h-12 button-label "Upload logo (PNG/SVG)", no native Choose File.
+
+### PDFs (lib/pdf-html.ts)
+US Letter 8.5x11, margins 44pt, Inter 400/500/600/700, tabular-nums on scores/dates/prices. Title 22pt Bold #111827, H2 13pt Bold with 1pt #E9D5FF bottom rule, H3 10.5pt SemiBold, body 9.5pt #374151 line-height 1.45, micro 8pt #4B5563, hero score 40pt Bold. White paper only, accent #BE185D only for the 3pt top cover rule, section label accents, callout left-border 2.5pt. Tinted bands #FAF5FF with 0.75pt #DDD6FE border. ZERO effects in PDFs: no backdrop-filter, glass blur, box-shadows, gradients, Sakuga glow, dark-mode blending, no #EC4899 or #A78BFA text. Running header every page (studio + document type + domain + run date, SAMPLE pill on sample), footer every page ("Prepared by {Studio} · {Contact} · {Email}" left, "Page X of Y" right), disclaimer micro line on page 1 and final page only. Score Hero Block page 1: 48x48 grade badge, score, status label, 6-row area table with 6pt bars. Findings are structured blocks with header bar and Found / Why it matters / Fix rows, break-inside avoid. Page counts verified: Sample 3p, Teardown 4p, Proposal 5p. Only the "What we found" section forces a page break; the rest flows, so a 5-finding audit still lands on 5 pages.
+
+### Sample brand (fixes the [YOUR STUDIO] defect)
+Sample PDF and /sample page are signed by the fictional Harbor & Pine Digital: studio Harbor and Pine Digital, contact Maya Lin, maya@harborandpine-digital.example, (555) 019-4410, Santa Rosa, CA, accent #BE185D. Audited business Harbor and Pine Plumbing, 12 Harbor Lane, Santa Rosa, CA 95401, (555) 014-8820, https://www.harborandpine-plumbing.example. `SAMPLE_BRAND` in lib/audit.ts. Real PDFs still require the buyer's own brand (brandValidationError refuses placeholders).
+
+### Tap flow and pages
+Home to audit stays 2 actions; hero URL input + Run a free audit is a single flex-nowrap pill/bar; "See a sample report" is a compact inline text link below. /sample shows 83/100 B instantly (CountUp immediate, no 67/100 flash). /templates has a 3-column horizontal step bar and unified border #E9D5FF rounded-2xl cards in a 2-column grid for both 8 proposals and 8 emails. /terms and /privacy have mt-8 / mb-10 breathing room below the Summary box, centered max-w 760px, #BE185D links. Home pricing is a 2-column card, FAQ centered max-w 760px, sample URL truncated to 1 line with a title tooltip. Mobile /audit: when a result exists the score card moves above the URL form (visual order only, DOM unchanged) so 45/100 reads above the fold at 390px.
+
+### P2s from Neon's second verdict (all fixed)
+1. "enquiry" on /sample and "honoured" on /terms → inquiry, honored (plus "enquire" in a real audit finding, also fixed). 2. /terms still says the count may reset when hosting restarts — kept honest, counter is still in-memory; swap to "Usage counts reset on a rolling monthly basis per license key" only when durable storage is live. Upstash NOT provisioned, no paid plan. 3. Manual 390px mobile check — verified in Playwright Chromium 390x844 on all 6 routes, scrollWidth exactly 390, drawer opens with 11 visible links, 45/100 at top 136px.
+
+### What was cut off in Neon's answer and how it was filled in
+Neon's spec text cut off at card shadow, primary button shadow, secondary border color, and proposal PDF pages 3 and 5. Filled in: site cards keep the existing subtle shadow 0 1px 2px rgba(24,16,36,0.06); primary buttons are flat #DB2777 with no shadow (zero-effects direction); secondary border is #E9D5FF; proposal pages are p1 cover/hero/intro, p2 what we found, p3 what we would fix, p4 investment + scope/timeline, p5 about/terms/next step (with flow, not forced breaks, so real finding counts still land on 5 pages).
+
+### Known cosmetic item
+The Sakuga submit button in the hero pill still wraps "Run a free audit" onto 3 lines: the Sakuga control sizes itself and ignores the nowrap class. Pre-existing Sakuga control sizing, not a redesign regression; left as is rather than editing the shipped Sakuga component files.

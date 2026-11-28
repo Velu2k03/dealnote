@@ -1,9 +1,11 @@
 // DealNote PDF HTML templates (shared by /api/pdf/teardown and /api/pdf/proposal).
 // Brand-new code for DealNote. No code copied from any other product.
 //
-// Design tokens: white / slate, deep teal #0F766E, Inter / system font.
+// Design tokens: white / slate-violet, pink #BE185D, Inter / system font.
 // No gradients, no glows, no emoji. The HTML is rendered to PDF by
 // Puppeteer (Chromium); it is plain printable HTML, no JavaScript.
+// Pink brand header/footer follows the site brand color (28 Nov 2026
+// Sakuga direction); no effects in PDFs.
 
 import type { AuditResult, BrandProfile, ProposalItem } from "@/lib/audit";
 import { CATEGORIES } from "@/lib/audit";
@@ -17,10 +19,10 @@ import {
 } from "@/lib/templates";
 
 /** Buyer brand color, validated to a #rrggbb hex; anything else falls
- *  back to DealNote teal so a bad value can never break the PDF. */
+ *  back to DealNote pink so a bad value can never break the PDF. */
 export function brandAccent(brand: BrandProfile): string {
   const c = (brand.primaryColor ?? "").trim();
-  return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#0F766E";
+  return /^#[0-9a-fA-F]{6}$/.test(c) ? c : "#BE185D";
 }
 
 /** Logo for the PDF: only an uploaded data URL is embedded. A remote
@@ -40,10 +42,12 @@ function logoImg(brand: BrandProfile): string {
 // ---------------------------------------------------------------------------
 
 /** Render printable HTML to a PDF buffer with headless Chromium.
- *  When `footerText` is given, it is printed on EVERY page via
- *  displayHeaderFooter (the footer disclaimer is a legal requirement,
- *  not a last-page note). Page numbers are included. */
-export async function htmlToPdfBuffer(html: string, footerText?: string): Promise<Buffer> {
+ *  Neon redesign (28 Nov 2026): US Letter 8.5x11, 44pt margins on all
+ *  sides, running header + footer on EVERY page via displayHeaderFooter.
+ *  `headerHtml` / `footerHtml` are the full header/footer templates
+ *  (already escaped); pass "" for none. Page numbers use Chromium's
+ *  pageNumber / totalPages spans inside the footer template. */
+export async function htmlToPdfBuffer(html: string, headerHtml = "", footerHtml = ""): Promise<Buffer> {
   const chromium = (await import("@sparticuz/chromium")).default;
   const puppeteer = (await import("puppeteer-core")).default;
   const executablePath = await chromium.executablePath();
@@ -56,14 +60,12 @@ export async function htmlToPdfBuffer(html: string, footerText?: string): Promis
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "domcontentloaded" });
     const pdf = await page.pdf({
-      format: "A4",
+      format: "Letter",
       printBackground: true,
-      margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "15mm" },
-      displayHeaderFooter: Boolean(footerText),
-      headerTemplate: "<div></div>",
-      footerTemplate: footerText
-        ? `<div style="width:100%;font-size:8px;color:#64748b;padding:0 15mm;text-align:center;">${escapeHtml(footerText)} &middot; Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>`
-        : "<div></div>",
+      margin: { top: "44pt", bottom: "44pt", left: "44pt", right: "44pt" },
+      displayHeaderFooter: Boolean(headerHtml || footerHtml),
+      headerTemplate: headerHtml || "<div></div>",
+      footerTemplate: footerHtml || "<div></div>",
     });
     return Buffer.from(pdf);
   } finally {
@@ -77,8 +79,33 @@ export const FOOTER_DISCLAIMER =
   "This report checks the public homepage only. It does not estimate traffic, rankings, or lost revenue. " +
   "No guarantee of client wins.";
 
+/** Sample-only disclaimer, printed on page 1 and the final page. */
+export const SAMPLE_DISCLAIMER =
+  "Sample data for demonstration only. Real audits reflect public homepage lab measurements on the run date and are not Lighthouse, PageSpeed, or search-ranking scores.";
+
+/** Running footer, every page: prepared-by left, "Page X of Y" right. */
 export function footerLine(brand: BrandProfile, runDate: string, prospectUrl: string): string {
-  return `Prepared by ${brand.brandName} on ${runDate} for ${prospectUrl}. ${FOOTER_DISCLAIMER}`;
+  void runDate;
+  void prospectUrl;
+  const left = `Prepared by ${brand.brandName} · ${brand.contactName} · ${brand.contactEmail}`;
+  return `<div style="width:100%;font-size:8pt;color:#4B5563;padding:0 44pt;display:flex;justify-content:space-between;"><span>${escapeHtml(left)}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>`;
+}
+
+/** Running header, every page: studio logo + name left, document type +
+ *  domain + run date right, SAMPLE pill on the sample PDF. */
+export function headerLine(opts: {
+  brand: BrandProfile;
+  docType: string;
+  prospectUrl: string;
+  runDate: string;
+  isSample: boolean;
+}): string {
+  const { brand, docType, prospectUrl, runDate, isSample } = opts;
+  const host = prospectUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  const pill = isSample
+    ? ` <span style="display:inline-block;border:1pt solid #B91C1C;color:#B91C1C;font-weight:700;font-size:7pt;letter-spacing:0.08em;padding:1pt 5pt;">SAMPLE</span>`
+    : "";
+  return `<div style="width:100%;font-size:8pt;color:#4B5563;padding:0 44pt;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:700;color:#111827;">${escapeHtml(brand.brandName)}${pill}</span><span>${escapeHtml(docType)} &middot; ${escapeHtml(host)} &middot; ${escapeHtml(runDate)}</span></div>`;
 }
 
 function escapeHtml(value: string): string {
@@ -96,28 +123,61 @@ function gradeColor(grade: string): string {
   return "#B91C1C";
 }
 
+/** Grade tint backgrounds, fixed, never overridden by brand. C uses the
+ *  darker text #92400E on its tint for contrast. */
+function gradeTint(grade: string): string {
+  if (grade === "A" || grade === "B") return "#F0FDF4";
+  if (grade === "C") return "#FFFBEB";
+  return "#FEF2F2";
+}
+
+function gradeTextColor(grade: string): string {
+  if (grade === "C") return "#92400E";
+  return gradeColor(grade);
+}
+
+function statusLabel(grade: string): string {
+  if (grade === "A") return "Excellent — keep it up";
+  if (grade === "B") return "Good — a few quick wins";
+  if (grade === "C") return "Fair — worth fixing soon";
+  if (grade === "D") return "Needs work";
+  return "Needs urgent attention";
+}
+
 const baseCss = (accent: string) => `
   * { box-sizing: border-box; }
-  body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1e293b; margin: 0; padding: 32px 40px; font-size: 13px; line-height: 1.55; background: #ffffff; }
-  h1 { font-size: 26px; line-height: 1.25; color: #0f172a; margin: 0 0 6px; }
-  h2 { font-size: 17px; color: #0f172a; margin: 28px 0 8px; padding-bottom: 6px; border-bottom: 2px solid ${accent}; }
-  h3 { font-size: 14px; color: #0f172a; margin: 14px 0 4px; }
-  p { margin: 6px 0; }
-  .brand { color: ${accent}; font-weight: 700; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
-  .meta { color: #64748b; font-size: 12px; }
-  .sample-stamp { display: inline-block; border: 2px solid #B91C1C; color: #B91C1C; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; font-size: 12px; margin: 10px 0; }
-  .score-box { border: 1px solid #cbd5e1; padding: 16px 20px; margin: 16px 0; }
-  .score-big { font-size: 40px; font-weight: 800; color: #0f172a; }
-  .grade { font-size: 22px; font-weight: 800; }
-  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-  th { color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-  .issue { border: 1px solid #e2e8f0; padding: 12px 14px; margin: 10px 0; page-break-inside: avoid; }
-  .severity { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; color: #ffffff; background: ${accent}; }
+  body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #374151; margin: 0; padding: 0; font-size: 9.5pt; line-height: 1.45; background: #ffffff; }
+  h1 { font-size: 22pt; font-weight: 700; line-height: 1.2; color: #111827; margin: 0 0 6pt; }
+  h2 { font-size: 13pt; font-weight: 700; color: #111827; margin: 14pt 0 6pt; padding-bottom: 5pt; border-bottom: 1pt solid #E9D5FF; }
+  h3 { font-size: 10.5pt; font-weight: 600; color: #111827; margin: 12pt 0 4pt; }
+  p { margin: 5pt 0; }
+  .micro { font-size: 8pt; color: #4B5563; line-height: 1.4; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .cover-rule { height: 3pt; background: ${accent}; margin: 0 0 14pt; }
+  .brand { color: ${accent}; font-weight: 700; font-size: 9pt; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4pt; }
+  .section-label { color: ${accent}; font-weight: 700; font-size: 8pt; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 4pt; }
+  .meta { color: #4B5563; font-size: 8pt; }
+  .notice-strip { background: #FAF5FF; border: 0.75pt solid #DDD6FE; padding: 8pt 10pt; margin: 10pt 0; font-size: 8.5pt; color: #374151; }
+  .sample-stamp { display: inline-block; border: 1.5pt solid #B91C1C; color: #B91C1C; font-weight: 700; letter-spacing: 0.08em; padding: 2pt 8pt; font-size: 9pt; margin: 8pt 0; }
+  .hero { border: 0.75pt solid #DDD6FE; background: #FAF5FF; padding: 10pt 14pt; margin: 10pt 0; }
+  .hero-score { font-size: 40pt; font-weight: 700; color: #111827; line-height: 1; }
+  .grade-badge { display: inline-flex; align-items: center; justify-content: center; width: 48pt; height: 48pt; font-size: 24pt; font-weight: 700; color: #ffffff; }
+  .score-bar { height: 6pt; background: #E9D5FF; border-radius: 3pt; overflow: hidden; }
+  .score-bar > span { display: block; height: 100%; border-radius: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9.5pt; }
+  th, td { text-align: left; padding: 4pt 6pt; border-bottom: 0.75pt solid #E9D5FF; vertical-align: top; }
+  th { color: #4B5563; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.05em; }
+  .issue { border: 0.75pt solid #DDD6FE; margin: 7pt 0; break-inside: avoid; page-break-inside: avoid; }
+  .issue-head { background: #FAF5FF; border-bottom: 0.75pt solid #DDD6FE; padding: 7pt 10pt; }
+  .issue-head h3 { margin: 0; }
+  .issue-body { padding: 6pt 10pt; }
+  .issue-body p { margin: 4pt 0; }
+  .severity { display: inline-block; font-size: 8pt; font-weight: 700; padding: 1pt 7pt; color: #ffffff; background: ${accent}; }
   .severity.critical { background: #B91C1C; }
-  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #cbd5e1; color: #64748b; font-size: 11px; line-height: 1.5; }
-  .cta { border: 2px solid ${accent}; padding: 14px 16px; margin: 16px 0; }
+  .footer-block { margin-top: 16pt; padding-top: 10pt; border-top: 1pt solid #E9D5FF; color: #4B5563; font-size: 8pt; line-height: 1.5; }
+  .cta { border-left: 2.5pt solid ${accent}; background: #FAF5FF; border-top: 0.75pt solid #DDD6FE; border-right: 0.75pt solid #DDD6FE; border-bottom: 0.75pt solid #DDD6FE; padding: 10pt 12pt; margin: 10pt 0; }
   .cta a { color: ${accent}; font-weight: 700; }
+  .page-break { break-before: page; page-break-before: always; }
   @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 `;
 
@@ -128,18 +188,53 @@ function reportShell(opts: {
   prospectUrl: string;
   isSample: boolean;
   body: string;
+  docType: string;
 }): string {
   const b = opts.brand;
+  const notice = opts.isSample
+    ? `<div class="notice-strip"><strong>SAMPLE REPORT</strong> — Fictional business (${escapeHtml("Harbor & Pine Plumbing")}) and fictional studio (${escapeHtml("Harbor & Pine Digital")}). All data is invented for demonstration.</div>`
+    : "";
+  const disclaimer = opts.isSample ? SAMPLE_DISCLAIMER : FOOTER_DISCLAIMER;
   return `<!doctype html>
 <html><head><meta charset="utf-8"><style>${baseCss(brandAccent(b))}</style></head>
 <body>
+  <div class="cover-rule"></div>
   ${logoImg(b)}
-  <div class="brand">${escapeHtml(b.brandName)}</div>
+  <div class="brand">${escapeHtml(b.brandName)}${opts.isSample ? " [SAMPLE]" : ""}</div>
   <h1>${escapeHtml(opts.title)}</h1>
-  <p class="meta">${escapeHtml(opts.prospectUrl)} &middot; ${escapeHtml(opts.runDate)}</p>
-  ${opts.isSample ? `<p><span class="sample-stamp">SAMPLE</span></p><p class="meta">Sample report. The business, address, phone number, and website in this report are fictional, and the findings are sample findings written to show the report format. Nothing in this report describes a real business.</p>` : ""}
+  <p class="meta tabular">${escapeHtml(opts.prospectUrl)} &middot; ${escapeHtml(opts.runDate)} &middot; ${escapeHtml(opts.docType)}</p>
+  ${opts.isSample ? `<p><span class="sample-stamp">SAMPLE</span></p>` : ""}
+  ${notice}
   ${opts.body}
+  <div class="footer-block">
+    <p class="micro">${escapeHtml(disclaimer)}</p>
+    <p class="micro">Prepared by ${escapeHtml(b.brandName)} · ${escapeHtml(b.contactName)} · ${escapeHtml(b.contactEmail)}${b.contactPhone ? ` · ${escapeHtml(b.contactPhone)}` : ""}</p>
+  </div>
 </body></html>`;
+}
+
+/** Score Hero Block, page 1: 48x48 grade badge, big score, status label,
+ *  6-row area table with 6pt bars. */
+function heroBlock(result: AuditResult): string {
+  const g = result.overallGrade;
+  const rows = result.categories
+    .map((c) => {
+      const meta = CATEGORIES.find((m) => m.key === c.key);
+      return `<tr><td>${escapeHtml(meta?.label ?? c.key)}</td><td class="tabular">${c.score} / 100</td><td><div class="score-bar"><span style="width:${c.score}%;background:${gradeColor(c.grade)};"></span></div></td><td style="color:${gradeTextColor(c.grade)};font-weight:700;background:${gradeTint(c.grade)};">${escapeHtml(c.grade)}</td></tr>`;
+    })
+    .join("");
+  return `<div class="hero">
+    <table style="margin:0;"><tbody><tr>
+      <td style="border:none;padding:0;width:56pt;vertical-align:middle;"><span class="grade-badge" style="background:${gradeColor(g)};">${escapeHtml(g)}</span></td>
+      <td style="border:none;padding:0 0 0 10pt;vertical-align:middle;">
+        <div><span class="hero-score tabular">${result.overallScore}</span><span style="font-size:16pt;color:#4B5563;"> / 100</span></div>
+        <div style="font-size:10.5pt;font-weight:600;color:${gradeTextColor(g)};">Grade ${escapeHtml(g)} — ${escapeHtml(statusLabel(g))}</div>
+      </td>
+    </tr></tbody></table>
+    <table style="margin-top:10pt;"><thead><tr><th>Area</th><th>Score</th><th style="width:45%;">Bar</th><th>Grade</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p class="micro tabular" style="margin-bottom:0;">Homepage: ${escapeHtml(result.finalUrl)} &middot; Loaded in ${(result.loadMs / 1000).toFixed(1)}s &middot; ${result.https ? "HTTPS" : "Not HTTPS"}</p>
+  </div>`;
 }
 
 /** Contact block for the end of a report: name + email always (PDF routes
@@ -155,25 +250,20 @@ function contactBlock(brand: BrandProfile): string {
   return `<p><strong>${escapeHtml(brand.contactName)}</strong> &middot; ${escapeHtml(brand.contactEmail)}${phone}</p>${cta}${site}`;
 }
 
-function categoryRows(result: AuditResult): string {
-  return result.categories
-    .map((c) => {
-      const meta = CATEGORIES.find((m) => m.key === c.key);
-      return `<tr><td>${escapeHtml(meta?.label ?? c.key)}</td><td>${c.score} / 100</td><td style="color:${gradeColor(c.grade)};font-weight:700;">${escapeHtml(c.grade)}</td><td>${escapeHtml(meta?.description ?? "")}</td></tr>`;
-    })
-    .join("");
-}
-
 function issueBlocks(result: AuditResult): string {
   if (result.issues.length === 0) return "<p>No issues were found on the homepage in this run.</p>";
   return result.issues
     .map(
       (issue) => `<div class="issue">
-        <p><span class="severity${issue.severity === "Critical" ? " critical" : ""}">${escapeHtml(issue.severity)}</span></p>
-        <h3>${escapeHtml(issue.title)}</h3>
-        <p><strong>Found:</strong> ${escapeHtml(issue.found)}</p>
-        <p><strong>Why it matters:</strong> ${escapeHtml(issue.why)}</p>
-        <p><strong>Fix:</strong> ${escapeHtml(issue.fix)}</p>
+        <div class="issue-head">
+          <p style="margin:0 0 3pt;"><span class="severity${issue.severity === "Critical" ? " critical" : ""}">${escapeHtml(issue.severity)}</span></p>
+          <h3>${escapeHtml(issue.title)}</h3>
+        </div>
+        <div class="issue-body">
+          <p><strong>Found:</strong> ${escapeHtml(issue.found)}</p>
+          <p><strong>Why it matters:</strong> ${escapeHtml(issue.why)}</p>
+          <p><strong>Fix:</strong> ${escapeHtml(issue.fix)}</p>
+        </div>
       </div>`,
     )
     .join("");
@@ -191,21 +281,18 @@ export function teardownReportHtml(opts: {
       ? "I reviewed your website and found it in good shape."
       : brand.introLine;
   const body = `
-  <div class="score-box">
-    <p class="meta">Overall score</p>
-    <p><span class="score-big">${result.overallScore} / 100</span> &nbsp; <span class="grade" style="color:${gradeColor(result.overallGrade)};">Grade ${escapeHtml(result.overallGrade)}</span></p>
-    <p class="meta">Homepage: ${escapeHtml(result.finalUrl)} &middot; Loaded in ${(result.loadMs / 1000).toFixed(1)}s &middot; ${result.https ? "HTTPS" : "Not HTTPS"}</p>
-  </div>
-  <h2>Scores by area</h2>
-  <table><thead><tr><th>Area</th><th>Score</th><th>Grade</th><th>What it covers</th></tr></thead>
-  <tbody>${categoryRows(result)}</tbody></table>
+  <p class="section-label">Teardown report</p>
+  ${heroBlock(result)}
+  <p class="micro">${escapeHtml(FOOTER_DISCLAIMER)}</p>
+  <div class="page-break"></div>
+  <p class="section-label">Findings</p>
   <h2>What we found, in plain language</h2>
   ${issueBlocks(result)}
   ${result.couldNotCheck.length > 0 ? `<h2>What this report could not check</h2><ul>${result.couldNotCheck.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul>` : ""}
   <h2>What happens next</h2>
   <div class="cta"><p>${escapeHtml(introLine)}</p>
   ${contactBlock(brand)}</div>`;
-  return reportShell({ title: "Website Teardown Report", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
+  return reportShell({ title: "Website Teardown Report", brand, runDate, prospectUrl: result.url, isSample: result.isSample, body, docType: "Teardown report" });
 }
 
 /** Proposal PDF HTML: the fix plan plus the proposal structure the buyer
@@ -279,21 +366,19 @@ export function proposalHtml(opts: {
     .join("");
 
   let body = `
-  <div class="score-box">
-    <p class="meta">Overall score</p>
-    <p><span class="score-big">${result.overallScore} / 100</span> &nbsp; <span class="grade" style="color:${gradeColor(result.overallGrade)};">Grade ${escapeHtml(result.overallGrade)}</span></p>
-    <p class="meta">Homepage: ${escapeHtml(result.finalUrl)}</p>
-  </div>
-  <p>${escapeHtml(introLine)}</p>`;
+  <p class="section-label">Proposal</p>
+  ${heroBlock(result)}
+  <p>${escapeHtml(introLine)}</p>
+  <p class="micro">${escapeHtml(FOOTER_DISCLAIMER)}</p>`;
 
   if (on("found")) {
-    body += `<h2>What we found</h2>${shownResult.issues.length === 0 ? "<p>No material issues were found on the homepage in this run. The opportunity is keeping the site in good shape, not fixing what is not broken.</p>" : issueBlocks(shownResult)}`;
+    body += `<div class="page-break"></div><p class="section-label">What we found</p><h2>What we found</h2>${shownResult.issues.length === 0 ? "<p>No material issues were found on the homepage in this run. The opportunity is keeping the site in good shape, not fixing what is not broken.</p>" : issueBlocks(shownResult)}`;
   }
   if (on("fix")) {
-    body += `<h2>${escapeHtml(fixHeading)}</h2>${phaseSections || "<p>No fix items were listed for this site in this run.</p>"}`;
+    body += `<p class="section-label">What we would fix</p><h2>${escapeHtml(fixHeading)}</h2>${phaseSections || "<p>No fix items were listed for this site in this run.</p>"}`;
   }
   if (on("scope") && scopeLines.length > 0) {
-    body += `<h2>Scope and deliverables</h2><ul>${scopeLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><h3>Not included</h3><ul>${notIncluded.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
+    body += `<p class="section-label">Scope</p><h2>Scope and deliverables</h2><ul>${scopeLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><h3>Not included</h3><ul>${notIncluded.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
   }
   if (on("timeline") && timelineLines.length > 0) {
     body += `<h2>Timeline and milestones</h2><ul>${timelineLines.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul><p class="meta">Start date: [fill in]. Timings assume the client provides content and access on time.</p>`;
@@ -302,17 +387,17 @@ export function proposalHtml(opts: {
     body += `<h2>Investment</h2>${investment}`;
   }
   if (on("about")) {
-    body += `<h2>About and past work</h2><p>${escapeHtml(TESTIMONIAL_SLOT_TEXT).replace(/\n/g, "<br>")}</p>`;
+    body += `<p class="section-label">About</p><h2>About and past work</h2><p>${escapeHtml(TESTIMONIAL_SLOT_TEXT).replace(/\n/g, "<br>")}</p>`;
   }
   if (on("terms")) {
     body += `<h2>Terms</h2><p>This proposal includes 2 rounds of design revisions. Additional revisions or work outside the scope described above will be quoted separately. Ownership of the finished site passes to the client on final payment. Edit these terms to match your agreement with your client. This is not legal advice.</p>`;
   }
   if (on("nextstep")) {
     const expiry = (opts.expiryDays ?? "").trim() || "[14/30]";
-    body += `<h2>What happens next</h2>
+    body += `<p class="section-label">Next step</p><h2>What happens next</h2>
   <div class="cta">${contactBlock(brand)}</div>
   <p>Reply to this email by [date] to book a 15-minute call. This proposal is valid for ${escapeHtml(expiry)} days from the date above.</p>
   <p class="meta">${escapeHtml(NON_BINDING_TEXT)}</p>`;
   }
-  return reportShell({ title, brand, runDate, prospectUrl: result.url, isSample: result.isSample, body });
+  return reportShell({ title, brand, runDate, prospectUrl: result.url, isSample: result.isSample, body, docType: "Proposal" });
 }

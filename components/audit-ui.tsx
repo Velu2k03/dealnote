@@ -15,10 +15,11 @@ import {
 import { motion } from "motion/react";
 import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
 import { CATEGORIES, gradeColor } from "@/lib/audit";
-import { CountUp, Stagger, StaggerItem } from "./motion-ui";
+import { Stagger, StaggerItem } from "./motion-ui";
+import { SakugaButton, SakugaTooltip } from "./sakuga";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
-  "Checkout is not connected yet — payment opens once the Lemon Squeezy account is set up.";
+  "Checkout is not connected yet. Payment opens once the Lemon Squeezy account is set up.";
 
 /** Buy button. POSTs to /api/checkout (owned by the checkout agent) and
  *  follows the checkout URL it returns. Shows a plain message when the
@@ -53,11 +54,15 @@ export function BuyButton({ className = "btn btn-primary" }: { className?: strin
 
   return (
     <span style={{ display: "inline-block" }}>
-      <button type="button" className={className} onClick={buy} disabled={busy}>
+      <SakugaButton
+        variant={className.includes("btn-secondary") ? "secondary" : undefined}
+        onClick={buy}
+        disabled={busy}
+      >
         {busy ? "Opening checkout…" : "Buy DealNote — $49 one-time"}
-      </button>
+      </SakugaButton>
       {message ? (
-        <span className="caption" role="status" style={{ display: "block", marginTop: 8 }}>
+        <span className="caption" role="status" style={{ display: "block", marginTop: "0.5rem" }}>
           {message}
         </span>
       ) : null}
@@ -84,7 +89,7 @@ export function GradeBadge({ grade, size = 36 }: { grade: string; size?: number 
 }
 
 export function CategoryIcon({ icon }: { icon: string }) {
-  const props = { size: 18, strokeWidth: 1.5, color: "#475569", "aria-hidden": true };
+  const props = { size: 18, strokeWidth: 1.5, color: "#4A3B5C", "aria-hidden": true };
   switch (icon) {
     case "gauge":
       return <Gauge {...props} />;
@@ -107,7 +112,7 @@ export function SeverityIcon({ severity }: { severity: Severity }) {
   const props = { size: 18, strokeWidth: 1.5, "aria-hidden": true };
   if (severity === "Critical") return <AlertOctagon {...props} color="#B91C1C" />;
   if (severity === "Fix soon") return <AlertTriangle {...props} color="#B45309" />;
-  return <Info {...props} color="#475569" />;
+  return <Info {...props} color="#4A3B5C" />;
 }
 
 export function severityClass(severity: Severity): string {
@@ -123,10 +128,10 @@ export function ScoreBars({ result }: { result: AuditResult }) {
         const meta = CATEGORIES.find((m) => m.key === cat.key);
         if (!meta) return null;
         return (
-          <div key={cat.key} style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <div key={cat.key} style={{ marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem" }}>
               <CategoryIcon icon={meta.icon} />
-              <span style={{ fontWeight: 600, fontSize: 14 }}>{meta.label}</span>
+              <span style={{ fontWeight: 600, fontSize: "0.875rem" }}>{meta.label}</span>
               <span className="caption">weight {meta.weight}%</span>
               <span className="tabular" style={{ marginLeft: "auto", fontWeight: 600 }}>
                 {cat.score}/100
@@ -153,17 +158,23 @@ export function ScoreBars({ result }: { result: AuditResult }) {
 export function ScoreSummary({ result, children }: { result: AuditResult; children?: ReactNode }) {
   return (
     <div className="card glass">
-      <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
-          <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
-            <CountUp to={result.overallScore} />
-            <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
+          <div className="tabular" style={{ fontSize: "3rem", fontWeight: 600, lineHeight: 1 }}>
+            {/* Neon P2-2 (28 Nov 2026): the headline score renders
+                immediately, no count-up. The counter flashed 68/100 B
+                mid-animation on /sample (and read 0 until scrolled to
+                in the earlier Neon recheck), while the grade badge
+                already showed the final B. CountUp stays in motion-ui
+                for other uses; the score itself is now static text. */}
+            {result.overallScore}
+            <span style={{ fontSize: "1.25rem", color: "#4A3B5C" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
         </div>
         <GradeBadge grade={result.overallGrade} size={56} />
-        <div style={{ flex: "1 1 220px" }}>
-          <p className="mb-8" style={{ overflowWrap: "anywhere" }}>
+        <div style={{ flex: "1 1 13.75rem" }}>
+          <p className="mb-8" title={result.url} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>
             <strong>{result.url}</strong>
           </p>
           {/* Teaser responses carry no run facts beyond the date; render only
@@ -189,7 +200,11 @@ export function ScoreSummary({ result, children }: { result: AuditResult; childr
         Lighthouse, PageSpeed, or search-ranking scores. Scores can vary between runs. Weights: Speed 20,
         Mobile 15, On-page SEO 20, Technical 15, Conversion 15, Trust &amp; local 15. This is
         DealNote&apos;s scoring model, not an industry standard. Grades: A 90-100, B 80-89, C 70-79,
-        D 60-69, F below 60.
+        D 60-69, F below 60.{" "}
+        <SakugaTooltip
+          label="How the score works"
+          text="Six categories, each scored 0 to 100, weighted as shown and added up. A category only scores what the audit could actually read; anything it could not read never lowers the score."
+        />
       </p>
     </div>
   );
@@ -202,10 +217,10 @@ export function IssueList({ issues, showCategory = true }: { issues: Issue[]; sh
         const meta = CATEGORIES.find((m) => m.key === issue.category);
         return (
           <StaggerItem key={issue.id}>
-          <article className="card glass" style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <article className="card glass" style={{ marginBottom: "1rem" }}>
+            <div style={{ display: "flex", gap: "0.625rem", alignItems: "flex-start", flexWrap: "wrap" }}>
               <SeverityIcon severity={issue.severity} />
-              <div style={{ flex: "1 1 260px" }}>
+              <div style={{ flex: "1 1 16.25rem" }}>
                 <h3 className="mb-8">{issue.title}</h3>
                 <p className="mb-8">
                   <span className={severityClass(issue.severity)}>{issue.severity}</span>{" "}

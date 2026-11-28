@@ -1,35 +1,64 @@
 :root {
-  /* Tokens in OKLCH (Loop 5, oklch-skill + tailwind-design-system token
-     discipline). Same colours as the hex originals, converted 1:1:
-     bg #ffffff, surface #f8fafc, border #e2e8f0, text #0f172a,
-     muted #475569, faint #64748b, accent #0f766e, accent-soft #f0fdfa,
-     accent-border #99f6e4, green #15803d, amber #b45309, red #b91c1c.
-     Contrast on white, WCAG: accent 5.47, muted 7.58, faint 4.76,
-     text 17.85, red 6.47, amber 5.02, green 5.02 — all AA. */
-  --bg: oklch(1 0 0);
-  --surface: oklch(0.984 0.003 247.9);
-  --border: oklch(0.929 0.013 255.5);
-  --text: oklch(0.208 0.04 265.8);
-  --muted: oklch(0.446 0.037 257.3);
-  --faint: oklch(0.554 0.041 257.4);
-  --accent: oklch(0.511 0.086 186.4);
-  --accent-soft: oklch(0.984 0.014 180.7);
-  --accent-border: oklch(0.91 0.093 180.4);
-  --green: oklch(0.527 0.137 150.1);
-  --amber: oklch(0.555 0.146 49);
-  --red: oklch(0.505 0.19 27.5);
+  /* Neon redesign tokens (28 Nov 2026, Gemini 4 Neon, "DealNote PDF and
+     site redesign"), on top of the live Sakuga pink palette. Hex values
+     are Neon's exact spec; contrast on white, WCAG: pink text #BE185D
+     6.04, pink CTA #DB2777 4.60 (white text), ink #181024, secondary
+     #4A3B5C, muted #6B5B7E — all AA. Grade colors stay green/amber/red
+     with the A-F letter, never pink-washed. Sakuga glow #EC4899 is
+     graphics only, never text. */
+  --bg: #ffffff;
+  --surface: #faf5ff;
+  --surface-2: #f5ecff;
+  --blush: #fdf2f8;
+  --border: #e9d5ff;
+  --border-line: #c4b5fd;
+  --focus: #7c3aed;
+  --text: #181024;
+  --muted: #4a3b5c;
+  --faint: #6b5b7e;
+  --accent: #be185d;
+  --cta: #db2777;
+  --cta-hover: #9d174d;
+  --accent-soft: #fdf2f8;
+  --accent-border: #f9a8d4;
+  --green: #15803d;
+  --amber: #b45309;
+  --red: #b91c1c;
+/* Sakuga VFX --sk-* variables (28 Nov 2026, pinkish direction).
+     These are the Sakuga defaults, set here so the page wins over the
+     core's :where() defaults: pink accent #ff5fa8 (decorative effects
+     only, never body text — the site accent #be185d is the readable
+     pink for text and buttons), violet primary #8f8df7, lavender
+     soft #b8b3ff, violet line #5a4fd8, dark violet ink #1d1a4a. */
+  --sk-card: #ffffff;
+  --sk-ink: #1d1a4a;
+  --sk-dim: #8580b0;
+  --sk-soft: #b8b3ff;
+  --sk-pri: #8f8df7;
+  --sk-pri-ink: #1d1a4a;
+  --sk-acc: #ff5fa8;
+  --sk-track: #c9cbe0;
+  --sk-line: #5a4fd8;
+  --sk-fill: #ff5fa8;
+  --sk-on-pri: #ffffff;
 }
 
 * { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* overflow-x: clip on html: every Sakuga control carries a back canvas
+   160px wider than itself on each side (canvas.back), which otherwise
+   inflates documentElement.scrollWidth by up to 160px and gives the
+   page a horizontal scrollbar. clip (not hidden) keeps sticky
+   positioning working and only trims what is outside the viewport;
+   the visible burst behind a control still shows. 28 Nov 2026. */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -38,30 +67,35 @@ body {
 a { color: var(--accent); text-decoration: none; text-underline-offset: 3px; }
 a:hover { text-decoration: underline; }
 
-h1 { font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; text-wrap: balance; }
-h2 { font-size: 24px; font-weight: 600; line-height: 1.25; margin: 0 0 12px; text-wrap: balance; }
-h3 { font-size: 18px; font-weight: 600; line-height: 1.3; margin: 0 0 8px; }
-p { margin: 0 0 16px; text-wrap: pretty; }
-small, .caption { font-size: 13px; line-height: 1.5; color: var(--muted); }
+/* Fluid type and spacing (Velu, 28 Nov 2026): no fixed px for layout.
+   Headings and section padding scale with the viewport via clamp, so
+   nothing is pinned to one screen size; rem keeps everything proportional
+   to the reader's font size. 1px borders and 2px focus rings stay px. */
+h1 { font-size: clamp(2rem, 1.5rem + 2.5vw, 2.75rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; margin: 0 0 1rem; text-wrap: balance; }
+h2 { font-size: clamp(1.5rem, 1.25rem + 1vw, 1.75rem); font-weight: 600; line-height: 1.25; margin: 0 0 0.75rem; text-wrap: balance; }
+h3 { font-size: 1.125rem; font-weight: 600; line-height: 1.3; margin: 0 0 0.5rem; }
+p { margin: 0 0 1rem; text-wrap: pretty; }
+small, .caption { font-size: 0.8125rem; line-height: 1.5; color: var(--muted); }
 
-.container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
-.reading { max-width: 720px; }
-section { padding: 64px 0; }
-@media (max-width: 640px) {
-  section { padding: 48px 0; }
-  h1 { font-size: 30px; }
-  h2 { font-size: 22px; }
+.container { max-width: 70rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 1.5rem); }
+.reading { max-width: 47.5rem; margin-left: auto; margin-right: auto; }
+section { padding: clamp(2.5rem, 1.5rem + 3vw, 4rem) 0; }
+@media (max-width: 40rem) {
+  section { padding: 2.5rem 0; }
+  .container { padding: 0 1rem; }
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.5rem; }
 }
 
 .eyebrow {
-  font-size: 13px; font-weight: 600;
-  color: var(--accent); margin: 0 0 12px;
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent); margin: 0 0 0.75rem;
 }
 
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 44px; padding: 10px 20px; border-radius: 8px;
-  font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid transparent;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-height: 3rem; padding: 0.75rem 1.25rem; border-radius: 0.75rem;
+  font-size: 0.9375rem; font-weight: 600; cursor: pointer; border: 1px solid transparent;
   text-decoration: none; white-space: normal; text-align: center;
   touch-action: manipulation;
   transition: background-color 120ms ease-out, border-color 120ms ease-out, transform 120ms ease-out, box-shadow 120ms ease-out;
@@ -73,84 +107,87 @@ section { padding: 64px 0; }
   .btn:hover { transform: translateY(-1px); }
 }
 .btn:active { transform: translateY(0) scale(0.98); }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: oklch(0.439 0.073 185.8); }
-.btn-secondary { background: #fff; border-color: var(--border); color: var(--text); }
-.btn-secondary:hover { border-color: var(--faint); }
+.btn-primary { background: var(--cta); color: #fff; }
+.btn-primary:hover { background: var(--cta-hover); }
+.btn-secondary { background: #fff; border-color: var(--border); color: var(--accent); }
+.btn-secondary:hover { border-color: var(--border-line); background: var(--blush); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--accent); }
+.btn-ghost:hover { color: var(--cta-hover); text-decoration: underline; }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
-  outline: 2px solid var(--accent); outline-offset: 2px;
+  outline: 2px solid var(--focus); outline-offset: 2px;
 }
 
 .card {
-  background: #fff; border: 1px solid var(--border); border-radius: 8px;
-  box-shadow: 0 1px 2px oklch(0.208 0.04 265.8 / 0.06); padding: 24px;
+  background: #fff; border: 1px solid var(--border); border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(24, 16, 36, 0.06); padding: 24px;
 }
-/* Apple glass (Velu, 28 Nov 2026, replaces the old no-glass rule): frosted
-   translucent panels for the hero score card, finding cards, step rows
-   and the pricing card. Dark slate text on light frosted panels only,
-   never over images or busy backgrounds, so contrast stays AA. Glass is
-   screen-only: print forces plain white (see @media print below), and
-   the PDF templates in lib/pdf-html.ts never use it. */
+.card:hover { border-color: var(--border-line); }
+/* Glass is kept only for the hero score card and the sticky header
+   (Neon redesign): white/80, blur, violet border. Everywhere else the
+   card is plain white. Glass is screen-only: print forces plain white
+   (see @media print below), and the PDF templates in lib/pdf-html.ts
+   never use it. */
 .glass {
-  background: oklch(1 0 0 / 0.72);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid oklch(1 0 0 / 0.65);
-  box-shadow: 0 8px 32px oklch(0.208 0.04 265.8 / 0.08), 0 1px 2px oklch(0.208 0.04 265.8 / 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(233, 213, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(24, 16, 36, 0.08), 0 1px 2px rgba(24, 16, 36, 0.06);
 }
-.callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 6px; padding: 16px 20px; }
-.evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; font-size: 14px; overflow-wrap: anywhere; }
+.callout { background: var(--accent-soft); border: 1px solid var(--accent-border); border-radius: 0.375rem; padding: 1rem 1.25rem; }
+.evidence { background: var(--surface); border: 1px solid var(--border); border-radius: 0.375rem; padding: 0.75rem 1rem; font-size: 0.875rem; overflow-wrap: anywhere; }
 
-label { display: block; font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+label { display: block; font-size: 0.875rem; font-weight: 600; margin: 0 0 0.375rem; }
 input[type="text"], input[type="url"], input[type="email"], input[type="tel"], input[type="color"], select, textarea {
-  width: 100%; min-height: 44px; padding: 10px 12px; font-size: 16px;
+  width: 100%; min-height: 3rem; padding: 0.75rem 1rem; font-size: 1rem;
   font-family: inherit; color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px; background: #fff;
+  border: 1px solid var(--border-line); border-radius: 0.75rem; background: #fff;
 }
-input[type="color"] { padding: 4px; max-width: 80px; }
-textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+input::placeholder { color: var(--faint); }
+input[type="color"] { padding: 0.25rem; max-width: 5rem; }
+textarea { min-height: 6rem; resize: vertical; line-height: 1.5; }
 /* Native checkboxes keep native keyboard behaviour; accent-color brands
    them teal (modern-web-guidance `checkbox` guide). The wrapping label
    gives a 44px hit target. */
 input[type="checkbox"] { accent-color: var(--accent); inline-size: 1.25em; aspect-ratio: 1; margin: 0; cursor: pointer; flex-shrink: 0; }
-.check-row { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding: 8px 0; cursor: pointer; font-weight: 400; margin: 0; }
-.check-row input[type="checkbox"] { margin-top: 3px; }
+.check-row { display: flex; align-items: flex-start; gap: 0.625rem; min-height: 2.75rem; padding: 0.5rem 0; cursor: pointer; font-weight: 400; margin: 0; }
+.check-row input[type="checkbox"] { margin-top: 0.1875rem; }
 .check-row > span { flex: 1 1 auto; }
-.field-error { color: var(--red); font-size: 13px; margin: 6px 0 0; }
+.field-error { color: var(--red); font-size: 0.8125rem; margin: 0.375rem 0 0; }
 
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th { text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); background: var(--surface); padding: 10px 12px; border-bottom: 1px solid var(--border); }
-td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
-@media (max-width: 640px) {
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th { text-align: left; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); background: var(--surface); padding: 0.625rem 0.75rem; border-bottom: 1px solid var(--border); }
+td { padding: 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+@media (max-width: 40rem) {
   .stack-table table, .stack-table tbody, .stack-table tr, .stack-table td { display: block; width: 100%; }
   .stack-table thead { display: none; }
-  .stack-table tr { border-bottom: 1px solid var(--border); padding: 8px 0; }
-  .stack-table td { border-bottom: none; padding: 4px 0; }
-  .stack-table td::before { content: attr(data-label); display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .stack-table tr { border-bottom: 1px solid var(--border); padding: 0.5rem 0; }
+  .stack-table td { border-bottom: none; padding: 0.25rem 0; }
+  .stack-table td::before { content: attr(data-label); display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
 }
 
-.score-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
-.score-bar > span { display: block; height: 100%; border-radius: 4px; }
+.score-bar { height: 0.5rem; background: var(--border); border-radius: 0.25rem; overflow: hidden; }
+.score-bar > span { display: block; height: 100%; border-radius: 0.25rem; }
 .grade-badge {
   display: inline-flex; align-items: center; justify-content: center;
-  min-width: 36px; height: 36px; padding: 0 8px; border-radius: 6px;
-  font-size: 20px; font-weight: 600; color: #fff;
+  min-width: 2.25rem; height: 2.25rem; padding: 0 0.5rem; border-radius: 0.375rem;
+  font-size: 1.25rem; font-weight: 600; color: #fff;
 }
 .sample-stamp {
-  display: inline-block; font-size: 13px; font-weight: 600; color: var(--accent);
+  display: inline-block; font-size: 0.8125rem; font-weight: 600; color: var(--accent);
   border: 1px solid var(--accent-border); background: var(--accent-soft);
-  border-radius: 6px; padding: 4px 10px;
+  border-radius: 0.375rem; padding: 0.25rem 0.625rem;
 }
-.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); color: var(--muted); }
-.tag-critical { color: var(--red); border-color: oklch(0.885 0.059 18.3); background: oklch(0.971 0.013 17.4); }
-.tag-soon { color: var(--amber); border-color: oklch(0.924 0.115 95.7); background: oklch(0.987 0.021 95.3); }
+.tag { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.1875rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border); color: var(--muted); }
+.tag-critical { color: var(--red); border-color: #FECACA; background: #FEF2F2; }
+.tag-soon { color: var(--amber); border-color: #FDE68A; background: #FFFBEB; }
 .tag-nice { color: var(--muted); background: var(--surface); }
 
-.site-header { border-bottom: 1px solid var(--border); background: oklch(1 0 0 / 0.8); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); position: sticky; top: 0; z-index: 10; }
-.site-header-inner { max-width: 1120px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-.site-header nav { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
-.site-header nav a { color: var(--muted); font-size: 15px; font-weight: 500; padding: 12px 10px; border-radius: 8px; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
+.site-header { border-bottom: 1px solid var(--border); background: rgba(255, 255, 255, 0.8); -webkit-backdrop-filter: blur(12px) saturate(150%); backdrop-filter: blur(12px) saturate(150%); position: sticky; top: 0; z-index: 10; }
+.site-header-inner { max-width: 70rem; margin: 0 auto; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.site-header nav { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-left: auto; align-items: center; }
+.site-header nav a { color: var(--muted); font-size: 0.9375rem; font-weight: 500; padding: 0.75rem 0.625rem; border-radius: 0.5rem; transition: background-color 120ms ease-out, border-color 120ms ease-out; }
 .site-header nav a:hover { color: var(--text); text-decoration: none; background: var(--surface); }
 /* One nav at every size (modern-web-guidance `navbar`): the Menu button
    and popover exist only under 640px, where the header would otherwise
@@ -159,7 +196,7 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
    popover element cannot also be an inline nav (Loop 4 P1-1). The popover
    is native, so light-dismiss and Escape work with no script; the links
    stay in the tab order as plain links. */
-.site-menu { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; align-items: center; }
+.site-menu { display: flex; gap: 0.25rem; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; align-items: center; }
 /* The mobile popover list is hidden at desktop width; the desktop list is
    hidden under 640px. A popover element must never also be the desktop
    inline nav: author display:flex overrides the UA closed-popover
@@ -167,19 +204,19 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
    black-bordered box in the top layer (Loop 4 P1-1). */
 .site-menu-mobile { display: none; }
 .menu-button { display: none; }
-@media (max-width: 640px) {
-  .site-header-inner { flex-wrap: nowrap; gap: 12px; padding: 8px 16px; }
+@media (max-width: 40rem) {
+  .site-header-inner { flex-wrap: nowrap; gap: 0.75rem; padding: 0.5rem 1rem; }
   .site-header nav { flex-wrap: nowrap; }
-  .menu-button { display: inline-flex; min-height: 44px; }
+  .menu-button { display: inline-flex; min-height: 2.75rem; }
   .site-menu-desktop { display: none; }
   .site-menu-mobile {
     position: fixed;
     inset: auto;
-    top: 60px;
-    right: 16px;
+    top: 3.75rem;
+    right: 1rem;
     left: auto;
     width: min(80vw, 20rem);
-    max-width: calc(100vw - 32px);
+    max-width: calc(100vw - 2rem);
     max-height: calc(100dvh - 6rem);
     overflow: auto;
     display: none;
@@ -188,47 +225,84 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     gap: 0;
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    box-shadow: 0 8px 24px oklch(0.208 0.04 265.8 / 0.16);
-    padding: 8px;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 24px rgba(24, 16, 36, 0.16);
+    padding: 0.5rem;
     margin: 0;
   }
   .site-menu-mobile:is(:popover-open, .\:popover-open) { display: flex; }
-  .site-menu-mobile li a { display: block; padding: 12px 10px; }
+  .site-menu-mobile li a { display: block; padding: 0.75rem 0.625rem; }
 }
-.wordmark { font-size: 20px; font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 8px; }
+.wordmark { font-size: 1.25rem; font-weight: 600; color: var(--text); display: inline-flex; align-items: center; gap: 0.5rem; }
 .wordmark:hover { text-decoration: none; }
 
-.site-footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 14px; }
+.site-footer { border-top: 1px solid var(--border); padding: clamp(2rem, 1.5rem + 2vw, 3rem) 0; color: var(--muted); font-size: 0.875rem; }
 .site-footer a { color: var(--muted); }
+/* Footer layout (28 Nov 2026, Velu: footer was one messy block on mobile).
+   Groups in a fluid grid: one column stacked on a phone, as many columns
+   as fit on desktop (minmax, auto-fit). No fixed widths anywhere. */
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 2rem; align-items: start; }
+.footer-group h3 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin: 0 0 0.75rem; }
+.footer-group ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.footer-group ul a { display: inline-block; padding: 0.25rem 0; }
+.footer-about { max-width: 30rem; }
+.footer-note { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); display: grid; gap: 0.5rem; }
+.footer-note p { margin: 0; }
 
-#how-it-works { scroll-margin-top: 80px; }
+/* Collapsible help (28 Nov 2026, /audit copy clean-up): detail that only
+   some readers need lives behind a <details> element, not in the flow. */
+details.help { border: 1px solid var(--border); border-radius: 0.75rem; padding: 0.75rem 1rem; background: var(--surface); }
+details.help summary { cursor: pointer; font-weight: 600; font-size: 0.9375rem; color: var(--text); }
+details.help p { margin: 0.75rem 0 0; }
+
+#how-it-works { scroll-margin-top: 5rem; }
 
 /* Skip link (web-design-guidelines): hidden until keyboard focus. */
-.skip-link { position: absolute; left: -9999px; top: 0; z-index: 100; background: #fff; padding: 8px 16px; }
-.skip-link:focus { left: 8px; top: 8px; }
+.skip-link { position: absolute; left: -624.9375rem; top: 0; z-index: 100; background: #fff; padding: 0.5rem 1rem; }
+.skip-link:focus { left: 0.5rem; top: 0.5rem; }
 
 /* Mobile hero: the score card's category bars are demo detail, not the
    visitor's task; hide them under 640px so the steps sit one screen down
    instead of two and a half (critique P1). The score, grade, run facts
    and the link to the full sample stay visible. */
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .hero-score .score-bars { display: none; }
 }
 
-.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
-@media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
-.steps-flow { display: grid; gap: 20px; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+@media (max-width: 53.75rem) { .hero-grid { grid-template-columns: 1fr; gap: 2rem; } }
+@media (max-width: 40rem) { .pricing-grid { grid-template-columns: 1fr !important; } }
+/* Hero audit pill: the Sakuga submit button must not shrink and wrap to
+   three lines inside the flex-nowrap pill. */
+.hero-submit { flex-shrink: 0; white-space: nowrap; }
+/* Audit page on mobile (Neon P2-3): when a result exists, the score card
+   moves above the URL form so 45/100 is readable above the fold. The
+   DOM order is unchanged; only the visual order moves on small screens. */
+@media (max-width: 40rem) {
+  .audit-layout { display: flex; flex-direction: column; }
+  .audit-layout .audit-results { order: -1; margin-top: 0.5rem; }
+}
+/* Templates page (Neon redesign): 3-column horizontal step bar, and
+   unified bordered cards in a 2-column grid for both 8 proposals and
+   8 emails. */
+.template-steps { grid-template-columns: repeat(3, 1fr); }
+.template-steps .step-row { flex-direction: column; gap: 0.5rem; }
+.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+@media (max-width: 53.75rem) {
+  .template-steps { grid-template-columns: 1fr; }
+  .template-grid { grid-template-columns: 1fr; }
+}
+.steps-flow { display: grid; gap: 1.25rem; }
 /* Step rows carry the shared .glass class in the markup; layout only here. */
-.step-row { display: flex; gap: 16px; align-items: flex-start; border-radius: 8px; padding: 24px; }
-.step-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; font-weight: 600; }
-.two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
-@media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.step-row { display: flex; gap: 1rem; align-items: flex-start; border-radius: 0.5rem; padding: 1.5rem; }
+.step-num { width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.875rem; font-weight: 600; }
+.two-col { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start; }
+@media (max-width: 53.75rem) { .two-col { grid-template-columns: 1fr; } }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 40rem) { .form-grid { grid-template-columns: 1fr; } }
 
-.progress-step { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; }
-.progress-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; font-weight: 600; color: var(--muted); background: #fff; }
+.progress-step { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.625rem 0; }
+.progress-dot { width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 2px solid var(--border); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.8125rem; font-weight: 600; color: var(--muted); background: #fff; }
 .progress-dot.done { background: var(--accent); border-color: var(--accent); color: #fff; }
 .progress-dot.active { border-color: var(--accent); color: var(--accent); }
 
@@ -237,8 +311,8 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 .faint { color: var(--faint); }
 .accent-text { color: var(--accent); }
 .mt-0 { margin-top: 0; } .mb-0 { margin-bottom: 0; }
-.mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-32 { margin-top: 32px; }
-.mb-8 { margin-bottom: 8px; } .mb-16 { margin-bottom: 16px; } .mb-24 { margin-bottom: 24px; } .mb-32 { margin-bottom: 32px; }
+.mt-16 { margin-top: 1rem; } .mt-24 { margin-top: 1.5rem; } .mt-32 { margin-top: 2rem; }
+.mb-8 { margin-bottom: 0.5rem; } .mb-16 { margin-bottom: 1rem; } .mb-24 { margin-bottom: 1.5rem; } .mb-32 { margin-bottom: 2rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .btn, .site-header nav a { transition: none; }
@@ -251,11 +325,11 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
 
 /* Footer links: inline text is ~17px tall; a small vertical hit area
    clears the 24px WCAG target size without changing the look. */
-.site-footer a { display: inline-block; padding: 4px 0; }
+.site-footer a { display: inline-block; padding: 0.25rem 0; }
 
 @media print {
   .site-header, .site-footer, .no-print { display: none !important; }
-  body { font-size: 14px; }
+  body { font-size: 0.875rem; }
   .card { box-shadow: none; break-inside: avoid; }
   section { padding: 0; }
   /* SAMPLE stamp repeats on every printed page: a fixed element is
@@ -266,12 +340,12 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
     top: 0;
     left: 0;
     right: 0;
-    font-size: 11px;
+    font-size: 0.6875rem;
     font-weight: 600;
     color: var(--accent);
     border-bottom: 1px solid var(--accent-border);
     background: var(--accent-soft);
-    padding: 4px 0;
+    padding: 0.25rem 0;
   }
   /* Glass and motion are screen-only: print shows plain white cards at
      final state, never a translucent panel or a half-animated element. */
@@ -281,6 +355,82 @@ td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top;
   .spotlight-overlay { display: none !important; }
 }
 .print-stamp { display: none; }
+
+/* Sakuga VFX sizing (28 Nov 2026). The controls are fixed-size by
+   default (input 230px, slider 230px, progress 280px); let them fill
+   their card on small screens instead of overflowing it. The toggle
+   keeps its own painted margin (89px above for the splash), so it is
+   never squeezed into a tight row. */
+sakuga-input { display: block; width: 100%; --sk-input-width: 100%; }
+sakuga-slider { --sk-slider-width: min(100%, 20rem); }
+sakuga-progress { --sk-progress-width: min(100%, 26.25rem); }
+
+/* Neon P1-1 (28 Nov 2026): primary Sakuga CTAs must match the site's
+   solid pink .btn-primary (bg #DB2777, hover #9D174D, white semibold
+   non-italic text, no thick dark border, no offset shadow), so "Run a
+   free audit" stays on one line and the buy/run/unlock buttons stop
+   clashing with the pink buttons elsewhere. The Sakuga button paints
+   its face from CSS variables inside its shadow DOM
+   (background var(--sk-card), color var(--sk-ink), border
+   var(--sk-bw) solid var(--sk-btn-line), shadow var(--sk-btn-sh)),
+   and its :where(:root) defaults lose to a page's own values, so the
+   host-level variables below restyle the face without touching the
+   vendor file. The font (italic 800, 19px) is hardcoded in the shadow
+   CSS, so it is restyled through the exposed ::part(button), which the
+   component declares. Secondary buttons keep their white face: the
+   selector excludes [variant="secondary"], and --sk-card is only set
+   on primary hosts (the .alt face also reads --sk-card). */
+sakuga-button { vertical-align: middle; flex-shrink: 0; }
+sakuga-button:not([variant="secondary"]) {
+  --sk-card: #DB2777;
+  --sk-ink: #ffffff;
+  --sk-btn-line: #DB2777;
+  --sk-btn-sh: none;
+}
+sakuga-button:not([variant="secondary"])::part(button) {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  padding: 0.75rem 1.25rem;
+  min-height: 3rem;
+  white-space: nowrap;
+  background: #DB2777;
+  color: #fff;
+  border: 1px solid transparent;
+  box-shadow: none;
+}
+sakuga-button:not([variant="secondary"])::part(button):hover { background: #9D174D; }
+
+/* Neon P1-3 (28 Nov 2026): the inline "?" tooltip broke footnote
+   line-height. The vendor file sets :host { margin-top: 60px } and a
+   42x42 help button, which split "Grades: A 90-100..." across lines
+   and left the /templates "?" alone below the subtitle. The host
+   margin is a shadow :host rule, so the document override needs
+   !important; the 16px face is restyled through ::part(button), which
+   the component declares. The bubble itself is absolutely positioned
+   above the host and is unaffected. */
+sakuga-tooltip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0 !important;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+sakuga-tooltip::part(button) {
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  border-width: 1.5px;
+  box-shadow: none;
+}
 
 /* CSS-only fade for /terms and /privacy: opacity only, 300ms, no JS
    cost on those pages. Reduced-motion users get no animation at all. */
