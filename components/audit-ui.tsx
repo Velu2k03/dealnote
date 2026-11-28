@@ -12,8 +12,10 @@ import {
   Smartphone,
   Wrench,
 } from "lucide-react";
+import { motion } from "motion/react";
 import type { AuditResult, CategoryKey, Issue, Severity } from "@/lib/audit";
 import { CATEGORIES, gradeColor } from "@/lib/audit";
+import { CountUp, Stagger, StaggerItem } from "./motion-ui";
 
 export const CHECKOUT_NOT_CONFIGURED_MESSAGE =
   "Checkout is not connected yet — payment opens once the Polar account is set up.";
@@ -132,7 +134,14 @@ export function ScoreBars({ result }: { result: AuditResult }) {
               <span style={{ fontWeight: 600, color: gradeColor(cat.grade) }}>{cat.grade}</span>
             </div>
             <div className="score-bar">
-              <span style={{ width: `${cat.score}%`, background: gradeColor(cat.grade) }} />
+              <motion.span
+                className="motion-fade"
+                style={{ background: gradeColor(cat.grade) }}
+                initial={{ width: 0 }}
+                whileInView={{ width: `${cat.score}%` }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              />
             </div>
           </div>
         );
@@ -143,11 +152,11 @@ export function ScoreBars({ result }: { result: AuditResult }) {
 
 export function ScoreSummary({ result, sampleLabel = false }: { result: AuditResult; sampleLabel?: boolean }) {
   return (
-    <div className="card">
+    <div className="card glass">
       <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ textAlign: "center" }}>
           <div className="tabular" style={{ fontSize: 48, fontWeight: 600, lineHeight: 1 }}>
-            {result.overallScore}
+            <CountUp to={result.overallScore} />
             <span style={{ fontSize: 20, color: "#475569" }}>/100</span>
           </div>
           <p className="caption mb-0">Overall score</p>
@@ -188,11 +197,12 @@ export function ScoreSummary({ result, sampleLabel = false }: { result: AuditRes
 
 export function IssueList({ issues, showCategory = true }: { issues: Issue[]; showCategory?: boolean }) {
   return (
-    <div>
+    <Stagger>
       {issues.map((issue) => {
         const meta = CATEGORIES.find((m) => m.key === issue.category);
         return (
-          <article key={issue.id} className="card" style={{ marginBottom: 16 }}>
+          <StaggerItem key={issue.id}>
+          <article className="card glass" style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start", flexWrap: "wrap" }}>
               <SeverityIcon severity={issue.severity} />
               <div style={{ flex: "1 1 260px" }}>
@@ -216,9 +226,10 @@ export function IssueList({ issues, showCategory = true }: { issues: Issue[]; sh
               </div>
             </div>
           </article>
+          </StaggerItem>
         );
       })}
-    </div>
+    </Stagger>
   );
 }
 

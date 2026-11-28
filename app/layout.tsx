@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/site";
 import Footer from "@/components/footer";
+import { MotionProvider } from "@/components/motion-ui";
 
 // Font choice, recorded: Inter, loaded via next/font/google so the named
 // font is the rendered font (weights 400/500/600/700). Previously the CSS
@@ -46,9 +47,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
       />
       <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <MotionProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );

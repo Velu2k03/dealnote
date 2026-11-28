@@ -11,6 +11,7 @@ export default function SamplePage() {
   return (
     <section style={{ paddingTop: 48 }}>
       <div className="container">
+        <p className="print-stamp">SAMPLE: fictional business, fictional data</p>
         <p><span className="sample-stamp">SAMPLE: fictional business, fictional data</span></p>
         <h1>Website Teardown and Proposal</h1>
         <p className="reading">
@@ -21,9 +22,13 @@ export default function SamplePage() {
           page describes a real business.
         </p>
         <p className="reading">
-          Prepared by [Your studio], [Your name], [your email]. Run date: 27 Nov 2026.
+          Prepared by [Your studio], [Your name], [your email]. Run date: 27 Nov 2026. The bracketed
+          names are placeholders on purpose: your brand goes here on a real report.
         </p>
         <div className="no-print" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <a href="/api/pdf/sample" className="btn btn-primary" download>
+            Download sample report as PDF
+          </a>
           <PrintButton />
           <a href="/audit" className="btn btn-secondary">Run a real audit</a>
         </div>
@@ -50,7 +55,7 @@ export default function SamplePage() {
         </p>
 
         <h2 className="mt-32">What we would fix</h2>
-        <div className="card">
+        <div className="card glass">
           <h3>Quick wins</h3>
           <ul style={{ paddingLeft: 20 }}>
             <li>Compress the hero image below 200 KB and serve it in a modern format.</li>
@@ -70,25 +75,25 @@ export default function SamplePage() {
         </div>
 
         <h2 className="mt-32">Investment</h2>
-        <div className="card">
+        <div className="card glass">
           <div className="stack-table">
             <table>
               <thead><tr><th>Tier</th><th>Includes</th><th>Price</th></tr></thead>
               <tbody>
-                <tr><td data-label="Tier">Essential</td><td data-label="Includes">Quick wins, core pages, basic SEO setup</td><td data-label="Price">$____</td></tr>
-                <tr><td data-label="Tier">Growth</td><td data-label="Includes">Everything in Essential, plus redesign, forms, and trust sections</td><td data-label="Price">$____</td></tr>
-                <tr><td data-label="Tier">Premium</td><td data-label="Includes">Everything in Growth, plus ongoing support period</td><td data-label="Price">$____</td></tr>
+                <tr><td data-label="Tier">Essential</td><td data-label="Includes">Quick wins, core pages, basic SEO setup</td><td data-label="Price">To be quoted</td></tr>
+                <tr><td data-label="Tier">Growth</td><td data-label="Includes">Everything in Essential, plus redesign, forms, and trust sections</td><td data-label="Price">To be quoted</td></tr>
+                <tr><td data-label="Tier">Premium</td><td data-label="Includes">Everything in Growth, plus ongoing support period</td><td data-label="Price">To be quoted</td></tr>
               </tbody>
             </table>
           </div>
           <p className="mb-0">
-            Prices are blank placeholders in this sample. The freelancer fills them in before sending.
-            Payment terms placeholder: 50% upfront, 50% on launch. This proposal is valid until [date].
+            Prices are quoted in the proposal, not shown here: the freelancer fills in the price for each
+            tier before sending. Payment terms placeholder: 50% upfront, 50% on launch. This proposal is valid until [date].
           </p>
         </div>
 
         <h2 className="mt-32">Scope and deliverables</h2>
-        <div className="card">
+        <div className="card glass">
           <ul style={{ paddingLeft: 20 }}>
             {DEFAULT_SCOPE.map((line) => (
               <li key={line}>{line}</li>
@@ -103,7 +108,7 @@ export default function SamplePage() {
         </div>
 
         <h2 className="mt-32">Timeline and milestones</h2>
-        <div className="card">
+        <div className="card glass">
           <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
             {DEFAULT_TIMELINE.map((line) => (
               <li key={line}>{line}</li>
@@ -115,7 +120,7 @@ export default function SamplePage() {
         </div>
 
         <h2 className="mt-32">About [Your Studio Name]</h2>
-        <div className="card">
+        <div className="card glass">
           <p>
             [Your Studio Name] is a web design studio run by [Your Name], based in [Your City]. We build
             and fix websites for local businesses, and this sample shows the format every proposal uses.
@@ -127,7 +132,7 @@ export default function SamplePage() {
         </div>
 
         <h2 className="mt-32">Terms</h2>
-        <div className="card">
+        <div className="card glass">
           <p>
             This proposal includes 2 rounds of design revisions. Additional revisions or work outside the
             scope described above will be quoted separately. Ownership of the finished site passes to the
@@ -136,7 +141,7 @@ export default function SamplePage() {
           <p className="mb-0">{NON_BINDING_TEXT}</p>
         </div>
 
-        <div className="card mt-32">
+        <div className="card glass mt-32">
           <h3>Next step</h3>
           <p>
             Reply to this email, or book a free 15-minute call at the link in the covering email. Prepared by
@@ -151,8 +156,8 @@ export default function SamplePage() {
 
         <p className="caption mt-32">
           <Printer size={18} strokeWidth={1.5} aria-hidden style={{ verticalAlign: "text-bottom" }} />{" "}
-          Use the print button above to save this sample as a PDF from your browser. Print-to-PDF covers the
-          sample report only in v1.
+          Use the download button above for the sample as a PDF, or the print button to save it from your
+          browser. The download is the same sample report, stamped SAMPLE.
         </p>
       </div>
     </section>

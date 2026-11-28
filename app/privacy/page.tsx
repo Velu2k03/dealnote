@@ -2,9 +2,19 @@ export default function PrivacyPage() {
   return (
     <section style={{ paddingTop: 48 }}>
       <div className="container">
-        <div className="reading">
+        <div className="reading fade-in">
           <h1>Privacy Policy</h1>
           <p className="caption">Last updated: 28 Nov 2026. This page is general information, not legal advice.</p>
+
+          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+            <p className="mb-0"><strong>Summary:</strong></p>
+            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+              <li>No accounts in v1, so no account information is collected.</li>
+              <li>Your brand profile, tracker, and licence key stay only in your own browser.</li>
+              <li>Vercel logs requests to run the service. One third-party script, the Ship or Die hackathon tracker, counts visits.</li>
+              <li>No payment is taken today. Payments, when live, will be handled by Polar.</li>
+            </ul>
+          </div>
 
           <h2>Who operates DealNote</h2>
           <p>

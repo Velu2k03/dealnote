@@ -2,9 +2,19 @@ export default function TermsPage() {
   return (
     <section style={{ paddingTop: 48 }}>
       <div className="container">
-        <div className="reading">
+        <div className="reading fade-in">
           <h1>Terms, Acceptable Use, and Refund policy</h1>
           <p className="caption">Last updated: 28 Nov 2026. This text is general information, not legal advice.</p>
+
+          <div className="card mt-16" style={{ background: "#F8FAFC" }}>
+            <p className="mb-0"><strong>Summary:</strong></p>
+            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
+              <li>$49 one-time. No subscription, no per-report fee. Fair-use limit: 30 audits a month.</li>
+              <li>Bad report? Report it within 14 days for a replacement or refund, our choice.</li>
+              <li>Audit public websites only, respect robots.txt, and you are responsible for your own outreach law.</li>
+              <li>Lifetime means the lifetime of the product. If it is discontinued, lifetime access ends with it.</li>
+            </ul>
+          </div>
 
           <h2>What DealNote is</h2>
           <p>
@@ -14,7 +24,10 @@ export default function TermsPage() {
             per-report fee. Fair-use limit: 30 audits per month per buyer. That limit is a fair-use
             limit, enforced on a best-effort basis: usage is counted per licence key, and the count is
             durable once the Upstash Redis store is configured; until then it may reset when the hosting
-            restarts. Lifetime means the lifetime of the product. If DealNote is discontinued, lifetime
+            restarts.
+          </p>
+          <p>
+            Lifetime means the lifetime of the product. If DealNote is discontinued, lifetime
             access ends with it, and the refund rule below applies to purchases made within the preceding
             14 days.
           </p>
@@ -83,7 +96,10 @@ export default function TermsPage() {
             You are responsible for your own outreach law, including spam, consent, and local rules where
             you and the recipient operate. DealNote provides no cold SMS scripts anywhere in the product,
             and templates are email only. Do not send a report to a business in a way that breaks the law
-            where you operate. In the United States, commercial email must follow the CAN-SPAM Act (honest
+            where you operate.
+          </p>
+          <p>
+            In the United States, commercial email must follow the CAN-SPAM Act (honest
             headers and subject line, identification as an advertisement, your postal address, and an opt-out
             honoured within 10 business days). Canada, the UK/EU, and Australia require consent before most
             cold commercial email. Do not rely on the US rule when emailing outside the US. Do not send
