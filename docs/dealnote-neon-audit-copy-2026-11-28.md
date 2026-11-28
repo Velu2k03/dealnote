@@ -138,5 +138,20 @@ receipt email or email murugan@drvelu.com."
 
 ## Live verification
 
-(To be filled after the merge deploy; see the parent report for the
-live numbers.)
+- Main HEAD: b365ec8 (merge of dealnote-neon-audit-copy), pushed to
+  origin. Vercel auto-deployed.
+- All 6 pages + /robots.txt + /sitemap.xml: 200. Tracker script present
+  on home (1 occurrence of ship-or-die.com/hackathon/verify.js).
+- Live /audit HTML: one-line intro present, "How the audit works"
+  present, "Have a license key?" present, "Want to see a finished
+  report first" present, "No audit yet" absent (0), placeholder
+  example-plumbing.com present.
+- Live POST /api/audit {"url":"https://example.com"}: 200, score 45,
+  grade F, teaser true, exactly 2 findings ("Meta description is
+  missing", "No phone number visible on the homepage").
+- Live POST /api/checkout {}: 200, real Lemon Squeezy URL
+  (pay.resonantatlas.com, new checkout session only, no payment).
+- Live GET /api/pdf/sample: 200, 86,254 B.
+- Live headless screenshot was not possible from this VM (egress proxy
+  fails for the live site, same caveat as Loops 4-5); local production
+  screenshots above are of the exact shipped commit.
